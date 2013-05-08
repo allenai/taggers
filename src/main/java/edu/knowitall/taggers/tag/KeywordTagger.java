@@ -123,7 +123,7 @@ public class KeywordTagger extends Tagger {
 
         for (int i = 0; i < tokens.size() - keyword.length; i++) {
             if (match(tokens, keyword, i)) {
-                Interval range = Interval.open(i, keyword.length);
+                Interval range = Interval.open(i, i + keyword.length);
                 tags.add(this.createType(sentence, range));
             }
         }

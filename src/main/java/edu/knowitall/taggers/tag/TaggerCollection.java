@@ -171,7 +171,7 @@ public class TaggerCollection {
 
         OpenNlpChunker chunker = new OpenNlpChunker();
 
-        System.out.println("Please eneter a sentence to tag:");
+        System.out.println("Please enter a sentence to tag:");
 
         MorphaStemmer morpha = new MorphaStemmer();
 

@@ -72,7 +72,7 @@ public class RegexTagger extends Tagger {
 
         for (int i = 0; i < tokens.size() - pattern.length; i++) {
             if (match(tokens, pattern, i)) {
-                Interval range = Interval.open(i, pattern.length);
+                Interval range = Interval.open(i, i + pattern.length);
                 tags.add(this.createType(sentence, range));
             }
         }

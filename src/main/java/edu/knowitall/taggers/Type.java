@@ -41,7 +41,7 @@ public class Type implements Serializable, XmlSerializable, Comparable<Type> {
 
     public static Type fromSentence(List<Lemmatized<ChunkedToken>> sentence, String descriptor, String source, String match,
             Interval interval) {
-        return new Type(Joiner.on(" ").join(sentence), descriptor, source, match, interval);
+        return new Type(Joiner.on(" ").join(sentence.subList(interval.start(), interval.end())), descriptor, source, match, interval);
     }
 
 
