@@ -14,7 +14,7 @@ public class SentenceFunctions {
     List<Lemmatized<ChunkedToken>> list = new ArrayList<Lemmatized<ChunkedToken>>(tokens.size());
 
     for (Lemmatized<ChunkedToken> token : tokens) {
-        list.add(new Lemmatized<ChunkedToken>(new ChunkedToken(token.token().chunk(), token.token().postag(), token.token().string(), token.token().offset()), token.lemma()));
+        list.add(new Lemmatized<ChunkedToken>(new ChunkedToken(token.token().chunk(), token.token().postag(), token.token().string().toLowerCase(), token.token().offset()), token.lemma()));
     }
 
     return list;

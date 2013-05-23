@@ -111,6 +111,7 @@ public class TaggerCollection {
     public static TaggerCollection fromPath(String path) throws SecurityException, IllegalArgumentException, JDOMException, IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         File file = new File(path);
         if (file.isDirectory()) {
+            logger.info("Loading taggers from directory: " + file);
             return fromDirectory(file);
         }
         else {
@@ -149,6 +150,7 @@ public class TaggerCollection {
             }
             else if (file.isFile()) {
                 if (file.getName().endsWith(".xml")) {
+                    logger.info("Loading taggers from file: " + file);
                     taggers.addAll(fromFile(file).taggers);
                 }
             }
