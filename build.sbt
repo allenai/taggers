@@ -11,10 +11,10 @@ scalaVersion <<= crossScalaVersions { (vs: Seq[String]) => vs.head }
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies ++= Seq(
-    "edu.washington.cs.knowitall.nlptools" %% "nlptools-core" % "2.4.2-SNAPSHOT",
-    "edu.washington.cs.knowitall.nlptools" %% "nlptools-chunk-opennlp" % "2.4.2-SNAPSHOT",
-    "edu.washington.cs.knowitall.nlptools" %% "nlptools-stem-morpha" % "2.4.2-SNAPSHOT",
-    "edu.washington.cs.knowitall.nlptools" %% "nlptools-typer-stanford" % "2.4.2-SNAPSHOT",
+    "edu.washington.cs.knowitall.nlptools" %% "nlptools-core" % "2.4.2",
+    "edu.washington.cs.knowitall.nlptools" %% "nlptools-chunk-opennlp" % "2.4.2",
+    "edu.washington.cs.knowitall.nlptools" %% "nlptools-stem-morpha" % "2.4.2",
+    "edu.washington.cs.knowitall.nlptools" %% "nlptools-typer-stanford" % "2.4.2",
     "edu.washington.cs.knowitall" % "openregex" % "1.0.3",
     "org.apache.commons" % "commons-lang3" % "3.1",
     "jdom" % "jdom" % "1.1",
