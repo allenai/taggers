@@ -2,7 +2,7 @@ organization := "edu.washington.cs.knowitall.taggers"
 
 name := "taggers"
 
-version := "1.0.0-SNAPSHOT"
+version := "0.1"
 
 crossScalaVersions := Seq("2.10.1", "2.9.2")
 
