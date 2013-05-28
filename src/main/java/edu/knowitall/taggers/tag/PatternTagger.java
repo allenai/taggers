@@ -16,6 +16,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 
 import edu.knowitall.collection.immutable.Interval;
+import edu.knowitall.collection.immutable.Interval$;
 import edu.knowitall.taggers.ListUtils;
 import edu.knowitall.taggers.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
@@ -204,10 +205,10 @@ public class PatternTagger extends Tagger {
         int endIndex = group.endIndex() + 1;
 
         if (startIndex == -1 || endIndex == -1) {
-            return Interval.empty();
+            return Interval$.MODULE$.empty();
         }
         else {
-            return Interval.open(startIndex, endIndex);
+            return Interval$.MODULE$.open(startIndex, endIndex);
         }
     }
 

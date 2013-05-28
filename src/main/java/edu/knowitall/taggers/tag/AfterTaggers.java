@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.knowitall.collection.immutable.Interval;
+import edu.knowitall.collection.immutable.Interval$;
 import edu.knowitall.taggers.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
@@ -16,7 +17,7 @@ public class AfterTaggers {
         for (Lemmatized<ChunkedToken> token : tokens) {
             // end a chunk tag sequence
             if (start != -1 && !token.token().chunk().equalsIgnoreCase("I-NP")) {
-                intervals.add(Interval.open(start, i));
+                intervals.add(Interval$.MODULE$.open(start, i));
                 start = -1;
             }
 

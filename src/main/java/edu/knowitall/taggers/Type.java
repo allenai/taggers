@@ -9,6 +9,7 @@ import org.jdom2.Element;
 import com.google.common.base.Joiner;
 
 import edu.knowitall.collection.immutable.Interval;
+import edu.knowitall.collection.immutable.Interval$;
 import edu.knowitall.taggers.XmlSerializable;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
@@ -139,7 +140,7 @@ public class Type implements Serializable, XmlSerializable, Comparable<Type> {
 
     /// XML
     public static Type fromXmlElement(List<Lemmatized<ChunkedToken>> sentence, Element e) {
-        Interval interval = Interval.open(
+        Interval interval = Interval$.MODULE$.open(
                 Integer.parseInt(e.getAttributeValue("start")),
                 Integer.parseInt(e.getAttributeValue("end")));
         return Type.fromSentence(sentence, e.getAttributeValue("descriptor"), e.getAttributeValue("source"), e.getAttributeValue("match"), interval);

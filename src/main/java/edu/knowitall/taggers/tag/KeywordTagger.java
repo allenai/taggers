@@ -18,6 +18,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import edu.knowitall.collection.immutable.Interval;
+import edu.knowitall.collection.immutable.Interval$;
 import edu.knowitall.taggers.SentenceFunctions;
 import edu.knowitall.taggers.StringFunctions;
 import edu.knowitall.taggers.Type;
@@ -123,7 +124,7 @@ public class KeywordTagger extends Tagger {
 
         for (int i = 0; i < tokens.size() - keyword.length; i++) {
             if (match(tokens, keyword, i)) {
-                Interval range = Interval.open(i, i + keyword.length);
+                Interval range = Interval$.MODULE$.open(i, i + keyword.length);
                 tags.add(this.createType(sentence, range));
             }
         }

@@ -12,6 +12,7 @@ import org.jdom2.Element;
 import com.google.common.collect.ImmutableList;
 
 import edu.knowitall.collection.immutable.Interval;
+import edu.knowitall.collection.immutable.Interval$;
 import edu.knowitall.taggers.SentenceFunctions;
 import edu.knowitall.taggers.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
@@ -72,7 +73,7 @@ public class RegexTagger extends Tagger {
 
         for (int i = 0; i < tokens.size() - pattern.length; i++) {
             if (match(tokens, pattern, i)) {
-                Interval range = Interval.open(i, i + pattern.length);
+                Interval range = Interval$.MODULE$.open(i, i + pattern.length);
                 tags.add(this.createType(sentence, range));
             }
         }
