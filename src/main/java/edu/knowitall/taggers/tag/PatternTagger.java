@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;

@@ -1,6 +1,6 @@
 package edu.knowitall.taggers.tag;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 public class ParseTagException extends Throwable {
     private static final long serialVersionUID = 1L;

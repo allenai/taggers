@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import edu.knowitall.collection.immutable.Interval;
 import edu.knowitall.taggers.XmlSerializable;

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import com.google.common.base.Joiner;
 

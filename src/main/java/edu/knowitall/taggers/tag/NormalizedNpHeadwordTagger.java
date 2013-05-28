@@ -2,7 +2,7 @@ package edu.knowitall.taggers.tag;
 
 import java.util.List;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import edu.knowitall.taggers.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;

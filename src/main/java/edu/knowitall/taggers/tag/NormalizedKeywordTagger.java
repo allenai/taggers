@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import com.google.common.collect.ImmutableList;
 
