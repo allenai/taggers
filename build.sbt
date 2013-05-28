@@ -2,6 +2,8 @@ organization := "edu.washington.cs.knowitall.taggers"
 
 name := "taggers"
 
+description := "Tag sentences with XML-specified logic."
+
 version := "0.1"
 
 crossScalaVersions := Seq("2.10.1", "2.9.2")
@@ -24,6 +26,14 @@ libraryDependencies ++= Seq(
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
 
+licenses := Seq("Academic License" -> url("http://reverb.cs.washington.edu/LICENSE.txt"))
+
+homepage := Some(url("http://github.com/knowitall/taggers"))
+
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+
+publishMavenStyle := true
+
 publishMavenStyle := true
 
 publishTo <<= version { (v: String) =>
@@ -33,3 +43,16 @@ publishTo <<= version { (v: String) =>
   else
     Some("releases"  at nexus + "service/local/staging/deploy/maven2")
 }
+
+pomExtra := (
+  <scm>
+    <url>https://github.com/knowitall/taggers</url>
+    <connection>scm:git://github.com/knowitall/taggers.git</connection>
+    <developerConnection>scm:git:git@github.com:knowitall/taggers.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+  <developers>
+   <developer>
+      <name>Michael Schmitz</name>
+    </developer>
+  </developers>)
