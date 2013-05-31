@@ -36,7 +36,7 @@ public class AfterTaggers {
         List<Type> tags = new ArrayList<Type>(initialTags.size());
         for (Type tag : initialTags) {
             for (Interval interval : npChunkIntervals(sentence)) {
-                if (interval.contains(tag.interval())) {
+                if (interval.superset(tag.interval())) {
                     tags.add(Type.fromSentence(sentence, tag.descriptor(), tag.source(), tag.match(), interval));
                 }
             }
@@ -48,7 +48,7 @@ public class AfterTaggers {
     public static Type tagHeadword(Type tag, List<Lemmatized<ChunkedToken>> tokens) {
         // final Pattern nounPosTag = Pattern.compile("nns?|nnps?", Pattern.CASE_INSENSITIVE);
         for (Interval interval : npChunkIntervals(tokens)) {
-            if (interval.contains(tag.interval())) {
+            if (interval.superset(tag.interval())) {
                 // look for preposition
                 int headwordEndIndex = interval.end() - 1;
                 for (int i = tokens.size() - 1; i > 0; i--) {
