@@ -41,7 +41,13 @@ public class Type implements Serializable, XmlSerializable, Comparable<Type> {
 
     public static Type fromSentence(List<Lemmatized<ChunkedToken>> sentence, String descriptor, String source, String match,
             Interval interval) {
-        return new Type(Joiner.on(" ").join(sentence.subList(interval.start(), interval.end())), descriptor, source, match, interval);
+        // build tyep string from tokens
+        StringBuilder builder = new StringBuilder();
+        for (Lemmatized<ChunkedToken> token : sentence.subList(interval.start(), interval.end())) {
+            builder.append(token.token().string() + " ");
+        }
+
+        return new Type(builder.toString().trim(), descriptor, source, match, interval);
     }
 
 
