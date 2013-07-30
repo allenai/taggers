@@ -104,6 +104,11 @@ public class PatternTagger extends Tagger {
         return true;
     }
     
+    /**
+     * Takes the list of Types found by the Tagger and nulls
+     * the ones that are included in larger tags.
+     * @param tags
+     */
     private void nullTagsThatAreContainedByOtherTags(List<Type> tags){
     	
         // null tags contained by another tag
@@ -120,6 +125,12 @@ public class PatternTagger extends Tagger {
         }
     }
 
+    /**
+     * Implementation of Tagger's abstract method findTags. This method
+     * uses only information from the Lemmatized ChunkedTokens in the sentence
+     * to match regular expressions. This method should not be used for the 
+     * PatternTagger but it is implemented anyways.
+     */
     @Override
     public List<Type> findTags(final List<Lemmatized<ChunkedToken>> sentence) {
         ArrayList<Type> tags = new ArrayList<Type>();
@@ -141,6 +152,10 @@ public class PatternTagger extends Tagger {
         return tags;
     }
     
+    /**
+     * This method overrides Tagger's default implementation. This implementation uses
+     * information from the Types that have been assigned to the sentence so far.
+     */
     @Override 
     public List<Type> getTags(final List<Lemmatized<ChunkedToken>> sentence, final List<Type> previousTags){
     	ArrayList<Type> tags = new ArrayList<Type>();
@@ -164,6 +179,14 @@ public class PatternTagger extends Tagger {
         return tags;	
     }
 
+    /**
+     * This is a helper method that creates the Type objects
+     * from a given pattern and a List of TypedTokens.
+     * @param typedTokenSentence
+     * @param sentence
+     * @param pattern
+     * @return
+     */
     protected List<Type> findTags(final List<TypedToken> typedTokenSentence,
             final List<Lemmatized<ChunkedToken>> sentence,
             final RegularExpression<TypedToken> pattern) {
@@ -470,17 +493,20 @@ public class PatternTagger extends Tagger {
         public boolean apply(TypedToken token) {
         	
         	Iterable<Type> types = null;
-        	switch (typeMatchType){
-        	case "type" :
+        	if(typeMatchType.equals("type")){
         		types = token.types();
-        		break;
-        	case "typeStart" :
-        		types = token.typesBeginningAtToken();
-        		break;
-        	case "typeEnd" :
-        		types = token.typesEndingAtToken();
-        		break;
         	}
+        	else if(typeMatchType.equals("typeStart")){
+        		types = token.typesBeginningAtToken();
+
+        	}
+        	else if(typeMatchType.equals("typeEnd")){
+        		types = token.typesEndingAtToken();
+        	}
+        	else{
+        		types = new ArrayList<Type>();
+        	}
+
         	for(Type t : types){
         		if(pattern.matcher(t.descriptor()).matches()){
         			return true;
@@ -488,6 +514,5 @@ public class PatternTagger extends Tagger {
         	}
         	return false;
         }
-    	
     }
 }
