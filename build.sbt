@@ -4,7 +4,7 @@ name := "taggers"
 
 description := "Tag sentences with XML-specified logic."
 
-version := "0.1"
+version := "0.2"
 
 crossScalaVersions := Seq("2.10.1", "2.9.3")
 
