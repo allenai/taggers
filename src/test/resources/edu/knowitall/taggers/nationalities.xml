@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taggers>
+    <CaseInsensitiveKeywordTagger descriptor="Nationality">
+        <keywords>
+            <keyword>Abkhazian</keyword>
+            <keyword>Abkhaz</keyword>
+            <keyword>Afghan</keyword>
+            <keyword>Albanian</keyword>
+            <keyword>Algerian</keyword>
+            <keyword>American Samoan</keyword>
+            <keyword>Andorran</keyword>
+            <keyword>Angolan</keyword>
+            <keyword>Anguillan</keyword>
+            <keyword>Antiguan</keyword>
+            <keyword>Barbudan</keyword>
+            <keyword>Argentine</keyword>
+            <keyword>Argentinean</keyword>
+            <keyword>Argentinian</keyword>
+            <keyword>Armenian</keyword>
+            <keyword>Aruban</keyword>
+            <keyword>Australian</keyword>
+            <keyword>Austrian</keyword>
+            <keyword>Azerbaijani</keyword>
+            <keyword>Azeri</keyword>
+            <keyword>Bahamian</keyword>
+            <keyword>Bahraini</keyword>
+            <keyword>Bangladeshi</keyword>
+            <keyword>Barbadian</keyword>
+            <keyword>Bajan</keyword>
+            <keyword>Belarusian</keyword>
+            <keyword>Belgian</keyword>
+            <keyword>Belizean</keyword>
+            <keyword>Beninese</keyword>
+            <keyword>Beninois</keyword>
+            <keyword>Bermudian</keyword>
+            <keyword>Bermudan</keyword>
+            <keyword>Bhutanese</keyword>
+            <keyword>Bolivian</keyword>
+            <keyword>Bosnian</keyword>
+            <keyword>Bosniak</keyword>
+            <keyword>Herzegovinian</keyword>
+            <keyword>Motswana</keyword>
+            <keyword>Botswanan</keyword>
+            <keyword>Brazilian</keyword>
+            <keyword>Bruneian</keyword>
+            <keyword>Bulgarian</keyword>
+            <keyword>Burkinabe</keyword>
+            <keyword>Burmese</keyword>
+            <keyword>Burundian</keyword>
+            <keyword>Cambodian</keyword>
+            <keyword>Cameroonian</keyword>
+            <keyword>Canadian</keyword>
+            <keyword>Cape Verdean</keyword>
+            <keyword>Caymanian</keyword>
+            <keyword>Central African</keyword>
+            <keyword>Chadian</keyword>
+            <keyword>Chilean</keyword>
+            <keyword>Chinese</keyword>
+            <keyword>Cocos Island</keyword>
+            <keyword>Colombian</keyword>
+            <keyword>Comorian</keyword>
+            <keyword>Congolese</keyword>
+            <keyword>Cook Island</keyword>
+            <keyword>Costa Rican</keyword>
+            <keyword>Ivorian</keyword>
+            <keyword>Croatian</keyword>
+            <keyword>Cuban</keyword>
+            <keyword>Cypriot</keyword>
+            <keyword>Czech</keyword>
+            <keyword>Danish</keyword>
+            <keyword>Djiboutian</keyword>
+            <keyword>Dominican</keyword>
+            <keyword>Timorese</keyword>
+            <keyword>Ecuadorian</keyword>
+            <keyword>Egyptian</keyword>
+            <keyword>Salvadoran</keyword>
+            <keyword>English</keyword>
+            <keyword>Equatorial Guinean</keyword>
+            <keyword>Equatoguinean</keyword>
+            <keyword>Eritrean</keyword>
+            <keyword>Estonian</keyword>
+            <keyword>Ethiopian</keyword>
+            <keyword>Falkland Island</keyword>
+            <keyword>Faroese</keyword>
+            <keyword>Fijian</keyword>
+            <keyword>Finnish</keyword>
+            <keyword>French</keyword>
+            <keyword>French Guyanese</keyword>
+            <keyword>French Polynesian</keyword>
+            <keyword>Gabonese</keyword>
+            <keyword>Gambian</keyword>
+            <keyword>Georgian</keyword>
+            <keyword>German</keyword>
+            <keyword>Ghanaian</keyword>
+            <keyword>Gibraltar</keyword>
+            <keyword>British</keyword>
+            <keyword>Greek</keyword>
+            <keyword>Greenlandic</keyword>
+            <keyword>Grenadian</keyword>
+            <keyword>Guadeloupe</keyword>
+            <keyword>Guamanian</keyword>
+            <keyword>Guatemalan</keyword>
+            <keyword>Guinean</keyword>
+            <keyword>Guyanese</keyword>
+            <keyword>Haitian</keyword>
+            <keyword>Honduran</keyword>
+            <keyword>Hongkongese</keyword>
+            <keyword>Hungarian</keyword>
+            <keyword>Magyar</keyword>
+            <keyword>Icelandic</keyword>
+            <keyword>Indian</keyword>
+            <keyword>Indonesian</keyword>
+            <keyword>Iranian</keyword>
+            <keyword>Iraqi</keyword>
+            <keyword>Irish</keyword>
+            <keyword>Manx</keyword>
+            <keyword>Israeli</keyword>
+            <keyword>Italian</keyword>
+            <keyword>Jamaican</keyword>
+            <keyword>Japanese</keyword>
+            <keyword>Jordanian</keyword>
+            <keyword>Kazakh</keyword>
+            <keyword>Kenyan</keyword>
+            <keyword>Kiribati</keyword>
+            <keyword>North Korean</keyword>
+            <keyword>South Korean</keyword>
+            <keyword>Korean</keyword>
+            <keyword>Kosovar</keyword>
+            <keyword>Kuwaiti</keyword>
+            <keyword>Kyrgyzstani</keyword>
+            <keyword>Kyrgyz</keyword>
+            <keyword>Kirgiz</keyword>
+            <keyword>Kirghiz</keyword>
+            <keyword>Laotian</keyword>
+            <keyword>Lao</keyword>
+            <keyword>Latvian</keyword>
+            <keyword>Lebanese</keyword>
+            <keyword>Basotho</keyword>
+            <keyword>Liberian</keyword>
+            <keyword>Libyan</keyword>
+            <keyword>Liechtenstein</keyword>
+            <keyword>Lithuanian</keyword>
+            <keyword>Luxembourg</keyword>
+            <keyword>Macanese</keyword>
+            <keyword>Macedonian</keyword>
+            <keyword>Malagasy</keyword>
+            <keyword>Malawian</keyword>
+            <keyword>Malaysian</keyword>
+            <keyword>Maldivian</keyword>
+            <keyword>Malian</keyword>
+            <keyword>Maltese</keyword>
+            <keyword>Marshallese</keyword>
+            <keyword>Martiniquais</keyword>
+            <keyword>Martinican</keyword>
+            <keyword>Mauritanian</keyword>
+            <keyword>Mauritian</keyword>
+            <keyword>Mahoran</keyword>
+            <keyword>Mexican</keyword>
+            <keyword>Micronesian</keyword>
+            <keyword>Moldovan</keyword>
+            <keyword>Monegasque</keyword>
+            <keyword>Monacan</keyword>
+            <keyword>Mongolian</keyword>
+            <keyword>Montenegrin</keyword>
+            <keyword>Montserratian</keyword>
+            <keyword>Moroccan</keyword>
+            <keyword>Mozambican</keyword>
+            <keyword>Namibian</keyword>
+            <keyword>Nauruan</keyword>
+            <keyword>Nepali</keyword>
+            <keyword>Dutch</keyword>
+            <keyword>Dutch Antillean</keyword>
+            <keyword>New Caledonian</keyword>
+            <keyword>New Zealand</keyword>
+            <keyword>Nicaraguan</keyword>
+            <keyword>Niuean</keyword>
+            <keyword>Nigerien</keyword>
+            <keyword>Nigerian</keyword>
+            <keyword>Norwegian</keyword>
+            <keyword>Northern Irish</keyword>
+            <keyword>Irish</keyword>
+            <keyword>Northern Marianan</keyword>
+            <keyword>Omani</keyword>
+            <keyword>Pakistani</keyword>
+            <keyword>Palestinian</keyword>
+            <keyword>Palauan</keyword>
+            <keyword>Panamanian</keyword>
+            <keyword>Papua New Guinean</keyword>
+            <keyword>Papuan</keyword>
+            <keyword>Paraguayan</keyword>
+            <keyword>Peruvian</keyword>
+            <keyword>Philippine</keyword>
+            <keyword>Filipino</keyword>
+            <keyword>Pitcairn Island</keyword>
+            <keyword>Polish</keyword>
+            <keyword>Portuguese</keyword>
+            <keyword>Puerto Rican</keyword>
+            <keyword>Qatari</keyword>
+            <keyword>Irish</keyword>
+            <keyword>Reunionese</keyword>
+            <keyword>Reunionnais</keyword>
+            <keyword>Romanian</keyword>
+            <keyword>Russian</keyword>
+            <keyword>Rwandan</keyword>
+            <keyword>St. Helenian</keyword>
+            <keyword>Kittitian</keyword>
+            <keyword>Nevisian</keyword>
+            <keyword>St. Lucian</keyword>
+            <keyword>Saint-Pierrais</keyword>
+            <keyword>Miquelonnais</keyword>
+            <keyword>St. Vincentian</keyword>
+            <keyword>Vincentian</keyword>
+            <keyword>Samoan</keyword>
+            <keyword>Sammarinese</keyword>
+            <keyword>Sao Tomean</keyword>
+            <keyword>Saudi</keyword>
+            <keyword>Saudi Arabian</keyword>
+            <keyword>Scots</keyword>
+            <keyword>Scottish</keyword>
+            <keyword>Scotch</keyword>
+            <keyword>Senegalese</keyword>
+            <keyword>Serbian</keyword>
+            <keyword>Seychellois</keyword>
+            <keyword>Sierra Leonean</keyword>
+            <keyword>Singapore</keyword>
+            <keyword>Slovak</keyword>
+            <keyword>Slovene</keyword>
+            <keyword>Slovenian</keyword>
+            <keyword>Solomon Island</keyword>
+            <keyword>Somali</keyword>
+            <keyword>South African</keyword>
+            <keyword>South Ossetian</keyword>
+            <keyword>Spanish</keyword>
+            <keyword>Sri Lankan</keyword>
+            <keyword>Sudanese</keyword>
+            <keyword>Surinamese</keyword>
+            <keyword>Swazi</keyword>
+            <keyword>Swedish</keyword>
+            <keyword>Swiss</keyword>
+            <keyword>Syrian</keyword>
+            <keyword>Taiwanese</keyword>
+            <keyword>Tajikistani</keyword>
+            <keyword>Tanzanian</keyword>
+            <keyword>Thai</keyword>
+            <keyword>Togolese</keyword>
+            <keyword>Tongan</keyword>
+            <keyword>Trinidadian</keyword>
+            <keyword>Tobagonian</keyword>
+            <keyword>Tunisian</keyword>
+            <keyword>Turkish</keyword>
+            <keyword>Turkmen</keyword>
+            <keyword>Tuvaluan</keyword>
+            <keyword>Ugandan</keyword>
+            <keyword>Ukrainian</keyword>
+            <keyword>Emirati</keyword>
+            <keyword>Emirian</keyword>
+            <keyword>British</keyword>
+            <keyword>American</keyword>
+            <keyword>Uruguayan</keyword>
+            <keyword>Uzbekistani</keyword>
+            <keyword>Uzbek</keyword>
+            <keyword>Ni-Vanuatu</keyword>
+            <keyword>Vanuatuan</keyword>
+            <keyword>Venezuelan</keyword>
+            <keyword>Vietnamese</keyword>
+            <keyword>Virgin Island</keyword>
+            <keyword>Welsh</keyword>
+            <keyword>Wallisian</keyword>
+            <keyword>Futunan</keyword>
+            <keyword>Sahraw</keyword>
+            <keyword>Sahrawian</keyword>
+            <keyword>Sahraouian</keyword>
+            <keyword>Yemeni</keyword>
+            <keyword>Zambian</keyword>
+            <keyword>Zimbabwean</keyword>
+            <keyword>Abkhazians</keyword>
+            <keyword>Afghans</keyword>
+            <keyword>Albanians</keyword>
+            <keyword>Algerians</keyword>
+            <keyword>American Samoans</keyword>
+            <keyword>Andorrans</keyword>
+            <keyword>Angolans</keyword>
+            <keyword>Anguillans</keyword>
+            <keyword>Antiguans</keyword>
+            <keyword>Barbudans</keyword>
+            <keyword>Argentines</keyword>
+            <keyword>Argentineans</keyword>
+            <keyword>Argentinians</keyword>
+            <keyword>Armenians</keyword>
+            <keyword>Arubans</keyword>
+            <keyword>Australians</keyword>
+            <keyword>Austrians</keyword>
+            <keyword>Azerbaijanis</keyword>
+            <keyword>Azeris</keyword>
+            <keyword>Bahamians</keyword>
+            <keyword>Bahrainis</keyword>
+            <keyword>Bangladeshis</keyword>
+            <keyword>Barbadians</keyword>
+            <keyword>Belarusians</keyword>
+            <keyword>Belgians</keyword>
+            <keyword>Belizeans</keyword>
+            <keyword>Beninese</keyword>
+            <keyword>Beninois</keyword>
+            <keyword>Bermudians</keyword>
+            <keyword>Bermudans</keyword>
+            <keyword>Bhutanese</keyword>
+            <keyword>Bolivians</keyword>
+            <keyword>Bosnians</keyword>
+            <keyword>Bosniaks</keyword>
+            <keyword>Herzegovinians</keyword>
+            <keyword>Batswana</keyword>
+            <keyword>Botswanans</keyword>
+            <keyword>Brazilians</keyword>
+            <keyword>British Virgin Islanders</keyword>
+            <keyword>Bruneians</keyword>
+            <keyword>Bulgarians</keyword>
+            <keyword>Burkinabe</keyword>
+            <keyword>Bamar, Burmese</keyword>
+            <keyword>Burundians</keyword>
+            <keyword>Cambodians</keyword>
+            <keyword>Cameroonians</keyword>
+            <keyword>Canadians</keyword>
+            <keyword>Cape Verdeans</keyword>
+            <keyword>Caymanians</keyword>
+            <keyword>Central Africans</keyword>
+            <keyword>Chadians</keyword>
+            <keyword>Chileans</keyword>
+            <keyword>Chinese</keyword>
+            <keyword>Christmas Islanders</keyword>
+            <keyword>Cocos Islanders</keyword>
+            <keyword>Colombians</keyword>
+            <keyword>Comorians</keyword>
+            <keyword>Congolese</keyword>
+            <keyword>Cook Islanders</keyword>
+            <keyword>Costa Ricans</keyword>
+            <keyword>Ivorians</keyword>
+            <keyword>Croatians</keyword>
+            <keyword>Croats</keyword>
+            <keyword>Cubans</keyword>
+            <keyword>Cypriots</keyword>
+            <keyword>Czechs</keyword>
+            <keyword>Danes</keyword>
+            <keyword>Djiboutians</keyword>
+            <keyword>Dominicans</keyword>
+            <keyword>Timorese</keyword>
+            <keyword>Ecuadorians</keyword>
+            <keyword>Egyptians</keyword>
+            <keyword>Salvadorans</keyword>
+            <keyword>English</keyword>
+            <keyword>Equatorial Guineans</keyword>
+            <keyword>Equatoguineans</keyword>
+            <keyword>Eritreans</keyword>
+            <keyword>Estonians</keyword>
+            <keyword>Ethiopians</keyword>
+            <keyword>Falkland Islanders</keyword>
+            <keyword>Faroese</keyword>
+            <keyword>Fijians</keyword>
+            <keyword>Finns</keyword>
+            <keyword>French</keyword>
+            <keyword>French Guyanese</keyword>
+            <keyword>French Polynesians</keyword>
+            <keyword>Tahitians</keyword>
+            <keyword>Gabonese</keyword>
+            <keyword>Gambians</keyword>
+            <keyword>Georgians</keyword>
+            <keyword>Germans</keyword>
+            <keyword>Ghanaians</keyword>
+            <keyword>Gibraltarians</keyword>
+            <keyword>Britons</keyword>
+            <keyword>Greeks</keyword>
+            <keyword>Greenlanders</keyword>
+            <keyword>Grenadians</keyword>
+            <keyword>Guadeloupians</keyword>
+            <keyword>Guamanians</keyword>
+            <keyword>Guatemalans</keyword>
+            <keyword>Guineans</keyword>
+            <keyword>Guyanese</keyword>
+            <keyword>Haitians</keyword>
+            <keyword>Hondurans</keyword>
+            <keyword>Hongkongers</keyword>
+            <keyword>Hongkongese</keyword>
+            <keyword>Hungarians</keyword>
+            <keyword>Magyars</keyword>
+            <keyword>Icelanders</keyword>
+            <keyword>Indians</keyword>
+            <keyword>Indonesians</keyword>
+            <keyword>Iranians</keyword>
+            <keyword>Iraqis</keyword>
+            <keyword>Irish</keyword>
+            <keyword>Manx</keyword>
+            <keyword>Israelis</keyword>
+            <keyword>Italians</keyword>
+            <keyword>Jamaicans</keyword>
+            <keyword>Japanese</keyword>
+            <keyword>Jordanians</keyword>
+            <keyword>Kazakhstanis</keyword>
+            <keyword>Kazakhs</keyword>
+            <keyword>Kenyans</keyword>
+            <keyword>I-Kiribati</keyword>
+            <keyword>Koreans</keyword>
+            <keyword>Kosovars</keyword>
+            <keyword>Kuwaitis</keyword>
+            <keyword>Kyrgyzstanis</keyword>
+            <keyword>Kyrgyz</keyword>
+            <keyword>Kirgiz</keyword>
+            <keyword>Kirghiz</keyword>
+            <keyword>Laotians</keyword>
+            <keyword>Laos</keyword>
+            <keyword>Latvians</keyword>
+            <keyword>Letts</keyword>
+            <keyword>Lebanese</keyword>
+            <keyword>Basotho</keyword>
+            <keyword>Liberians</keyword>
+            <keyword>Libyans</keyword>
+            <keyword>Liechtensteiners</keyword>
+            <keyword>Lithuanians</keyword>
+            <keyword>Luxembourgers</keyword>
+            <keyword>Macanese</keyword>
+            <keyword>Macedonians</keyword>
+            <keyword>Malagasy</keyword>
+            <keyword>Malawians</keyword>
+            <keyword>Malaysians</keyword>
+            <keyword>Maldivians</keyword>
+            <keyword>Malians</keyword>
+            <keyword>Maltese</keyword>
+            <keyword>Marshallese</keyword>
+            <keyword>Martiniquais</keyword>
+            <keyword>Mauritanians</keyword>
+            <keyword>Mauritians</keyword>
+            <keyword>Mahorais</keyword>
+            <keyword>Mexicans</keyword>
+            <keyword>Micronesians</keyword>
+            <keyword>Moldovans</keyword>
+            <keyword>Monégasques</keyword>
+            <keyword>Monacans</keyword>
+            <keyword>Mongolians</keyword>
+            <keyword>Mongols</keyword>
+            <keyword>Montenegrins</keyword>
+            <keyword>Montserratians</keyword>
+            <keyword>Moroccans</keyword>
+            <keyword>Mozambicans</keyword>
+            <keyword>Namibians</keyword>
+            <keyword>Nauruans</keyword>
+            <keyword>Nepalese</keyword>
+            <keyword>Dutch</keyword>
+            <keyword>Dutch Antilleans</keyword>
+            <keyword>New Caledonians</keyword>
+            <keyword>New Zealanders</keyword>
+            <keyword>Nicaraguans</keyword>
+            <keyword>Niueans</keyword>
+            <keyword>Nigeriens</keyword>
+            <keyword>Nigerians</keyword>
+            <keyword>Norwegians</keyword>
+            <keyword>Irish</keyword>
+            <keyword>Northern Irish</keyword>
+            <keyword>Northern Marianans</keyword>
+            <keyword>Omanis</keyword>
+            <keyword>Pakistanis</keyword>
+            <keyword>Palestinians</keyword>
+            <keyword>Palauans</keyword>
+            <keyword>Panamanians</keyword>
+            <keyword>Papua New Guineans</keyword>
+            <keyword>Papuans</keyword>
+            <keyword>Paraguayans</keyword>
+            <keyword>Peruvians</keyword>
+            <keyword>Filipinos</keyword>
+            <keyword>Pitcairn Islanders</keyword>
+            <keyword>Poles</keyword>
+            <keyword>Portuguese</keyword>
+            <keyword>Puerto Ricans</keyword>
+            <keyword>Boricuas</keyword>
+            <keyword>Qataris</keyword>
+            <keyword>Romanians</keyword>
+            <keyword>Russians</keyword>
+            <keyword>Rwandans</keyword>
+            <keyword>St. Helenians</keyword>
+            <keyword>Kittitians</keyword>
+            <keyword>Nevisians</keyword>
+            <keyword>St. Lucians</keyword>
+            <keyword>Saint-Pierrais</keyword>
+            <keyword>Miquelonnais</keyword>
+            <keyword>St. Vincentians</keyword>
+            <keyword>Vincentians</keyword>
+            <keyword>Samoans</keyword>
+            <keyword>Sammarinese</keyword>
+            <keyword>Saudis</keyword>
+            <keyword>Saudi Arabians</keyword>
+            <keyword>Scots</keyword>
+            <keyword>Senegalese</keyword>
+            <keyword>Serbians</keyword>
+            <keyword>Serbs</keyword>
+            <keyword>Seychellois</keyword>
+            <keyword>Sierra Leoneans</keyword>
+            <keyword>Singaporeans</keyword>
+            <keyword>Slovaks</keyword>
+            <keyword>Slovenians</keyword>
+            <keyword>Slovenes</keyword>
+            <keyword>Solomon Islanders</keyword>
+            <keyword>Somalis</keyword>
+            <keyword>South Africans</keyword>
+            <keyword>South Ossetians</keyword>
+            <keyword>Spaniards</keyword>
+            <keyword>Sri Lankans</keyword>
+            <keyword>Sudanese</keyword>
+            <keyword>Surinamers</keyword>
+            <keyword>Swazis</keyword>
+            <keyword>Swedes</keyword>
+            <keyword>Swiss</keyword>
+            <keyword>Syrians</keyword>
+            <keyword>Taiwanese</keyword>
+            <keyword>Tajikistanis</keyword>
+            <keyword>Tajiks</keyword>
+            <keyword>Tanzanians</keyword>
+            <keyword>Thai</keyword>
+            <keyword>Togolese</keyword>
+            <keyword>Tongans</keyword>
+            <keyword>Trinidadians</keyword>
+            <keyword>Tobagonians</keyword>
+            <keyword>Tunisians</keyword>
+            <keyword>Turks</keyword>
+            <keyword>Turkmens</keyword>
+            <keyword>Turks and Caicos Islanders</keyword>
+            <keyword>Tuvaluans</keyword>
+            <keyword>Ugandans</keyword>
+            <keyword>Ukrainians</keyword>
+            <keyword>Emiratis</keyword>
+            <keyword>Emirians</keyword>
+            <keyword>Britons</keyword>
+            <keyword>Americansj</keyword>
+            <keyword>Uruguayans</keyword>
+            <keyword>Uzbekistanis</keyword>
+            <keyword>Uzbeks</keyword>
+            <keyword>Ni-Vanuatu</keyword>
+            <keyword>Venezuelans</keyword>
+            <keyword>Vietnamese</keyword>
+            <keyword>Virgin Islanders</keyword>
+            <keyword>Welsh</keyword>
+            <keyword>Wallisians</keyword>
+            <keyword>Futunans</keyword>
+            <keyword>Sahrawis</keyword>
+            <keyword>Sahraouis</keyword>
+            <keyword>Yemenis</keyword>
+            <keyword>Zambians</keyword>
+            <keyword>Zimbabweans</keyword>
+        </keywords>
+    </CaseInsensitiveKeywordTagger>
+</taggers>
