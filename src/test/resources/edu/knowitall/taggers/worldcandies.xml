@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taggers>
+    <PatternTagger descriptor="WorldCandy">
+      <patterns>
+	<pattern>[type='Nationality']+ [type='Candy']+</pattern>
+      </patterns>
+    </PatternTagger>
+</taggers>

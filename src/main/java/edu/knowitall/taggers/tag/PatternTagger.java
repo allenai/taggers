@@ -3,14 +3,19 @@ package edu.knowitall.taggers.tag;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 import org.jdom2.Element;
+
+import scala.collection.JavaConverters;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
@@ -34,7 +39,7 @@ import edu.washington.cs.knowitall.regex.RegularExpression;
  *
  */
 public class PatternTagger extends Tagger {
-    public ImmutableList<RegularExpression<Lemmatized<ChunkedToken>>> patterns;
+    public ImmutableList<RegularExpression<TypedToken>> patterns;
     public ImmutableList<String> expressions;
 
     protected PatternTagger(String descriptor) {
@@ -57,10 +62,10 @@ public class PatternTagger extends Tagger {
     public void sort() {
     }
 
-    private ImmutableList<RegularExpression<Lemmatized<ChunkedToken>>> compile(List<String> expressions) {
-        List<RegularExpression<Lemmatized<ChunkedToken>>> patterns = new ArrayList<RegularExpression<Lemmatized<ChunkedToken>>>();
+    private ImmutableList<RegularExpression<TypedToken>> compile(List<String> expressions) {
+        List<RegularExpression<TypedToken>> patterns = new ArrayList<RegularExpression<TypedToken>>();
         for (String expression : expressions) {
-            RegularExpression<Lemmatized<ChunkedToken>> pattern = PatternTagger.makeRegex(expression);
+            RegularExpression<TypedToken> pattern = PatternTagger.makeRegex(expression);
             patterns.add(pattern);
         }
 
@@ -86,8 +91,8 @@ public class PatternTagger extends Tagger {
             return false;
         }
 
-        Iterator<RegularExpression<Lemmatized<ChunkedToken>>> i1 = this.patterns.iterator();
-        Iterator<RegularExpression<Lemmatized<ChunkedToken>>> i2 = kt.patterns.iterator();
+        Iterator<RegularExpression<TypedToken>> i1 = this.patterns.iterator();
+        Iterator<RegularExpression<TypedToken>> i2 = kt.patterns.iterator();
 
         while (i1.hasNext() && i2.hasNext()) {
             if (!i1.equals(i2)) {
@@ -97,14 +102,14 @@ public class PatternTagger extends Tagger {
 
         return true;
     }
-
-    @Override
-    public List<Type> findTags(final List<Lemmatized<ChunkedToken>> sentence) {
-        ArrayList<Type> tags = new ArrayList<Type>();
-        for (RegularExpression<Lemmatized<ChunkedToken>> pattern : patterns) {
-            tags.addAll(this.findTags(sentence, pattern));
-        }
-
+    
+    /**
+     * Takes the list of Types found by the Tagger and nulls
+     * the ones that are included in larger tags.
+     * @param tags
+     */
+    private void nullTagsThatAreContainedByOtherTags(List<Type> tags){
+    	
         // null tags contained by another tag
         for (int i = 0 ; i < tags.size(); i++) {
             Type tag = tags.get(i);
@@ -117,21 +122,79 @@ public class PatternTagger extends Tagger {
                 }
             }
         }
+    }
 
+    /**
+     * Implementation of Tagger's abstract method findTags. This method
+     * uses only information from the Lemmatized ChunkedTokens in the sentence
+     * to match regular expressions. This method should not be used for the 
+     * PatternTagger but it is implemented anyways.
+     */
+    @Override
+    public List<Type> findTags(final List<Lemmatized<ChunkedToken>> sentence) {
+        ArrayList<Type> tags = new ArrayList<Type>();
+        
+        //convert sentence to TypedToken sentence
+        List<TypedToken> typedTokenSentence = new ArrayList<TypedToken>();
+        for(int i =0; i < sentence.size(); i ++){
+        	typedTokenSentence.add(new TypedToken(i, new HashSet<Type>(), sentence));
+        }
+        //Get all the pattern types from the chunkedTokens
+        for (RegularExpression<TypedToken> pattern : patterns) {
+            tags.addAll(this.findTags(typedTokenSentence, sentence, pattern));
+        }
+        
         // remove nulled tags
+        nullTagsThatAreContainedByOtherTags(tags);
         ListUtils.removeNulls(tags);
 
         return tags;
     }
+    
+    /**
+     * This method overrides Tagger's default implementation. This implementation uses
+     * information from the Types that have been assigned to the sentence so far.
+     */
+    @Override 
+    public List<Type> getTags(final List<Lemmatized<ChunkedToken>> sentence, final List<Type> previousTags){
+    	ArrayList<Type> tags = new ArrayList<Type>();
+    	Set<Type> tagSet = new HashSet<Type>();
+    	for(Type t: previousTags){
+    		tagSet.add(t);
+    	}
+        //convert sentence to TypedToken sentence
+        List<TypedToken> typedTokenSentence = new ArrayList<TypedToken>();
+        for(int i =0; i < sentence.size(); i ++){
+        	typedTokenSentence.add(new TypedToken(i, tagSet, sentence));
+        }
+        
+        
+        for (RegularExpression<TypedToken> pattern : patterns) {
+            tags.addAll(this.findTags(typedTokenSentence, sentence, pattern));
+        }
+        
+        nullTagsThatAreContainedByOtherTags(tags);
+        ListUtils.removeNulls(tags);
+        return tags;	
+    }
 
-    protected List<Type> findTags(final List<Lemmatized<ChunkedToken>> sentence,
-            final RegularExpression<Lemmatized<ChunkedToken>> pattern) {
+    /**
+     * This is a helper method that creates the Type objects
+     * from a given pattern and a List of TypedTokens.
+     * @param typedTokenSentence
+     * @param sentence
+     * @param pattern
+     * @return
+     */
+    protected List<Type> findTags(final List<TypedToken> typedTokenSentence,
+            final List<Lemmatized<ChunkedToken>> sentence,
+            final RegularExpression<TypedToken> pattern) {
 
         List<Type> tags = new ArrayList<Type>();
 
-        List<Match<Lemmatized<ChunkedToken>>> matches = pattern.findAll(sentence);
-        for (Match<Lemmatized<ChunkedToken>> match : matches) {
-            final Match.Group<Lemmatized<ChunkedToken>> group;
+        List<Match<TypedToken>> matches = pattern.findAll(typedTokenSentence);
+        for (Match<TypedToken> match : matches) {
+            final Match.Group<TypedToken> group;
 
             int groupSize = match.groups().size();
             if (groupSize == 1) {
@@ -238,20 +301,20 @@ public class PatternTagger extends Tagger {
      * @param regex
      * @return
      */
-    public static RegularExpression<Lemmatized<ChunkedToken>> makeRegex(String regex) {
-        return RegularExpression.compile(regex, new ExpressionFactory<Lemmatized<ChunkedToken>>() {
+    public static RegularExpression<TypedToken> makeRegex(String regex) {
+        return RegularExpression.compile(regex, new ExpressionFactory<TypedToken>() {
 
             @Override
-            public BaseExpression<Lemmatized<ChunkedToken>> create(final String expression) {
+            public BaseExpression<TypedToken> create(final String expression) {
                 final Pattern valuePattern = Pattern.compile("([\"'])(.*)\\1");
-                    return new BaseExpression<Lemmatized<ChunkedToken>>(expression) {
-                        private final LogicExpression<Lemmatized<ChunkedToken>> logic;
+                    return new BaseExpression<TypedToken>(expression) {
+                        private final LogicExpression<TypedToken> logic;
 
                         {
-                            this.logic = LogicExpression.compile(expression, new ArgFactory<Lemmatized<ChunkedToken>>() {
+                            this.logic = LogicExpression.compile(expression, new ArgFactory<TypedToken>() {
                                 @Override
-                                public edu.washington.cs.knowitall.logic.Expression.Arg<Lemmatized<ChunkedToken>> create(final String argument) {
-                                    return new edu.washington.cs.knowitall.logic.Expression.Arg<Lemmatized<ChunkedToken>>() {
+                                public edu.washington.cs.knowitall.logic.Expression.Arg<TypedToken> create(final String argument) {
+                                    return new edu.washington.cs.knowitall.logic.Expression.Arg<TypedToken>() {
                                         private final Expression expression;
 
                                         {
@@ -280,36 +343,43 @@ public class PatternTagger extends Tagger {
                                             else if (base.equalsIgnoreCase("chunk")) {
                                                 this.expression = new ChunkTagExpression(string);
                                             }
+                                            else if (base.equalsIgnoreCase("type")||
+                                            		base.equalsIgnoreCase("typeStart")||
+                                            		base.equalsIgnoreCase("typeEnd")){
+                                            	this.expression = new TypeTagExpression(string,base);
+                                            }
                                             else {
                                                 throw new IllegalStateException("unknown argument specified: " + base);
                                             }
                                         }
 
                                         @Override
-                                        public boolean apply(Lemmatized<ChunkedToken> entity) {
+                                        public boolean apply(TypedToken entity) {
                                             return this.expression.apply(entity);
                                         }};
                                 }});
                         }
 
                         @Override
-                        public boolean apply(Lemmatized<ChunkedToken> entity) {
+                        public boolean apply(TypedToken entity) {
                             return logic.apply(entity);
                         }};
             }});
     }
 
     /***
-     * An expression that is evaluated against a token.
+     * An expression that is evaluated against a TypedToken.
      * @author schmmd
      *
      */
-    protected static abstract class Expression implements Predicate<Lemmatized<ChunkedToken>> {
+    protected static abstract class Expression implements Predicate<TypedToken> {
     }
+    
+
 
     /***
      * A regular expression that is evaluated against the string portion of a
-     * token.
+     * TypedToken.
      * @author schmmd
      *
      */
@@ -325,14 +395,14 @@ public class PatternTagger extends Tagger {
         }
 
         @Override
-        public boolean apply(Lemmatized<ChunkedToken> token) {
-            return pattern.matcher(token.token().string()).matches();
+        public boolean apply(TypedToken token) {
+            return pattern.matcher(token.token().token().string()).matches();
         }
     }
 
     /***
      * A regular expression that is evaluated against the lemma portion of a
-     * token.
+     * TypedToken.
      * @author schmmd
      *
      */
@@ -348,14 +418,14 @@ public class PatternTagger extends Tagger {
         }
 
         @Override
-        public boolean apply(Lemmatized<ChunkedToken> token) {
-            return pattern.matcher(token.lemma()).matches();
+        public boolean apply(TypedToken token) {
+            return pattern.matcher(token.token().lemma()).matches();
         }
     }
 
     /***
      * A regular expression that is evaluated against the POS tag portion of a
-     * token.
+     * TypedToken.
      * @author schmmd
      *
      */
@@ -371,14 +441,14 @@ public class PatternTagger extends Tagger {
         }
 
         @Override
-        public boolean apply(Lemmatized<ChunkedToken> token) {
-            return pattern.matcher(token.token().postag()).matches();
+        public boolean apply(TypedToken token) {
+            return pattern.matcher(token.token().token().postag()).matches();
         }
     }
 
     /***
      * A regular expression that is evaluated against the chunk tag portion of a
-     * token.
+     * TypedToken.
      * @author schmmd
      *
      */
@@ -394,8 +464,107 @@ public class PatternTagger extends Tagger {
         }
 
         @Override
-        public boolean apply(Lemmatized<ChunkedToken> token) {
-            return pattern.matcher(token.token().chunk()).matches();
+        public boolean apply(TypedToken token) {
+            return pattern.matcher(token.token().token().chunk()).matches();
         }
     }
+    
+    /**
+     * A regular expression that is evaluated agains the type tag of a 
+     * TypedToken.
+     * @author jgilme1
+     *
+     */
+    protected static class TypeTagExpression extends Expression{
+    	final Pattern pattern;
+    	final String typeMatchType;
+    	
+    	public TypeTagExpression(String string, int flags, String base){
+    		pattern = Pattern.compile(string,flags);
+    		typeMatchType = base;
+    	}
+    	
+    	public TypeTagExpression(String string, String base){
+    		this(string, Pattern.CASE_INSENSITIVE, base);
+    	}
+    	
+        @Override
+        public boolean apply(TypedToken token) {
+        	
+        	Iterable<Type> types = null;
+        	if(typeMatchType.equals("type")){
+        		types = token.types();
+        	}
+        	else if(typeMatchType.equals("typeStart")){
+        		types = token.typesBeginningAtToken();
+
+        	}
+        	else if(typeMatchType.equals("typeEnd")){
+        		types = token.typesEndingAtToken();
+        	}
+        	else{
+        		types = new ArrayList<Type>();
+        	}
+
+        	for(Type t : types){
+        		if(pattern.matcher(t.descriptor()).matches()){
+        			return true;
+        		}
+        	}
+        	return false;
+        }
+    }
+    
+    private class TypedToken {
+    	  
+    	  private Lemmatized<ChunkedToken> token;
+    	  private Set<Type> types = new HashSet<Type>();
+    	  private Set<Type> typesBeginningAtToken = new HashSet<Type>();
+    	  private Set<Type> typesEndingAtToken = new HashSet<Type>();
+    	  
+    	  /***
+    	   * The constructor creates three different Type Sets associated with the
+    	   * input Token.
+    	   * types is a Type Set that stores all of the intersecting types at a given Token.
+    	   * typesBeginningAtToken is a Type Set that stores all of the types with the same
+    	   * 	ending offset as the Token
+    	   * typesEndingAtToken is a Type Set that stores all of the types with the same
+    	   * 	beginning offset as the Token
+    	   * @param tokenIndex
+    	   * @param types
+    	   * @param sentence
+    	   */
+    	  public TypedToken(Integer tokenIndex, Set<Type> types, List<Lemmatized<ChunkedToken>> sentence){
+    		  token = sentence.get(tokenIndex);
+    		  Interval tokenInterval = Interval.closed(tokenIndex, tokenIndex);
+    		  for(Type t : types){
+    			  if(t.interval().intersects(tokenInterval)){
+    				 this.types.add(t); 
+    				 if(t.interval().start() == tokenInterval.start()){
+    					 this.typesBeginningAtToken.add(t);
+    				 }
+    				 if(t.interval().end() == tokenInterval.end()){
+    					 this.typesEndingAtToken.add(t);
+    				 }
+    			  }
+    		  }
+    	  }
+    	  
+    	  public Lemmatized<ChunkedToken> token(){
+    		  return this.token;
+    	  }
+    	  
+    	  public Set<Type> types(){
+    		  return this.types;
+    	  }
+    	  
+    	  public Set<Type> typesBeginningAtToken(){
+    		  return this.typesBeginningAtToken;
+    	  }
+    	  
+    	  public Set<Type> typesEndingAtToken(){
+    		  return this.typesEndingAtToken;
+    	  }
+
+    	}
 }

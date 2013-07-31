@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taggers>
+    <CaseInsensitiveKeywordTagger descriptor="Candy">
+        <keywords>
+            <keyword>Chocolate</keyword>
+            <keyword>Gum</keyword>
+	    <keyword>Taffy</keyword>
+	    <keyword>Licorice</keyword>
+	</keywords>
+   </CaseInsensitiveKeywordTagger>
+</taggers>

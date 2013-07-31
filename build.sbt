@@ -22,6 +22,7 @@ libraryDependencies ++= Seq(
     "org.apache.commons" % "commons-lang3" % "3.1",
     "org.jdom" % "jdom2" % "2.0.5",
     "junit" % "junit" % "4.11" % "test",
+    "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test",
     "org.specs2" % "specs2" % "1.12.3" % "test" cross CrossVersion.binaryMapped {
       case "2.9.3" => "2.9.2"
       case "2.10.1" => "2.10"

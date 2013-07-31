@@ -48,6 +48,18 @@ public abstract class Tagger implements XmlSerializable {
     }
 
     public abstract List<Type> findTags(List<Lemmatized<ChunkedToken>> sentence);
+    
+    /**
+     * This method should be overridden by any Tagger that wants to use the
+     * Types accumulated from previous Taggers. If it's not overridden the sentence
+     * will be tagged without type information.
+     * @param sentence
+     * @param types
+     * @return
+     */
+    public List<Type> getTags(List<Lemmatized<ChunkedToken>> sentence, List<Type> types){
+    	return findTags(sentence);
+    }
 
     /***
      * Remove types that cover over types.
