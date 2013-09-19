@@ -17,7 +17,7 @@ libraryDependencies ++= Seq(
     "edu.washington.cs.knowitall.nlptools" %% "nlptools-core" % "2.4.2",
     "edu.washington.cs.knowitall.nlptools" %% "nlptools-chunk-opennlp" % "2.4.2",
     "edu.washington.cs.knowitall.nlptools" %% "nlptools-stem-morpha" % "2.4.2",
-    "edu.washington.cs.knowitall.nlptools" %% "nlptools-typer-stanford" % "2.4.2" % "provided",
+    "edu.washington.cs.knowitall.nlptools" %% "nlptools-typer-stanford" % "2.4.2",
     "edu.washington.cs.knowitall" % "openregex" % "1.0.3",
     "org.apache.commons" % "commons-lang3" % "3.1",
     "org.jdom" % "jdom2" % "2.0.5",
