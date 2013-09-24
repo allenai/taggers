@@ -5,6 +5,8 @@ import java.io.File
 import edu.knowitall.common.Resource.using
 import edu.knowitall.taggers.tag.Tagger
 import edu.knowitall.taggers.constraint.Constraint
+import java.io.FileReader
+import edu.knowitall.taggers.tag.TaggerCollection
 
 object CompactTaggerCollection {
   def fromFile(file: File) = {
@@ -13,59 +15,29 @@ object CompactTaggerCollection {
   }
 }
 
-case class CompactTaggerCollection(taggers: Seq[Tagger], definitions: Map[String, String]) {
-  def +(tagger: Tagger) = {
+case class CompactTaggerCollection(taggers: Seq[Tagger], definitions: Seq[DefinitionRule]) {
+  def this() = this(Seq.empty, Seq.empty)
+
+  def +(tagger: Tagger): CompactTaggerCollection = {
     this.copy(taggers :+ tagger)
   }
 
-  object Rule {
-    val definitionSyntax = "=>"
-    val taggerSyntax = ":="
-    def parse(rule: String) = {
-      val definitionIndex = rule.indexOf(definitionSyntax)
-      val taggerIndex = rule.indexOf(taggerSyntax)
-
-      if (definitionIndex < taggerIndex) {
-        DefinitionRule(
-          name = rule.substring(0, definitionIndex),
-          definition = rule.substring(definitionIndex + definitionSyntax.size, rule.size))
-      }
-      else if (taggerIndex < definitionIndex) {
-        TaggerRule.parse(
-          name = rule.substring(0, taggerIndex),
-          definition = rule.substring(taggerIndex + taggerSyntax.size, rule.size))
-      }
-      else {
-        throw new MatchError("Could not break line into a rule: " + rule)
-      }
+  def +(rule: Rule): CompactTaggerCollection = {
+    rule match {
+      case defn @ DefinitionRule(_, _) =>
+        this.copy(definitions = definitions :+ defn)
+      case rule @ TaggerRule(descriptor, _, _, _) =>
+        val tagger = rule.instantiate(definitions)
+        this + tagger
     }
   }
-  abstract class Rule {
-    def name: String
-    def definition: String
-  }
-  case class DefinitionRule(name: String, definition: String) {
-    override def toString = s"$name ${Rule.definitionSyntax} $definition"
-  }
-  case class TaggerRule(name: String, tagger: String, constraints: Seq[Constraint], arguments: Seq[String]) {
-    override def toString = {
-      if (constraints.isEmpty && arguments.size == 1) {
-        s"$name ${Rule.definitionSyntax} $definition"
-      }
-      else {
-        val list = constraints.map(_.toString) ++ $definition
-        s"$name ${Rule.taggerSyntax} {\n${list.mkString("\n")}\n}"
-      }
-    }
+
+  def toTaggerCollection: TaggerCollection = {
+    val col = new TaggerCollection()
+
+    taggers foreach col.addTagger
+
+    col
   }
 }
 
-abstract class RuleReader {
-  def read(line: String): Rule
-}
-
-abstract class RuleWriter {
-  def write(rule: Rule): String
-}
-
-abstract class RuleFormat extends RuleReader with RuleWriter
