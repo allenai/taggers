@@ -54,9 +54,10 @@ class TaggerWeb(port: Int) {
       (line, types)
     }
 
-    val resultText = results.map { case (sentence, typs) =>
-      sentence + "\n" + typs.mkString("\n")
-    }.mkString("\n\n")
+    val resultText = ctc.taggers.mkString("\n") + "\n\n" +
+      results.map { case (sentence, typs) =>
+        sentence + "\n" + typs.mkString("\n")
+      }.mkString("\n\n")
 
     page(params, resultText)
   }
