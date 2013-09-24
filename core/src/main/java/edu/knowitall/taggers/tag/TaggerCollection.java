@@ -93,7 +93,6 @@ public class TaggerCollection {
 
     public TaggerCollection(Element e) throws ClassNotFoundException,
             NoSuchMethodException, InstantiationException, InvocationTargetException, IllegalArgumentException, IllegalAccessException {
-        @SuppressWarnings("unchecked")
         List<Element> children = (List<Element>) e.getChildren();
 
         this.taggers = new ArrayList<Tagger>();

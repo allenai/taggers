@@ -97,7 +97,6 @@ public class RegexTagger extends Tagger {
 
     /// XML
 
-    @SuppressWarnings("unchecked")
     public RegexTagger(Element e) throws ParseTagException, SecurityException, IllegalArgumentException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         super(e);
 

@@ -47,8 +47,8 @@ public abstract class Tagger implements XmlSerializable {
         return this.descriptor.equals(tagger.descriptor);
     }
 
-    public abstract List<Type> findTags(List<Lemmatized<ChunkedToken>> sentence);
-    
+    protected abstract List<Type> findTags(List<Lemmatized<ChunkedToken>> sentence);
+
     /**
      * This method should be overridden by any Tagger that wants to use the
      * Types accumulated from previous Taggers. If it's not overridden the sentence
@@ -58,7 +58,7 @@ public abstract class Tagger implements XmlSerializable {
      * @return
      */
     public List<Type> getTags(List<Lemmatized<ChunkedToken>> sentence, List<Type> types){
-    	return findTags(sentence);
+        return findTags(sentence);
     }
 
     /***
@@ -132,7 +132,6 @@ public abstract class Tagger implements XmlSerializable {
         }
 
         List<Constraint> constraints = new ArrayList<Constraint>();
-        @SuppressWarnings("unchecked")
         List<Element> constraintElements = (List<Element>)e.getChildren("constraint");
         for (Element element : constraintElements) {
             String type = element.getAttributeValue("type");
