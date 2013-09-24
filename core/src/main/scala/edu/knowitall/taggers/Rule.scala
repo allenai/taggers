@@ -29,6 +29,7 @@ class RuleParser extends JavaTokenParsers {
 }
 
 object ParseRule extends RuleParser {
+  def parse(string: String) = parseAll(collection, string)
   def main(args: Array[String]) = {
     val reader = new FileReader(args(0))
     val rules = parseAll(collection, reader) match {
