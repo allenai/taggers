@@ -16,7 +16,7 @@ class TaggerWeb(port: Int) {
   val chunker = new OpenNlpChunker()
   val stemmer = new MorphaStemmer()
 
-  def page(params: Map[String, Seq[String]] = Map.empty, result: String = "") = {
+  def page(params: Map[String, Seq[String]] = Map.empty, errors: Seq[String] = Seq.empty, result: String = "") = {
     val sentenceText = params.get("sentences").flatMap(_.headOption).getOrElse("")
     val patternText = params.get("patterns").flatMap(_.headOption).getOrElse("")
     """<html><head><title>Tagger Web</title></head>
@@ -25,6 +25,7 @@ class TaggerWeb(port: Int) {
          s"<br /><b>Sentences:</b><br /><textarea name='sentences' cols='120' rows='20'>$sentenceText</textarea>" +
       """<br />
          <input type='submit'>""" +
+         s"<p style='color:red'>${errors.mkString("<br />")}</p>" +
          s"<pre>$result</pre>" +
        """</form></body></html>"""
   }
@@ -40,26 +41,42 @@ class TaggerWeb(port: Int) {
   }
 
   def post(params: Map[String, Seq[String]]) = {
-    val sentenceText = params("sentences").headOption.get
-    val patternText = params("patterns").headOption.get
+    try {
+      val sentenceText = params("sentences").headOption.get
+      val patternText = params("patterns").headOption.get
 
-    val rules = ParseRule.parse(patternText).get
-    val ctc = rules.foldLeft(new CompactTaggerCollection()){ case (ctc, rule) => ctc + rule }
-    val col = ctc.toTaggerCollection
+      val rules = ParseRule.parse(patternText).get
+      val ctc = rules.foldLeft(new CompactTaggerCollection()){ case (ctc, rule) => ctc + rule }
+      val col = ctc.toTaggerCollection
 
-    val results = for (line <- sentenceText.split("\n")) yield {
-      val tokens = chunker(line) map stemmer.lemmatizeToken
-      val types = col.tag(tokens.asJava).asScala
+      val results = for (line <- sentenceText.split("\n")) yield {
+        val tokens = chunker(line) map stemmer.lemmatizeToken
+        val types = col.tag(tokens.asJava).asScala
 
-      (line, types)
+        (line, types)
+      }
+
+      val resultText = ctc.taggers.mkString("\n") + "\n\n" +
+        results.map { case (sentence, typs) =>
+          sentence + "\n" + typs.mkString("\n")
+        }.mkString("\n\n")
+
+      page(params, Seq.empty, resultText)
     }
-
-    val resultText = ctc.taggers.mkString("\n") + "\n\n" +
-      results.map { case (sentence, typs) =>
-        sentence + "\n" + typs.mkString("\n")
-      }.mkString("\n\n")
-
-    page(params, resultText)
+    catch {
+      case e: Throwable =>
+        e.printStackTrace()
+        def getMessageChain(throwable: Throwable): List[String] = {
+          Option(throwable) match {
+            case Some(throwable) => Option(throwable.getMessage) match {
+              case Some(message) => message :: getMessageChain(throwable.getCause)
+              case None => getMessageChain(throwable.getCause)
+            }
+            case None => Nil
+          }
+        }
+        page(params, getMessageChain(e), "")
+    }
   }
 }
 
