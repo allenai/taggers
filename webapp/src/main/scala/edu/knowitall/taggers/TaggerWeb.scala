@@ -81,6 +81,15 @@ class TaggerWeb(port: Int) {
 }
 
 object TaggerWebMain extends App {
-  val server = new TaggerWeb(8080)
-  server.run()
+  case class Config(port: Int = 8080)
+  val parser = new scopt.OptionParser[Config]("taggerweb") {
+    opt[Int]('p', "port").action { (x, c) => 
+      c.copy(port = x)
+    }.text("port for web server")
+  }
+
+  parser.parse(args, Config()).foreach { config =>
+    val server = new TaggerWeb(config.port)
+    server.run()
+  }
 }
