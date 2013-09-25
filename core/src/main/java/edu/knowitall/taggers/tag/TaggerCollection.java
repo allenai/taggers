@@ -93,7 +93,7 @@ public class TaggerCollection {
 
     public TaggerCollection(Element e) throws ClassNotFoundException,
             NoSuchMethodException, InstantiationException, InvocationTargetException, IllegalArgumentException, IllegalAccessException {
-        List<Element> children = (List<Element>) e.getChildren();
+        List<Element> children = e.getChildren();
 
         this.taggers = new ArrayList<Tagger>();
 
@@ -194,5 +194,6 @@ public class TaggerCollection {
                 System.out.println(type);
             }
         }
+        scanner.close();
     }
 }
