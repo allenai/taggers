@@ -20,9 +20,9 @@ class TaggerWeb(port: Int) {
     val sentenceText = params.get("sentences").flatMap(_.headOption).getOrElse("")
     val patternText = params.get("patterns").flatMap(_.headOption).getOrElse("")
     """<html><head><title>Tagger Web</title></head>
-       <body><form method='POST'>""" +
-         s"<textarea name='patterns' cols='120' rows='25'>$patternText</textarea>" +
-         s"<textarea name='sentences' cols='120' rows='25'>$sentenceText</textarea>" +
+       <body><h1>Tagger Web</h1><form method='POST'>""" +
+         s"<br /><b>Patterns:</b><br /><textarea name='patterns' cols='120' rows='20'>$patternText</textarea>" +
+         s"<br /><b>Sentences:</b><br /><textarea name='sentences' cols='120' rows='20'>$sentenceText</textarea>" +
       """<br />
          <input type='submit'>""" +
          s"<pre>$result</pre>" +
