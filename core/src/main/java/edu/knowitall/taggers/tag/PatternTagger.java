@@ -154,8 +154,6 @@ public class PatternTagger extends Tagger {
             tags.addAll(this.findTags(typedTokenSentence, sentence, pattern));
         }
 
-        nullTagsThatAreContainedByOtherTags(tags);
-        ListUtils.removeNulls(tags);
         return tags;
     }
 
