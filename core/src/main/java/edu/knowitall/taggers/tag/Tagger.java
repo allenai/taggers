@@ -3,6 +3,7 @@ package edu.knowitall.taggers.tag;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.jdom2.Element;
@@ -47,8 +48,34 @@ public abstract class Tagger implements XmlSerializable {
         return this.descriptor.equals(tagger.descriptor);
     }
 
-    public abstract List<Type> findTags(List<Lemmatized<ChunkedToken>> sentence);
-    
+    /***
+     * Public method for finding tags in a sentence.
+     * @param sentence
+     * @return a list of the tags found
+     */
+    public List<Type> tags(List<Lemmatized<ChunkedToken>> sentence) {
+        return tags(sentence, Collections.<Type>emptyList());
+    }
+
+    /***
+     * Public method for finding tags in a sentence with types.
+     * This method also filters out types by constraint.
+     *
+     * @param sentence
+     * @return a list of the tags found
+     */
+    public List<Type> tags(List<Lemmatized<ChunkedToken>> sentence, List<Type> types) {
+        List<Type> tags = findTagsWithTypes(sentence, types);
+
+        // remove types that are covered by other types.
+        filterCovered(tags);
+        tags = filterWithConstraints(sentence, tags);
+
+        return tags;
+    }
+
+    protected abstract List<Type> findTags(List<Lemmatized<ChunkedToken>> sentence);
+
     /**
      * This method should be overridden by any Tagger that wants to use the
      * Types accumulated from previous Taggers. If it's not overridden the sentence
@@ -57,19 +84,22 @@ public abstract class Tagger implements XmlSerializable {
      * @param types
      * @return
      */
-    public List<Type> getTags(List<Lemmatized<ChunkedToken>> sentence, List<Type> types){
-    	return findTags(sentence);
+    public List<Type> findTagsWithTypes(List<Lemmatized<ChunkedToken>> sentence, List<Type> types){
+        return findTags(sentence);
     }
 
     /***
      * Remove types that cover over types.
      * @param tags
      */
-    public void filter(List<Type> tags) {
+    public void filterCovered(List<Type> tags) {
         for (int i = 0; i < tags.size(); i++) {
             for (int j = 0; j < tags.size(); j++) {
                 if (i != j) {
-                    if (tags.get(i).interval().superset(tags.get(j).interval())) {
+                    Type tagi = tags.get(i);
+                    Type tagj = tags.get(j);
+                    if (tagi.descriptor().equals(tagj.descriptor()) &&
+                        tagi.interval().superset(tagj.interval())) {
                         tags.set(j, tags.get(tags.size() - 1));
                         tags.remove(tags.size() - 1);
 
@@ -82,6 +112,25 @@ public abstract class Tagger implements XmlSerializable {
         }
     }
 
+    public List<Type> filterWithConstraints(List<Lemmatized<ChunkedToken>> sentence, List<Type> tags) {
+        List<Type> filtered = new ArrayList<Type>();
+        for (Type tag : tags) {
+            boolean passesConstraints = true;
+            for (Constraint constraint : this.constraints) {
+                if (!constraint.apply(sentence.subList(tag.interval().start(), tag.interval().end()), tag)) {
+                    passesConstraints = false;
+                    break;
+                }
+            }
+
+            if (passesConstraints) {
+                filtered.add(tag);
+            }
+        }
+
+        return filtered;
+    }
+
     public Type createType(List<Lemmatized<ChunkedToken>> sentence, Interval interval) {
         return Type.fromSentence(sentence, this.descriptor, this.source, interval);
     }
@@ -91,7 +140,16 @@ public abstract class Tagger implements XmlSerializable {
     }
 
     public static Class<?> getTaggerClass(String classname, String pack) throws ClassNotFoundException {
-        return (Class<?>)Class.forName(pack + "." + classname.replace('.', '$'));
+        try {
+          return Class.forName(pack + "." + classname.replace('.', '$'));
+        }
+        catch(ClassNotFoundException ex) {
+          return Class.forName(classname.replace('.', '$'));
+        }
+    }
+
+    public static Tagger create(String classname, String pack, Object[] argValues) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        return create(getTaggerClass(classname, pack), new Class<?>[] { String.class, List.class }, argValues);
     }
 
     public static Tagger create(String classname, String pack, Class<?>[] argTypes, Object[] argValues) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
@@ -132,8 +190,7 @@ public abstract class Tagger implements XmlSerializable {
         }
 
         List<Constraint> constraints = new ArrayList<Constraint>();
-        @SuppressWarnings("unchecked")
-        List<Element> constraintElements = (List<Element>)e.getChildren("constraint");
+        List<Element> constraintElements = e.getChildren("constraint");
         for (Element element : constraintElements) {
             String type = element.getAttributeValue("type");
             constraints.add(Constraint.create(type));
@@ -145,6 +202,7 @@ public abstract class Tagger implements XmlSerializable {
     /***
      * Serialize to an XML element.
      */
+    @Override
     public Element toXmlElement() {
         String nameWithoutPackage = this.getClass().getName().substring(this.getClass().getPackage().getName().length() + 1).replace('$', '.');
         Element e = new Element(nameWithoutPackage);

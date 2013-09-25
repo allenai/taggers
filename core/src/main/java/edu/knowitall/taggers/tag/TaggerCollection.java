@@ -83,7 +83,7 @@ public class TaggerCollection {
     public List<Type> tag(List<Lemmatized<ChunkedToken>> sentence) {
         ArrayList<Type> list = new ArrayList<Type>();
         for (Tagger tagger : taggers) {
-            list.addAll(tagger.getTags(sentence,new ArrayList<Type>(list)));
+            list.addAll(tagger.findTagsWithTypes(sentence,new ArrayList<Type>(list)));
         }
 
         return list;
@@ -93,8 +93,7 @@ public class TaggerCollection {
 
     public TaggerCollection(Element e) throws ClassNotFoundException,
             NoSuchMethodException, InstantiationException, InvocationTargetException, IllegalArgumentException, IllegalAccessException {
-        @SuppressWarnings("unchecked")
-        List<Element> children = (List<Element>) e.getChildren();
+        List<Element> children = e.getChildren();
 
         this.taggers = new ArrayList<Tagger>();
 
@@ -195,5 +194,6 @@ public class TaggerCollection {
                 System.out.println(type);
             }
         }
+        scanner.close();
     }
 }

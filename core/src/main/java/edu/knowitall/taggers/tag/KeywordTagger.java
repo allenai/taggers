@@ -148,7 +148,6 @@ public class KeywordTagger extends Tagger {
 
     /// XML
 
-    @SuppressWarnings("unchecked")
     public KeywordTagger(Element e) throws ParseTagException {
         super(e);
 
