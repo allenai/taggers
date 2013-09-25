@@ -3,6 +3,7 @@ package edu.knowitall.taggers.tag;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.jdom2.Element;
@@ -47,6 +48,32 @@ public abstract class Tagger implements XmlSerializable {
         return this.descriptor.equals(tagger.descriptor);
     }
 
+    /***
+     * Public method for finding tags in a sentence.
+     * @param sentence
+     * @return a list of the tags found
+     */
+    public List<Type> tags(List<Lemmatized<ChunkedToken>> sentence) {
+        return tags(sentence, Collections.<Type>emptyList());
+    }
+
+    /***
+     * Public method for finding tags in a sentence with types.
+     * This method also filters out types by constraint.
+     *
+     * @param sentence
+     * @return a list of the tags found
+     */
+    public List<Type> tags(List<Lemmatized<ChunkedToken>> sentence, List<Type> types) {
+        List<Type> tags = findTagsWithTypes(sentence, types);
+
+        // remove types that are covered by other types.
+        filterCovered(tags);
+        tags = filterWithConstraints(sentence, tags);
+
+        return tags;
+    }
+
     protected abstract List<Type> findTags(List<Lemmatized<ChunkedToken>> sentence);
 
     /**
@@ -65,7 +92,7 @@ public abstract class Tagger implements XmlSerializable {
      * Remove types that cover over types.
      * @param tags
      */
-    public void filter(List<Type> tags) {
+    public void filterCovered(List<Type> tags) {
         for (int i = 0; i < tags.size(); i++) {
             for (int j = 0; j < tags.size(); j++) {
                 if (i != j) {
@@ -80,6 +107,25 @@ public abstract class Tagger implements XmlSerializable {
                 }
             }
         }
+    }
+
+    public List<Type> filterWithConstraints(List<Lemmatized<ChunkedToken>> sentence, List<Type> tags) {
+        List<Type> filtered = new ArrayList<Type>();
+        for (Type tag : tags) {
+            boolean passesConstraints = true;
+            for (Constraint constraint : this.constraints) {
+                if (!constraint.apply(sentence.subList(tag.interval().start(), tag.interval().end()), tag)) {
+                    passesConstraints = false;
+                    break;
+                }
+            }
+
+            if (passesConstraints) {
+                filtered.add(tag);
+            }
+        }
+
+        return filtered;
     }
 
     public Type createType(List<Lemmatized<ChunkedToken>> sentence, Interval interval) {
