@@ -84,7 +84,7 @@ public abstract class Tagger implements XmlSerializable {
      * @param types
      * @return
      */
-    public List<Type> getTags(List<Lemmatized<ChunkedToken>> sentence, List<Type> types){
+    public List<Type> findTagsWithTypes(List<Lemmatized<ChunkedToken>> sentence, List<Type> types){
         return findTags(sentence);
     }
 

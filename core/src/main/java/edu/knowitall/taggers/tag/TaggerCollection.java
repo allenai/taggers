@@ -83,7 +83,7 @@ public class TaggerCollection {
     public List<Type> tag(List<Lemmatized<ChunkedToken>> sentence) {
         ArrayList<Type> list = new ArrayList<Type>();
         for (Tagger tagger : taggers) {
-            list.addAll(tagger.getTags(sentence,new ArrayList<Type>(list)));
+            list.addAll(tagger.findTagsWithTypes(sentence,new ArrayList<Type>(list)));
         }
 
         return list;

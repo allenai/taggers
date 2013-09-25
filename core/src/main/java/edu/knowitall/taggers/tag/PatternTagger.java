@@ -162,7 +162,7 @@ public class PatternTagger extends Tagger {
      * the sentence so far.
      */
     @Override
-    public List<Type> getTags(final List<Lemmatized<ChunkedToken>> sentence,
+    public List<Type> findTagsWithTypes(final List<Lemmatized<ChunkedToken>> sentence,
             final List<Type> previousTags) {
         ArrayList<Type> tags = new ArrayList<Type>();
         Set<Type> tagSet = new HashSet<Type>();
