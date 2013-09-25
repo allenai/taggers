@@ -19,13 +19,13 @@ import com.google.common.collect.ImmutableList;
 
 import edu.knowitall.collection.immutable.Interval;
 import edu.knowitall.collection.immutable.Interval$;
-import edu.knowitall.taggers.ListUtils;
 import edu.knowitall.taggers.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
 import edu.washington.cs.knowitall.logic.ArgFactory;
 import edu.washington.cs.knowitall.logic.LogicExpression;
 import edu.washington.cs.knowitall.regex.Expression.BaseExpression;
+import edu.washington.cs.knowitall.regex.Expression.NamedGroup;
 import edu.washington.cs.knowitall.regex.ExpressionFactory;
 import edu.washington.cs.knowitall.regex.Match;
 import edu.washington.cs.knowitall.regex.RegularExpression;
@@ -161,6 +161,9 @@ public class PatternTagger extends Tagger {
      * This is a helper method that creates the Type objects from a given
      * pattern and a List of TypedTokens.
      *
+     * Matching groups will create a type with the name or index
+     * appended to the descriptor.
+     *
      * @param typedTokenSentence
      * @param sentence
      * @param pattern
@@ -174,21 +177,24 @@ public class PatternTagger extends Tagger {
 
         List<Match<TypedToken>> matches = pattern.findAll(typedTokenSentence);
         for (Match<TypedToken> match : matches) {
-            final Match.Group<TypedToken> group;
-
             int groupSize = match.groups().size();
-            if (groupSize == 1) {
-                group = match.groups().get(0);
-            } else if (groupSize == 2) {
-                group = match.groups().get(1);
-            } else {
-                throw new IllegalArgumentException(
-                        "There must not be exactly more than one capture group.");
-            }
+            for (int i = 0; i < groupSize; i++) {
+                final Match.Group<TypedToken> group = match.groups().get(i);
 
-            Type tag = Type.fromSentence(sentence, this.descriptor,
-                    this.source, intervalFromGroup(group));
-            tags.add(tag);
+                String postfix = "";
+                if (i > 0) {
+                    if (group.expr instanceof NamedGroup<?>) {
+                        NamedGroup<?> namedGroup = (NamedGroup<?>)group.expr;
+                        postfix = "." + namedGroup.name;
+                    }
+                    else {
+                        postfix = "." + i;
+                    }
+                }
+                Type tag = Type.fromSentence(sentence, this.descriptor + postfix,
+                        this.source, intervalFromGroup(group));
+                tags.add(tag);
+            }
         }
 
         return tags;

@@ -96,7 +96,10 @@ public abstract class Tagger implements XmlSerializable {
         for (int i = 0; i < tags.size(); i++) {
             for (int j = 0; j < tags.size(); j++) {
                 if (i != j) {
-                    if (tags.get(i).interval().superset(tags.get(j).interval())) {
+                    Type tagi = tags.get(i);
+                    Type tagj = tags.get(j);
+                    if (tagi.descriptor().equals(tagj.descriptor()) &&
+                        tagi.interval().superset(tagj.interval())) {
                         tags.set(j, tags.get(tags.size() - 1));
                         tags.remove(tags.size() - 1);
 
