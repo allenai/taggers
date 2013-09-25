@@ -57,6 +57,7 @@ public class PatternTagger extends Tagger {
         this.patterns = this.compile(this.expressions);
     }
 
+    @Override
     public void sort() {
     }
 
@@ -107,28 +108,6 @@ public class PatternTagger extends Tagger {
     }
 
     /**
-     * Takes the list of Types found by the Tagger and nulls the ones that are
-     * included in larger tags.
-     *
-     * @param tags
-     */
-    private void nullTagsThatAreContainedByOtherTags(List<Type> tags) {
-
-        // null tags contained by another tag
-        for (int i = 0; i < tags.size(); i++) {
-            Type tag = tags.get(i);
-
-            for (Type compare : tags) {
-                if (compare != null && tag != compare) {
-                    if (compare.interval().superset(tag.interval())) {
-                        tags.set(i, null);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Implementation of Tagger's abstract method findTags. This method uses
      * only information from the Lemmatized ChunkedTokens in the sentence to
      * match regular expressions. This method should not be used for the
@@ -148,10 +127,6 @@ public class PatternTagger extends Tagger {
         for (RegularExpression<TypedToken> pattern : patterns) {
             tags.addAll(this.findTags(typedTokenSentence, sentence, pattern));
         }
-
-        // remove nulled tags
-        nullTagsThatAreContainedByOtherTags(tags);
-        ListUtils.removeNulls(tags);
 
         return tags;
     }
@@ -230,7 +205,7 @@ public class PatternTagger extends Tagger {
         super(e);
 
         Map<String, String> variables = new TreeMap<String, String>();
-        for (Element variable : (List<Element>) e.getChildren("variable")) {
+        for (Element variable : e.getChildren("variable")) {
             String name = variable.getAttributeValue("name");
             String value = variable.getText().trim();
 
@@ -244,7 +219,7 @@ public class PatternTagger extends Tagger {
 
         List<String> expressions = new ArrayList<String>(patterns.getChildren()
                 .size());
-        for (Element pattern : (List<Element>) patterns.getChildren("pattern")) {
+        for (Element pattern : patterns.getChildren("pattern")) {
             String expression = pattern.getText().trim();
 
             // perform variable substitutions
@@ -260,6 +235,7 @@ public class PatternTagger extends Tagger {
         this.patterns = this.compile(this.expressions);
     }
 
+    @Override
     public Element toXmlElement() {
         Element e = super.toXmlElement();
 
