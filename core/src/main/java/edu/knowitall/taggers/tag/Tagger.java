@@ -137,7 +137,16 @@ public abstract class Tagger implements XmlSerializable {
     }
 
     public static Class<?> getTaggerClass(String classname, String pack) throws ClassNotFoundException {
-        return (Class<?>)Class.forName(pack + "." + classname.replace('.', '$'));
+        try {
+          return Class.forName(pack + "." + classname.replace('.', '$'));
+        }
+        catch(ClassNotFoundException ex) {
+          return Class.forName(classname.replace('.', '$'));
+        }
+    }
+
+    public static Tagger create(String classname, String pack, Object[] argValues) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        return create(getTaggerClass(classname, pack), new Class<?>[] { String.class, List.class }, argValues);
     }
 
     public static Tagger create(String classname, String pack, Class<?>[] argTypes, Object[] argValues) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
@@ -178,7 +187,7 @@ public abstract class Tagger implements XmlSerializable {
         }
 
         List<Constraint> constraints = new ArrayList<Constraint>();
-        List<Element> constraintElements = (List<Element>)e.getChildren("constraint");
+        List<Element> constraintElements = e.getChildren("constraint");
         for (Element element : constraintElements) {
             String type = element.getAttributeValue("type");
             constraints.add(Constraint.create(type));
@@ -190,6 +199,7 @@ public abstract class Tagger implements XmlSerializable {
     /***
      * Serialize to an XML element.
      */
+    @Override
     public Element toXmlElement() {
         String nameWithoutPackage = this.getClass().getName().substring(this.getClass().getPackage().getName().length() + 1).replace('$', '.');
         Element e = new Element(nameWithoutPackage);

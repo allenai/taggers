@@ -40,4 +40,3 @@ case class CompactTaggerCollection(taggers: Seq[Tagger], definitions: Seq[Defini
     col
   }
 }
-

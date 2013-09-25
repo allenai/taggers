@@ -1,12 +1,12 @@
 package edu.knowitall.taggers
 
 import java.io.FileReader
-
 import scala.collection.JavaConverters.seqAsJavaListConverter
 import scala.util.parsing.combinator.JavaTokenParsers
-
 import edu.knowitall.taggers.constraint.Constraint
 import edu.knowitall.taggers.tag.PatternTagger
+import scala.util.control.Exception
+import edu.knowitall.taggers.tag.Tagger
 
 class RuleParser extends JavaTokenParsers {
   val descriptor = ident
@@ -83,9 +83,7 @@ case class TaggerRule(name: String, taggerIdentifier: String, constraints: Seq[C
 
   def instantiate(definitions: Iterable[DefinitionRule]) = {
     val substituted = arguments.map(arg => definitions.foldLeft(arg) { case (arg, defn) => defn.replace(arg) })
-    val tagger = taggerIdentifier match {
-      case "PatternTagger" => new PatternTagger(name, substituted.asJava)
-    }
+    val tagger = Tagger.create(this.taggerIdentifier, "edu.knowitall.taggers.tag", Array[Object](name, substituted.asJava))
 
     // apply constraints
     constraints foreach tagger.constrain
