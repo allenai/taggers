@@ -1,18 +1,17 @@
-
 ## PatternTagger
 
 This tagger compiles regular expressions over the tokens in a sentence into an
 NFA.  A token is described as a logical formula between angled brackets `<>`.
 There are a number of fields that can be matched upon for each token.
 
-* _string_
-* _lemma_
-* _pos_: the part-of-speech tag
-* _chunk_: the chunk tag
-* _type_: any type that intersects this token
-* _typeStart_: any type that starts at this token
-* _typeEnd_: any type that ends at this token
-* _typeCont_: any type that intersects at this token but does not start or end there
+* __string__
+* __lemma__
+* __pos__: the part-of-speech tag
+* __chunk__: the chunk tag
+* __type__: any type that intersects this token
+* __typeStart__: any type that starts at this token
+* __typeEnd__: any type that ends at this token
+* __typeCont__: any type that intersects at this token but does not start or end there
 
 A field can be matched in one of three ways.
 
