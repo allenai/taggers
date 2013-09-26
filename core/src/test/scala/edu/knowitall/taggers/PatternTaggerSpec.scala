@@ -69,7 +69,7 @@ class PatternTaggerSpec extends FlatSpec {
            <typeCont = 'AnimalTagger' >
          }
          TypeEndTaggerTest := PatternTagger {
-           <typeEnd = 'AnimalTagger' >
+           (<aName>:<typeEnd = 'AnimalTagger' >)
          }
       """
 
@@ -92,6 +92,10 @@ class PatternTaggerSpec extends FlatSpec {
     val typeEndTypes = types.filter(_.descriptor == "TypeEndTaggerTest")
     assert(typeEndTypes.size === 1)
     assert(typeEndTypes.headOption.map(_.text).get == "cat")
+    
+    val typeEndANameTypes = types.filter(_.descriptor == "TypeEndTaggerTest.aName")
+    assert((typeEndANameTypes.size == 1))
+    assert(typeEndANameTypes.headOption.map(_.text).get == "cat")
 
     val typeContTypes = types.filter(_.descriptor == "TypeContTaggerTest")
     assert(typeContTypes.size === 1)

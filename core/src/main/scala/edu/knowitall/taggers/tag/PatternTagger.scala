@@ -106,7 +106,7 @@ class PatternTagger(descriptor: String, expressions: Seq[String]) extends Tagger
       for (i <- 0 until groupSize) {
         val group = m.groups(i);
 
-        val postfix = "";
+        val postfix = 
         group.expr match {
           case _ if i == 0 => ""
           case namedGroup: NamedGroup[_] => "." + namedGroup.name
