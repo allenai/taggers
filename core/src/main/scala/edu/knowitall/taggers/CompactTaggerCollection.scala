@@ -7,11 +7,25 @@ import edu.knowitall.taggers.tag.Tagger
 import edu.knowitall.taggers.constraint.Constraint
 import java.io.FileReader
 import edu.knowitall.taggers.tag.TaggerCollection
+import java.io.Reader
 
 object CompactTaggerCollection {
   def fromFile(file: File) = {
     using(Source.fromFile(file)) { input =>
+      this.fromReader(input.bufferedReader)
     }
+  }
+
+  def fromReader(reader: Reader) = {
+    this.fromRules(ParseRule.parse(reader).get)
+  }
+
+  def fromString(string: String) = {
+    this.fromRules(ParseRule.parse(string).get)
+  }
+
+  def fromRules(rules: List[Rule]) = {
+    rules.foldLeft(new CompactTaggerCollection()) { case (col, rule) => col + rule }
   }
 }
 
