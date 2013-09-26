@@ -6,8 +6,8 @@ import edu.knowitall.common.Resource.using
 import edu.knowitall.taggers.tag.Tagger
 import edu.knowitall.taggers.constraint.Constraint
 import java.io.FileReader
-import edu.knowitall.taggers.tag.TaggerCollection
 import java.io.Reader
+import edu.knowitall.taggers.tag.Tagger
 
 object CompactTaggerCollection {
   def fromFile(file: File) = {
@@ -44,13 +44,5 @@ case class CompactTaggerCollection(taggers: Seq[Tagger], definitions: Seq[Defini
         val tagger = rule.instantiate(definitions)
         this + tagger
     }
-  }
-
-  def toTaggerCollection: TaggerCollection = {
-    val col = new TaggerCollection()
-
-    taggers foreach col.addTagger
-
-    col
   }
 }

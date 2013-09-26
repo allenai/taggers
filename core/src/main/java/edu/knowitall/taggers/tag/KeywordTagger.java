@@ -2,6 +2,7 @@ package edu.knowitall.taggers.tag;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -18,7 +19,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import edu.knowitall.collection.immutable.Interval;
-import edu.knowitall.collection.immutable.Interval$;
 import edu.knowitall.taggers.SentenceFunctions;
 import edu.knowitall.taggers.StringFunctions;
 import edu.knowitall.taggers.Type;
@@ -30,22 +30,13 @@ import edu.knowitall.tool.stem.Lemmatized;
  * @author schmmd
  *
  */
-public class KeywordTagger extends Tagger {
+public class KeywordTagger extends JavaTagger {
     public ImmutableList<String[]> keywords;
 
-    protected KeywordTagger(String descriptor) {
-        super(descriptor, null);
-        keywords = null;
-    }
-
-    public KeywordTagger(String descriptor, List<String> keywords) {
+    public KeywordTagger(String descriptor, Collection<String> keywords) {
         super(descriptor, null);
 
         setKeywords(new TreeSet<String>(keywords));
-    }
-
-    public KeywordTagger(String descriptor, String keyword) {
-        this(descriptor, Collections.singletonList(keyword));
     }
 
     protected void setKeywords(Set<String> keywords) {
@@ -65,13 +56,6 @@ public class KeywordTagger extends Tagger {
                 return Joiner.on(" ").join(parts);
             }
         });
-    }
-
-    @Override
-    public void sort() {
-        List<String> keywords = this.getKeywords();
-        Collections.sort(keywords);
-        this.setKeywords(keywords);
     }
 
     @Override
@@ -106,25 +90,25 @@ public class KeywordTagger extends Tagger {
     }
 
     @Override
-    public List<Type> findTags(final List<Lemmatized<ChunkedToken>> sentence) {
-        return this.findTags(sentence, SentenceFunctions.strings(sentence));
+    public List<Type> findTagsJava(final List<Lemmatized<ChunkedToken>> sentence) {
+        return this.findTagsJava(sentence, SentenceFunctions.strings(sentence));
     }
 
-    protected List<Type> findTags(final List<Lemmatized<ChunkedToken>> sentence,
+    protected List<Type> findTagsJava(final List<Lemmatized<ChunkedToken>> sentence,
             List<String> tokens) {
         List<Type> tags = new ArrayList<Type>();
         for (String[] keyword : keywords) {
-            this.findTags(tags, sentence, tokens, keyword);
+            this.findTagsJava(tags, sentence, tokens, keyword);
         }
         return tags;
     }
 
-    protected void findTags(final List<Type> tags, final List<Lemmatized<ChunkedToken>>  sentence,
+    protected void findTagsJava(final List<Type> tags, final List<Lemmatized<ChunkedToken>>  sentence,
             List<String> tokens, final String[] keyword) {
 
         for (int i = 0; i < tokens.size() - keyword.length; i++) {
             if (match(tokens, keyword, i)) {
-                Interval range = Interval$.MODULE$.open(i, i + keyword.length);
+                Interval range = Interval.open(i, i + keyword.length);
                 tags.add(this.createType(sentence, range));
             }
         }
@@ -143,38 +127,5 @@ public class KeywordTagger extends Tagger {
         }
 
         return true;
-    }
-
-
-    /// XML
-
-    public KeywordTagger(Element e) throws ParseTagException {
-        super(e);
-
-        List<String> kw = new ArrayList<String>();
-        Element keywords = e.getChild("keywords");
-        if (keywords == null) {
-            throw new ParseTagException("No element 'keywords'", e);
-        }
-
-        for (Element keyword : (List<Element>)keywords.getChildren("keyword")) {
-            kw.add(keyword.getText());
-        }
-
-        this.setKeywords(new TreeSet<String>(kw));
-    }
-
-    public Element toXmlElement() {
-        Element e = super.toXmlElement();
-
-        Element keywords = new Element("keywords");
-        for (String[] keyword : this.keywords) {
-            keywords.addContent(new Element("keyword").setText(
-                    StringUtils.join(keyword, " ")));
-        }
-
-        e.addContent(keywords);
-
-        return e;
     }
 }

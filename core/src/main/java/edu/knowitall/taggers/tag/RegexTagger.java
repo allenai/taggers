@@ -12,18 +12,17 @@ import org.jdom2.Element;
 import com.google.common.collect.ImmutableList;
 
 import edu.knowitall.collection.immutable.Interval;
-import edu.knowitall.collection.immutable.Interval$;
 import edu.knowitall.taggers.SentenceFunctions;
 import edu.knowitall.taggers.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
 
-public class RegexTagger extends Tagger {
+public class RegexTagger extends JavaTagger {
     public ImmutableList<Pattern[]> patterns;
 
     protected RegexTagger(String descriptor) {
         super(descriptor, null);
-        patterns = null;
+        this.patterns = null;
     }
 
     public RegexTagger(String descriptor, List<String> keywords) {
@@ -53,27 +52,26 @@ public class RegexTagger extends Tagger {
     }
 
     @Override
-    public List<Type> findTags(final List<Lemmatized<ChunkedToken>>  sentence) {
-        return this.findTags(sentence, SentenceFunctions.strings(sentence));
+    public List<Type> findTagsJava(final List<Lemmatized<ChunkedToken>>  sentence) {
+        return this.findTagsJava(sentence, SentenceFunctions.strings(sentence));
     }
 
-    protected List<Type> findTags(final List<Lemmatized<ChunkedToken>> sentence,
+    protected List<Type> findTagsJava(final List<Lemmatized<ChunkedToken>> sentence,
             List<String> tokens) {
         List<Type> tags = new ArrayList<Type>();
         for (Pattern[] pattern : this.patterns) {
-            this.findTags(tags, sentence, tokens, pattern);
+            this.findTagsJava(tags, sentence, tokens, pattern);
         }
-
 
         return tags;
     }
 
-    protected void findTags(final List<Type> tags, final List<Lemmatized<ChunkedToken>>  sentence,
+    protected void findTagsJava(final List<Type> tags, final List<Lemmatized<ChunkedToken>>  sentence,
             List<String> tokens, final Pattern[] pattern) {
 
         for (int i = 0; i < tokens.size() - pattern.length; i++) {
             if (match(tokens, pattern, i)) {
-                Interval range = Interval$.MODULE$.open(i, i + pattern.length);
+                Interval range = Interval.open(i, i + pattern.length);
                 tags.add(this.createType(sentence, range));
             }
         }
@@ -92,42 +90,5 @@ public class RegexTagger extends Tagger {
         }
 
         return true;
-    }
-
-
-    /// XML
-
-    public RegexTagger(Element e) throws ParseTagException, SecurityException, IllegalArgumentException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        super(e);
-
-        List<String> kw = new ArrayList<String>();
-        Element keywords = e.getChild("patterns");
-        if (keywords == null) {
-            throw new ParseTagException("No element 'patterns'", e);
-        }
-
-        for (Element keyword : (List<Element>)keywords.getChildren("pattern")) {
-            kw.add(keyword.getText());
-        }
-
-        this.setPatterns(kw);
-    }
-
-    public Element toXmlElement() {
-        Element e = super.toXmlElement();
-
-        Element patterns = new Element("patterns");
-        for (Pattern[] keyword : this.patterns) {
-            patterns.addContent(new Element("pattern").setText(
-                    StringUtils.join(keyword, " ")));
-        }
-
-        e.addContent(patterns);
-
-        return e;
-    }
-
-    @Override
-    public void sort() {
     }
 }

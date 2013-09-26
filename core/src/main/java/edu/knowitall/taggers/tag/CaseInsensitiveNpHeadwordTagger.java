@@ -2,8 +2,6 @@ package edu.knowitall.taggers.tag;
 
 import java.util.List;
 
-import org.jdom2.Element;
-
 import edu.knowitall.taggers.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
@@ -24,15 +22,8 @@ public class CaseInsensitiveNpHeadwordTagger extends CaseInsensitiveKeywordTagge
     }
 
     @Override
-    public List<Type> findTags(final List<Lemmatized<ChunkedToken>>  sentence) {
-        List<Type> keywordTags = super.findTags(sentence);
+    public List<Type> findTagsJava(final List<Lemmatized<ChunkedToken>>  sentence) {
+        List<Type> keywordTags = super.findTagsJava(sentence);
         return AfterTaggers.tagHeadword(keywordTags, sentence);
-    }
-
-
-    /// XML
-
-    public CaseInsensitiveNpHeadwordTagger(Element e) throws ParseTagException {
-        super(e);
     }
 }

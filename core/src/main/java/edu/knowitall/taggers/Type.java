@@ -2,6 +2,7 @@ package edu.knowitall.taggers;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.jdom2.Element;
@@ -9,7 +10,6 @@ import org.jdom2.Element;
 import com.google.common.base.Joiner;
 
 import edu.knowitall.collection.immutable.Interval;
-import edu.knowitall.collection.immutable.Interval$;
 import edu.knowitall.taggers.XmlSerializable;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
@@ -51,8 +51,26 @@ public class Type implements Serializable, XmlSerializable, Comparable<Type> {
         return new Type(builder.toString().trim(), descriptor, source, match, interval);
     }
 
+    public static Type fromSentence(scala.collection.Seq<Lemmatized<ChunkedToken>> sentence, String descriptor, String source, String match,
+            Interval interval) {
+        // build tyep string from tokens
+        StringBuilder builder = new StringBuilder();
+        Iterator<Lemmatized<ChunkedToken>> it =
+                scala.collection.JavaConversions.asJavaIterator(
+                        sentence.slice(interval.start(), interval.end()).iterator());
+        while (it.hasNext()) {
+            builder.append(it.next().token().string() + " ");
+        }
+
+        return new Type(builder.toString().trim(), descriptor, source, match, interval);
+    }
 
     public static Type fromSentence(List<Lemmatized<ChunkedToken>> sentence, String descriptor, String source,
+            Interval interval) {
+        return fromSentence(sentence, descriptor, source, null, interval);
+    }
+
+    public static Type fromSentence(scala.collection.Seq<Lemmatized<ChunkedToken>> sentence, String descriptor, String source,
             Interval interval) {
         return fromSentence(sentence, descriptor, source, null, interval);
     }
@@ -106,6 +124,7 @@ public class Type implements Serializable, XmlSerializable, Comparable<Type> {
         }
     }
 
+    @Override
     public String toString() {
         return descriptor + "{" + this.interval().toString() + ":" + this.text() + "}";
     }
@@ -140,7 +159,7 @@ public class Type implements Serializable, XmlSerializable, Comparable<Type> {
 
     /// XML
     public static Type fromXmlElement(List<Lemmatized<ChunkedToken>> sentence, Element e) {
-        Interval interval = Interval$.MODULE$.open(
+        Interval interval = Interval.open(
                 Integer.parseInt(e.getAttributeValue("start")),
                 Integer.parseInt(e.getAttributeValue("end")));
         return Type.fromSentence(sentence, e.getAttributeValue("descriptor"), e.getAttributeValue("source"), e.getAttributeValue("match"), interval);

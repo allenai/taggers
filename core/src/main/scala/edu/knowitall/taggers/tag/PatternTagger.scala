@@ -36,7 +36,9 @@ import scala.collection.JavaConverters._
  * @author schmmd
  *
  */
-class PatternTagger(descriptor: String, expressions: Seq[String]) extends Tagger(descriptor, null) {
+case class PatternTagger(descriptor: String, expressions: Seq[String]) extends Tagger {
+  override val source = null
+
   val patterns: Seq[openregex.Pattern[PatternBuilder.Token]] = this.compile(expressions)
 
   // for reflection
@@ -48,14 +50,12 @@ class PatternTagger(descriptor: String, expressions: Seq[String]) extends Tagger
     this(descriptor, null: Seq[String])
   }
 
-  override def sort() = {}
-
   private def compile(expressions: Seq[String]) = {
     expressions map PatternBuilder.compile
   }
 
-  override def findTags(sentence: java.util.List[Lemmatized[ChunkedToken]]) = {
-    this.findTagsWithTypes(sentence, Collections.emptyList[Type])
+  override def findTags(sentence: Seq[Lemmatized[ChunkedToken]]) = {
+    this.findTagsWithTypes(sentence, Seq.empty[Type])
   }
 
   /**
@@ -63,14 +63,14 @@ class PatternTagger(descriptor: String, expressions: Seq[String]) extends Tagger
    * implementation uses information from the Types that have been assigned to
    * the sentence so far.
    */
-  override def findTagsWithTypes(sentence: java.util.List[Lemmatized[ChunkedToken]],
-    originalTags: java.util.List[Type]): java.util.List[Type] = {
+  override def findTagsWithTypes(sentence: Seq[Lemmatized[ChunkedToken]],
+    originalTags: Seq[Type]): Seq[Type] = {
 
     // create a java set of the original tags
-    val originalTagSet = originalTags.asScala.toSet
+    val originalTagSet = originalTags.toSet
 
     // convert tokens to TypedTokens
-    val typedTokens = for ((token, i) <- sentence.asScala.zipWithIndex) yield {
+    val typedTokens = for ((token, i) <- sentence.zipWithIndex) yield {
       new TypedToken(token, i, originalTagSet.filter(_.interval contains i))
     }
 
@@ -79,7 +79,7 @@ class PatternTagger(descriptor: String, expressions: Seq[String]) extends Tagger
       tag <- this.findTags(typedTokens, sentence, pattern)
     } yield (tag)
 
-    return tags.asJava;
+    return tags
   }
 
   /**
@@ -95,7 +95,7 @@ class PatternTagger(descriptor: String, expressions: Seq[String]) extends Tagger
    * @return
    */
   protected def findTags(typedTokenSentence: Seq[TypedToken],
-    sentence: List[Lemmatized[ChunkedToken]],
+    sentence: Seq[Lemmatized[ChunkedToken]],
     pattern: openregex.Pattern[TypedToken]) = {
 
     var tags = Seq.empty[Type]
