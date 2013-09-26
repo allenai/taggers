@@ -51,7 +51,7 @@ class PatternTaggerSpec extends FlatSpec {
     //assert that the worldCandyInterval has been matched
     //and that it has been tagged as a ''World Candy''
     assert(targetTypeOption.isDefined)
-    assert(targetTypeOption.get.descriptor() === "WorldCandy")
+    assert(targetTypeOption.get.name() === "WorldCandy")
   }
 
   "type fields in PatternTagger" should "match correctly" in {
@@ -81,23 +81,23 @@ class PatternTaggerSpec extends FlatSpec {
 
     val types = taggerCollection.tag(tokens.asJava).asScala
 
-    val typeTypes = types.filter(_.descriptor == "TypeTaggerTest")
+    val typeTypes = types.filter(_.name == "TypeTaggerTest")
     assert(typeTypes.size === 3)
     assert(typeTypes.map(_.text).toSet == Set("the", "large", "cat"))
 
-    val typeStartTypes = types.filter(_.descriptor == "TypeStartTaggerTest")
+    val typeStartTypes = types.filter(_.name == "TypeStartTaggerTest")
     assert(typeStartTypes.size === 1)
     assert(typeStartTypes.headOption.map(_.text).get == "the")
 
-    val typeEndTypes = types.filter(_.descriptor == "TypeEndTaggerTest")
+    val typeEndTypes = types.filter(_.name == "TypeEndTaggerTest")
     assert(typeEndTypes.size === 1)
     assert(typeEndTypes.headOption.map(_.text).get == "cat")
     
-    val typeEndANameTypes = types.filter(_.descriptor == "TypeEndTaggerTest.aName")
+    val typeEndANameTypes = types.filter(_.name == "TypeEndTaggerTest.aName")
     assert((typeEndANameTypes.size == 1))
     assert(typeEndANameTypes.headOption.map(_.text).get == "cat")
 
-    val typeContTypes = types.filter(_.descriptor == "TypeContTaggerTest")
+    val typeContTypes = types.filter(_.name == "TypeContTaggerTest")
     assert(typeContTypes.size === 1)
     assert(typeContTypes.headOption.map(_.text).get == "large")
   }

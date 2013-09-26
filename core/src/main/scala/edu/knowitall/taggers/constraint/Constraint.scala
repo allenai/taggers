@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import edu.knowitall.taggers.tag.ParseTagException;
-import edu.knowitall.taggers.Type;
+import edu.knowitall.tool.typer.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
 

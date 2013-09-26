@@ -3,7 +3,7 @@ package edu.knowitall.taggers.constraint;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import edu.knowitall.taggers.Type;
+import edu.knowitall.tool.typer.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
 

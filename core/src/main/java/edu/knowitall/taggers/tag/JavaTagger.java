@@ -3,25 +3,25 @@ package edu.knowitall.taggers.tag;
 import java.util.List;
 
 import edu.knowitall.collection.immutable.Interval;
-import edu.knowitall.taggers.SentenceFunctions;
-import edu.knowitall.taggers.Type;
-import edu.knowitall.tool.chunk.ChunkedToken;
+import edu.knowitall.taggers.TypeHelper;
 import edu.knowitall.tool.stem.Lemmatized;
+import edu.knowitall.tool.chunk.ChunkedToken;
+import edu.knowitall.tool.typer.Type;
 
 abstract public class JavaTagger extends Tagger {
-    private final String descriptor;
+    private final String name;
     private final String source;
 
-    public String descriptor() {
-        return descriptor;
+    public String name() {
+        return name;
     }
 
     public String source() {
         return source;
     }
 
-    public JavaTagger(String descriptor, String source) {
-        this.descriptor = descriptor;
+    public JavaTagger(String name, String source) {
+        this.name = name;
         this.source = source;
     }
 
@@ -34,6 +34,6 @@ abstract public class JavaTagger extends Tagger {
     abstract public List<Type> findTagsJava(final List<Lemmatized<ChunkedToken>> sentence);
 
     public Type createType(List<Lemmatized<ChunkedToken>> sentence, Interval interval) {
-        return Type.fromSentence(sentence, this.descriptor, this.source, interval);
+        return TypeHelper.fromJavaSentence(sentence, this.name, this.source, interval);
     }
 }

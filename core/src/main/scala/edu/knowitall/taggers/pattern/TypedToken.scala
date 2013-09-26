@@ -1,7 +1,7 @@
 package edu.knowitall.taggers.pattern
 
 import edu.knowitall.tool.stem.Lemmatized
-import edu.knowitall.taggers.Type
+import edu.knowitall.tool.typer.Type
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.collection.immutable.Interval
 
@@ -16,14 +16,14 @@ case class TypedToken(token: Lemmatized[ChunkedToken], index: Int, types: Set[Ty
     * is a Type Set that stores all of the types with the same ending offset as the Token
     */
   lazy val typesBeginningAtToken = {
-    types.filter(_.interval.start == this.index)
+    types.filter(_.tokenInterval.start == this.index)
   }
 
    /**
     * is a Type Set that stores all of the types with the same beginning offset as the Token
     */
   lazy val typesEndingAtToken = {
-    types.filter(_.interval.last == this.index)
+    types.filter(_.tokenInterval.last == this.index)
   }
   lazy val typesContinuingAtToken = types -- typesBeginningAtToken -- typesEndingAtToken
 }

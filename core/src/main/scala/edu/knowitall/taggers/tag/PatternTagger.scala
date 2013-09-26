@@ -14,7 +14,7 @@ import java.util.regex.Pattern
 import org.jdom2.Element
 import com.google.common.base.Predicate
 import com.google.common.collect.ImmutableList
-import edu.knowitall.taggers.Type
+import edu.knowitall.tool.typer.Type
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.stem.Lemmatized
 import edu.washington.cs.knowitall.logic.ArgFactory
@@ -28,6 +28,7 @@ import edu.knowitall.openregex
 import edu.knowitall.taggers.pattern.PatternBuilder
 import edu.knowitall.taggers.pattern.TypedToken
 import scala.collection.JavaConverters._
+import edu.knowitall.taggers.TypeHelper
 
 /**
  * *
@@ -36,18 +37,18 @@ import scala.collection.JavaConverters._
  * @author schmmd
  *
  */
-case class PatternTagger(descriptor: String, expressions: Seq[String]) extends Tagger {
+case class PatternTagger(name: String, expressions: Seq[String]) extends Tagger {
   override val source = null
 
   val patterns: Seq[openregex.Pattern[PatternBuilder.Token]] = this.compile(expressions)
 
   // for reflection
-  def this(descriptor: String, expressions: java.util.List[String]) = {
-    this(descriptor, expressions.asScala.toSeq)
+  def this(name: String, expressions: java.util.List[String]) = {
+    this(name, expressions.asScala.toSeq)
   }
 
-  protected def this(descriptor: String) {
-    this(descriptor, null: Seq[String])
+  protected def this(name: String) {
+    this(name, null: Seq[String])
   }
 
   private def compile(expressions: Seq[String]) = {
@@ -71,7 +72,7 @@ case class PatternTagger(descriptor: String, expressions: Seq[String]) extends T
 
     // convert tokens to TypedTokens
     val typedTokens = for ((token, i) <- sentence.zipWithIndex) yield {
-      new TypedToken(token, i, originalTagSet.filter(_.interval contains i))
+      new TypedToken(token, i, originalTagSet.filter(_.tokenInterval contains i))
     }
 
     val tags = for {
@@ -87,7 +88,7 @@ case class PatternTagger(descriptor: String, expressions: Seq[String]) extends T
    * pattern and a List of TypedTokens.
    *
    * Matching groups will create a type with the name or index
-   * appended to the descriptor.
+   * appended to the name.
    *
    * @param typedTokenSentence
    * @param sentence
@@ -106,13 +107,13 @@ case class PatternTagger(descriptor: String, expressions: Seq[String]) extends T
       for (i <- 0 until groupSize) {
         val group = m.groups(i);
 
-        val postfix = 
+        val postfix =
         group.expr match {
           case _ if i == 0 => ""
           case namedGroup: NamedGroup[_] => "." + namedGroup.name
           case _ => "." + i
         }
-        val tag = Type.fromSentence(sentence, this.descriptor + postfix,
+        val tag = TypeHelper.fromSentence(sentence, this.name + postfix,
           this.source, group.interval);
         tags = tags :+ tag
       }

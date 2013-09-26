@@ -2,7 +2,7 @@ package edu.knowitall.taggers.tag;
 
 import java.util.List;
 
-import edu.knowitall.taggers.Type;
+import edu.knowitall.tool.typer.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
 
@@ -13,12 +13,12 @@ import edu.knowitall.tool.stem.Lemmatized;
  *
  */
 public class CaseInsensitiveNpHeadwordTagger extends CaseInsensitiveKeywordTagger {
-    public CaseInsensitiveNpHeadwordTagger(String descriptor, List<String> keywords) {
-        super(descriptor, keywords);
+    public CaseInsensitiveNpHeadwordTagger(String name, List<String> keywords) {
+        super(name, keywords);
     }
 
-    public CaseInsensitiveNpHeadwordTagger(String descriptor, String keyword) {
-        super(descriptor, keyword);
+    public CaseInsensitiveNpHeadwordTagger(String name, String keyword) {
+        super(name, keyword);
     }
 
     @Override

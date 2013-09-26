@@ -13,20 +13,20 @@ import com.google.common.collect.ImmutableList;
 
 import edu.knowitall.collection.immutable.Interval;
 import edu.knowitall.taggers.SentenceFunctions;
-import edu.knowitall.taggers.Type;
+import edu.knowitall.tool.typer.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
 
 public class RegexTagger extends JavaTagger {
     public ImmutableList<Pattern[]> patterns;
 
-    protected RegexTagger(String descriptor) {
-        super(descriptor, null);
+    protected RegexTagger(String name) {
+        super(name, null);
         this.patterns = null;
     }
 
-    public RegexTagger(String descriptor, List<String> keywords) {
-        super(descriptor, null);
+    public RegexTagger(String name, List<String> keywords) {
+        super(name, null);
 
         setPatterns(keywords);
     }
@@ -47,8 +47,8 @@ public class RegexTagger extends JavaTagger {
         this.patterns = ImmutableList.copyOf(split);
     }
 
-    public RegexTagger(String descriptor, String keyword) {
-        this(descriptor, Collections.singletonList(keyword));
+    public RegexTagger(String name, String keyword) {
+        this(name, Collections.singletonList(keyword));
     }
 
     @Override

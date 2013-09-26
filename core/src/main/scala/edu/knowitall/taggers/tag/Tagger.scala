@@ -5,10 +5,10 @@ import edu.knowitall.common.HashCodeHelper
 import edu.knowitall.tool.stem.Lemmatized
 import edu.knowitall.tool.chunk.ChunkedToken
 import collection.JavaConverters._
-import edu.knowitall.taggers.Type
+import edu.knowitall.tool.typer.Type
 
 abstract class Tagger {
-  def descriptor: String
+  def name: String
   def source: String
   var constraints: Seq[Constraint] = Seq.empty
 
@@ -20,10 +20,10 @@ abstract class Tagger {
     if (this.getClass() != that.getClass()) return false
 
     val tagger = that.asInstanceOf[Tagger]
-    return this.descriptor.equals(tagger.descriptor)
+    return this.name.equals(tagger.name)
   }
 
-  override def hashCode = HashCodeHelper(descriptor, source, constraints)
+  override def hashCode = HashCodeHelper(name, source, constraints)
 
   def constrain(constraint: Constraint) {
     this.constraints :+= constraint
@@ -79,7 +79,7 @@ abstract class Tagger {
     tags.filter { tag =>
       tags.find { other =>
         other != tag &&
-          (other.interval superset tag.interval)
+          (other.tokenInterval superset tag.tokenInterval)
       } match {
         case Some(superType) => false
         case None => true

@@ -25,7 +25,7 @@
 //import edu.knowitall.tool.stem.Lemmatized;
 //import edu.knowitall.tool.stem.MorphaStemmer;
 //import edu.knowitall.taggers.SentenceFunctions;
-//import edu.knowitall.taggers.Type;
+//import edu.knowitall.tool.typer.Type;
 //
 ///***
 // * A collection of {@see Tagger}s.

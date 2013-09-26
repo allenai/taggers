@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.knowitall.collection.immutable.Interval;
-import edu.knowitall.collection.immutable.Interval$;
-import edu.knowitall.taggers.Type;
+import edu.knowitall.taggers.TypeHelper;
+import edu.knowitall.tool.typer.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
 
@@ -17,7 +17,7 @@ public class AfterTaggers {
         for (Lemmatized<ChunkedToken> token : tokens) {
             // end a chunk tag sequence
             if (start != -1 && !token.token().chunk().equalsIgnoreCase("I-NP")) {
-                intervals.add(Interval$.MODULE$.open(start, i));
+                intervals.add(Interval.open(start, i));
                 start = -1;
             }
 
@@ -37,8 +37,8 @@ public class AfterTaggers {
         List<Type> tags = new ArrayList<Type>(initialTags.size());
         for (Type tag : initialTags) {
             for (Interval interval : npChunkIntervals(sentence)) {
-                if (interval.superset(tag.interval())) {
-                    tags.add(Type.fromSentence(sentence, tag.descriptor(), tag.source(), tag.match(), interval));
+                if (interval.superset(tag.tokenInterval())) {
+                    tags.add(TypeHelper.fromJavaSentence(sentence, tag.name(), tag.source(), interval));
                 }
             }
         }
@@ -49,7 +49,7 @@ public class AfterTaggers {
     public static Type tagHeadword(Type tag, List<Lemmatized<ChunkedToken>> tokens) {
         // final Pattern nounPosTag = Pattern.compile("nns?|nnps?", Pattern.CASE_INSENSITIVE);
         for (Interval interval : npChunkIntervals(tokens)) {
-            if (interval.superset(tag.interval())) {
+            if (interval.superset(tag.tokenInterval())) {
                 // look for preposition
                 int headwordEndIndex = interval.end() - 1;
                 for (int i = tokens.size() - 1; i > 0; i--) {
@@ -58,8 +58,8 @@ public class AfterTaggers {
                     }
                 }
 
-                if (tag.interval().end() == headwordEndIndex + 1) {
-                    return Type.fromSentence(tokens, tag.descriptor(), tag.source(), tag.match(),
+                if (tag.tokenInterval().end() == headwordEndIndex + 1) {
+                    return TypeHelper.fromJavaSentence(tokens, tag.name(), tag.source(),
                             interval);
                 }
             }

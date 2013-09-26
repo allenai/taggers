@@ -2,7 +2,7 @@ package edu.knowitall.taggers.tag;
 
 import java.util.List;
 
-import edu.knowitall.taggers.Type;
+import edu.knowitall.tool.typer.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
 
@@ -14,12 +14,12 @@ import edu.knowitall.tool.stem.Lemmatized;
  *
  */
 public class NormalizedNpChunkTagger extends NormalizedKeywordTagger {
-    public NormalizedNpChunkTagger(String descriptor, List<String> keywords) {
-        super(descriptor, keywords);
+    public NormalizedNpChunkTagger(String name, List<String> keywords) {
+        super(name, keywords);
     }
 
-    public NormalizedNpChunkTagger(String descriptor, String keyword) {
-        super(descriptor, keyword);
+    public NormalizedNpChunkTagger(String name, String keyword) {
+        super(name, keyword);
     }
 
     @Override

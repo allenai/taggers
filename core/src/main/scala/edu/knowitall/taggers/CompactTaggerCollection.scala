@@ -40,7 +40,7 @@ case class CompactTaggerCollection(taggers: Seq[Tagger], definitions: Seq[Defini
     rule match {
       case defn @ DefinitionRule(_, _) =>
         this.copy(definitions = definitions :+ defn)
-      case rule @ TaggerRule(descriptor, _, _, _) =>
+      case rule @ TaggerRule(name, _, _, _) =>
         val tagger = rule.instantiate(definitions)
         this + tagger
     }

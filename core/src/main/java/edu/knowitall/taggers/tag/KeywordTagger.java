@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import edu.knowitall.collection.immutable.Interval;
 import edu.knowitall.taggers.SentenceFunctions;
 import edu.knowitall.taggers.StringFunctions;
-import edu.knowitall.taggers.Type;
+import edu.knowitall.tool.typer.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
 
@@ -33,8 +33,8 @@ import edu.knowitall.tool.stem.Lemmatized;
 public class KeywordTagger extends JavaTagger {
     public ImmutableList<String[]> keywords;
 
-    public KeywordTagger(String descriptor, Collection<String> keywords) {
-        super(descriptor, null);
+    public KeywordTagger(String name, Collection<String> keywords) {
+        super(name, null);
 
         setKeywords(new TreeSet<String>(keywords));
     }
