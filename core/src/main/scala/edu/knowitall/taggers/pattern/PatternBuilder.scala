@@ -22,12 +22,39 @@ object PatternBuilder {
     override def apply(a: A) = f(a)
   }
 
+  /**
+   * *
+   * This class compiles regular expressions over the tokens in a sentence
+   * into an NFA. There is a lot of redundancy in their expressiveness. This
+   * is largely because it supports pattern matching on the fields This is not
+   * necessary but is an optimization and a shorthand (i.e.
+   * {@code <pos="NNPS?"> is equivalent to "<pos="NNP" | pos="NNPS">} and
+   * {@code (?:<pos="NNP"> | <pos="NNPS">)}.
+   * <p>
+   * Here are some equivalent examples:
+   * <ol>
+   * <li> {@code <pos="JJ">* <pos="NNP.">+}
+   * <li> {@code <pos="JJ">* <pos="NNPS?">+}
+   * <li> {@code <pos="JJ">* <pos="NNP" | pos="NNPS">+}
+   * <li> {@code <pos="JJ">* (?:<pos="NNP"> | <pos="NNPS">)+}
+   * </ol>
+   * Note that (3) and (4) are not preferred for efficiency reasons. Regex OR
+   * (in example (4)) should only be used on multi-token sequences.
+   * <p>
+   * The Regular Expressions support named groups (<name>: ... ), unnamed
+   * groups (?: ... ), and capturing groups ( ... ). The operators allowed are
+   * +, ?, *, and |. The Logic Expressions (that describe each token) allow
+   * grouping "( ... )", not '!', or '|', and and '&'.
+   *
+   * @param regex
+   * @return
+  **/
   def compile(pattern: String) =
     openregex.Pattern.compile(pattern, (expression: String) => {
       // mostly copied from scala.util.parsing.combinator.JavaTokenParser
       val doubleQuoteStringLiteralRegex = ("\"" + """((?:[^"\p{Cntrl}\\]|\\[\\'"bfnrt]|\\u[a-fA-F0-9]{4})*)""" + "\"").r
       val singleQuoteStringLiteralRegex = ("'" + """([^']*)""" + "'").r
-      val regexLiteralRegex = ("/" + """([^/]*(?:(?:\\)|(?:\/))?)""" + "/").r
+      val regexLiteralRegex = ("/" + """((?:[^/\\]*(?:\\)*(?:\\/)*)*)""" + "/").r
 
       val baseExpr = new Expression.BaseExpression[Token](expression) {
         val deserializeToken: String => (Token => Boolean) = (argument: String) => {
@@ -54,7 +81,9 @@ object PatternBuilder {
             case singleQuoteStringLiteralRegex(string) =>
               new Expressions.StringExpression(field, string)
             case regexLiteralRegex(string) =>
-              val unescapedString = string.replaceAll("""\/""", "/").replaceAll("""\\""", """\""")
+              println(string)
+              val unescapedString = string.replace("""\\""", """\""").replace("""\/""", "/")
+              println(unescapedString)
               new Expressions.RegularExpression(field, string)
             case _ => throw new IllegalArgumentException("Value not enclosed in quote (\") or (') or (/): " + argument)
           }
