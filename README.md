@@ -21,6 +21,11 @@ A field can be matched in one of three ways.
     regular expression.  Backslash is the escape character so `\\` becomes a single
     backslash and `\/` escapes the forward slash.
 
+A pattern tagger makes types with the tagger name, but also types for each matching
+group.  If the tagger is named `T` and a matching group is named `G1` for example, the
+tagger will create `T.G1`.  If there is an unnamed matching group a type will be created
+with the group number (i.e. `T.1`).
+
 There is a lot of redundancy in their expressiveness. For example,
 PatternTagger supports pattern matching on the fields .This is not necessary
 but is an optimization and a shorthand.  For example, the following two'
@@ -43,8 +48,8 @@ Here are some more equivalent examples:
 Note that (3) and (4) are not preferred for efficiency reasons. Regex OR
 (in example (4)) should only be used on multi-token sequences.
 
-The Regular Expressions support named groups (<name>: ... ), unnamed
-groups (?: ... ), and capturing groups ( ... ). The operators allowed are
-+, ?, *, and |. The Logic Expressions (that describe each token) allow
-grouping "( ... )", not '!', or '|', and and '&'.  To learn more about
+The Regular Expressions support named groups `(<name>: ... )`, unnamed
+groups `(?: ... )`, and capturing groups `( ... )`. The operators allowed are
+`+`, `?`, `*`, and `|`. The Logic Expressions (that describe each token) allow
+grouping `( ... )`, not `!`, or `|`, and and `&`.  To learn more about
 the regular expression language, see https://github.com/knowitall/openregex.
