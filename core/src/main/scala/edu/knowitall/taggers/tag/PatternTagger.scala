@@ -1,206 +1,128 @@
-package edu.knowitall.taggers.tag;
+package edu.knowitall.taggers.tag
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.lang.reflect.InvocationTargetException
+import java.util.ArrayList
+import java.util.Collections
+import java.util.HashSet
+import java.util.Iterator
+import java.util.List
+import java.util.Map
+import java.util.Set
+import java.util.TreeMap
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+import org.jdom2.Element
+import com.google.common.base.Predicate
+import com.google.common.collect.ImmutableList
+import edu.knowitall.taggers.Type
+import edu.knowitall.tool.chunk.ChunkedToken
+import edu.knowitall.tool.stem.Lemmatized
+import edu.washington.cs.knowitall.logic.ArgFactory
+import edu.washington.cs.knowitall.logic.LogicExpression
+import edu.washington.cs.knowitall.regex.Expression.BaseExpression
+import edu.washington.cs.knowitall.regex.Expression.NamedGroup
+import edu.washington.cs.knowitall.regex.ExpressionFactory
+import edu.washington.cs.knowitall.regex.Match
+import edu.washington.cs.knowitall.regex.RegularExpression
+import edu.knowitall.openregex
+import edu.knowitall.taggers.pattern.PatternBuilder
+import edu.knowitall.taggers.pattern.TypedToken
+import scala.collection.JavaConverters._
 
-import org.jdom2.Element;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
-
-import edu.knowitall.collection.immutable.Interval;
-import edu.knowitall.collection.immutable.Interval$;
-import edu.knowitall.taggers.Type;
-import edu.knowitall.tool.chunk.ChunkedToken;
-import edu.knowitall.tool.stem.Lemmatized;
-import edu.washington.cs.knowitall.logic.ArgFactory;
-import edu.washington.cs.knowitall.logic.LogicExpression;
-import edu.washington.cs.knowitall.regex.Expression.BaseExpression;
-import edu.washington.cs.knowitall.regex.Expression.NamedGroup;
-import edu.washington.cs.knowitall.regex.ExpressionFactory;
-import edu.washington.cs.knowitall.regex.Match;
-import edu.washington.cs.knowitall.regex.RegularExpression;
-
-/***
+/**
+ * *
  * Run a token-based pattern over the text and tag matches.
  *
  * @author schmmd
  *
  */
-public class PatternTagger extends Tagger {
-    public ImmutableList<RegularExpression<TypedToken>> patterns;
-    public ImmutableList<String> expressions;
+class PatternTagger(descriptor: String, expressions: Seq[String]) extends Tagger(descriptor, null) {
+  val patterns: Seq[openregex.Pattern[PatternBuilder.Token]] = this.compile(expressions)
 
-    protected PatternTagger(String descriptor) {
-        super(descriptor, null);
-        patterns = null;
-        expressions = null;
+  // for reflection
+  def this(descriptor: String, expressions: java.util.List[String]) = {
+    this(descriptor, expressions.asScala.toSeq)
+  }
+
+  protected def this(descriptor: String) {
+    this(descriptor, null: Seq[String])
+  }
+
+  override def sort() = {}
+
+  private def compile(expressions: Seq[String]) = {
+    expressions map PatternBuilder.compile
+  }
+
+  override def findTags(sentence: java.util.List[Lemmatized[ChunkedToken]]) = {
+    this.findTagsWithTypes(sentence, Collections.emptyList[Type])
+  }
+
+  /**
+   * This method overrides Tagger's default implementation. This
+   * implementation uses information from the Types that have been assigned to
+   * the sentence so far.
+   */
+  override def findTagsWithTypes(sentence: java.util.List[Lemmatized[ChunkedToken]],
+    originalTags: java.util.List[Type]): java.util.List[Type] = {
+
+    // create a java set of the original tags
+    val originalTagSet = originalTags.asScala.toSet
+
+    // convert tokens to TypedTokens
+    val typedTokens = for ((token, i) <- sentence.asScala.zipWithIndex) yield {
+      new TypedToken(token, i, originalTagSet.filter(_.interval contains i))
     }
 
-    public PatternTagger(String descriptor, List<String> expressions) {
-        super(descriptor, null);
-        this.expressions = ImmutableList.copyOf(expressions);
-        this.patterns = this.compile(this.expressions);
+    val tags = for {
+      pattern <- patterns
+      tag <- this.findTags(typedTokens, sentence, pattern)
+    } yield (tag)
+
+    return tags.asJava;
+  }
+
+  /**
+   * This is a helper method that creates the Type objects from a given
+   * pattern and a List of TypedTokens.
+   *
+   * Matching groups will create a type with the name or index
+   * appended to the descriptor.
+   *
+   * @param typedTokenSentence
+   * @param sentence
+   * @param pattern
+   * @return
+   */
+  protected def findTags(typedTokenSentence: Seq[TypedToken],
+    sentence: List[Lemmatized[ChunkedToken]],
+    pattern: openregex.Pattern[TypedToken]) = {
+
+    var tags = Seq.empty[Type]
+
+    val matches = pattern.findAll(typedTokenSentence);
+    for (m <- matches) {
+      val groupSize = m.groups.size
+      for (i <- 0 until groupSize) {
+        val group = m.groups(i);
+
+        val postfix = "";
+        group.expr match {
+          case _ if i == 0 => ""
+          case namedGroup: NamedGroup[_] => "." + namedGroup.name
+          case _ => "." + i
+        }
+        val tag = Type.fromSentence(sentence, this.descriptor + postfix,
+          this.source, group.interval);
+        tags = tags :+ tag
+      }
     }
 
-    public PatternTagger(String descriptor, String pattern) {
-        this(descriptor, Collections.singletonList(pattern));
-        this.patterns = this.compile(this.expressions);
-    }
+    tags
+  }
 
-    @Override
-    public void sort() {
-    }
-
-    private ImmutableList<RegularExpression<TypedToken>> compile(
-            List<String> expressions) {
-        List<RegularExpression<TypedToken>> patterns = new ArrayList<RegularExpression<TypedToken>>();
-        for (String expression : expressions) {
-            RegularExpression<TypedToken> pattern = PatternTagger
-                    .makeRegex(expression);
-            patterns.add(pattern);
-        }
-
-        return ImmutableList.copyOf(patterns);
-    }
-
-    @Override
-    public boolean equals(Object that) {
-        if (that == null)
-            return false;
-        if (this == that)
-            return true;
-        if (this.getClass() != that.getClass())
-            return false;
-
-        PatternTagger kt = (PatternTagger) that;
-        if (!super.equals(that)) {
-            return false;
-        }
-
-        if (this.patterns.size() != kt.patterns.size()) {
-            return false;
-        }
-
-        if (this.patterns.size() != kt.patterns.size()) {
-            return false;
-        }
-
-        Iterator<RegularExpression<TypedToken>> i1 = this.patterns.iterator();
-        Iterator<RegularExpression<TypedToken>> i2 = kt.patterns.iterator();
-
-        while (i1.hasNext() && i2.hasNext()) {
-            if (!i1.equals(i2)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Implementation of Tagger's abstract method findTags. This method uses
-     * only information from the Lemmatized ChunkedTokens in the sentence to
-     * match regular expressions. This method should not be used for the
-     * PatternTagger but it is implemented anyways.
-     */
-    @Override
-    public List<Type> findTags(final List<Lemmatized<ChunkedToken>> sentence) {
-        ArrayList<Type> tags = new ArrayList<Type>();
-
-        // convert sentence to TypedToken sentence
-        List<TypedToken> typedTokenSentence = new ArrayList<TypedToken>();
-        for (int i = 0; i < sentence.size(); i++) {
-            typedTokenSentence.add(new TypedToken(i, new HashSet<Type>(),
-                    sentence));
-        }
-        // Get all the pattern types from the chunkedTokens
-        for (RegularExpression<TypedToken> pattern : patterns) {
-            tags.addAll(this.findTags(typedTokenSentence, sentence, pattern));
-        }
-
-        return tags;
-    }
-
-    /**
-     * This method overrides Tagger's default implementation. This
-     * implementation uses information from the Types that have been assigned to
-     * the sentence so far.
-     */
-    @Override
-    public List<Type> findTagsWithTypes(final List<Lemmatized<ChunkedToken>> sentence,
-            final List<Type> previousTags) {
-        ArrayList<Type> tags = new ArrayList<Type>();
-        Set<Type> tagSet = new HashSet<Type>();
-        for (Type t : previousTags) {
-            tagSet.add(t);
-        }
-        // convert sentence to TypedToken sentence
-        List<TypedToken> typedTokenSentence = new ArrayList<TypedToken>();
-        for (int i = 0; i < sentence.size(); i++) {
-            typedTokenSentence.add(new TypedToken(i, tagSet, sentence));
-        }
-
-        for (RegularExpression<TypedToken> pattern : patterns) {
-            tags.addAll(this.findTags(typedTokenSentence, sentence, pattern));
-        }
-
-        return tags;
-    }
-
-    /**
-     * This is a helper method that creates the Type objects from a given
-     * pattern and a List of TypedTokens.
-     *
-     * Matching groups will create a type with the name or index
-     * appended to the descriptor.
-     *
-     * @param typedTokenSentence
-     * @param sentence
-     * @param pattern
-     * @return
-     */
-    protected List<Type> findTags(final List<TypedToken> typedTokenSentence,
-            final List<Lemmatized<ChunkedToken>> sentence,
-            final RegularExpression<TypedToken> pattern) {
-
-        List<Type> tags = new ArrayList<Type>();
-
-        List<Match<TypedToken>> matches = pattern.findAll(typedTokenSentence);
-        for (Match<TypedToken> match : matches) {
-            int groupSize = match.groups().size();
-            for (int i = 0; i < groupSize; i++) {
-                final Match.Group<TypedToken> group = match.groups().get(i);
-
-                String postfix = "";
-                if (i > 0) {
-                    if (group.expr instanceof NamedGroup<?>) {
-                        NamedGroup<?> namedGroup = (NamedGroup<?>)group.expr;
-                        postfix = "." + namedGroup.name;
-                    }
-                    else {
-                        postfix = "." + i;
-                    }
-                }
-                Type tag = Type.fromSentence(sentence, this.descriptor + postfix,
-                        this.source, intervalFromGroup(group));
-                tags.add(tag);
-            }
-        }
-
-        return tags;
-    }
-
-    // / XML
+  // / XML
+  /*
     public PatternTagger(Element e) throws ParseTagException,
             SecurityException, IllegalArgumentException,
             ClassNotFoundException, NoSuchMethodException,
@@ -263,33 +185,36 @@ public class PatternTagger extends Tagger {
             return Interval$.MODULE$.open(startIndex, endIndex);
         }
     }
+    */
 
-    /***
-     * This class compiles regular expressions over the tokens in a sentence
-     * into an NFA. There is a lot of redundancy in their expressiveness. This
-     * is largely because it supports pattern matching on the fields This is not
-     * necessary but is an optimization and a shorthand (i.e.
-     * {@code <pos="NNPS?"> is equivalent to "<pos="NNP" | pos="NNPS">} and
-     * {@code (?:<pos="NNP"> | <pos="NNPS">)}.
-     * <p>
-     * Here are some equivalent examples:
-     * <ol>
-     * <li> {@code <pos="JJ">* <pos="NNP.">+}
-     * <li> {@code <pos="JJ">* <pos="NNPS?">+}
-     * <li> {@code <pos="JJ">* <pos="NNP" | pos="NNPS">+}
-     * <li> {@code <pos="JJ">* (?:<pos="NNP"> | <pos="NNPS">)+}
-     * </ol>
-     * Note that (3) and (4) are not preferred for efficiency reasons. Regex OR
-     * (in example (4)) should only be used on multi-token sequences.
-     * <p>
-     * The Regular Expressions support named groups (<name>: ... ), unnamed
-     * groups (?: ... ), and capturing groups ( ... ). The operators allowed are
-     * +, ?, *, and |. The Logic Expressions (that describe each token) allow
-     * grouping "( ... )", not '!', or '|', and and '&'.
-     *
-     * @param regex
-     * @return
-     */
+  /**
+   * *
+   * This class compiles regular expressions over the tokens in a sentence
+   * into an NFA. There is a lot of redundancy in their expressiveness. This
+   * is largely because it supports pattern matching on the fields This is not
+   * necessary but is an optimization and a shorthand (i.e.
+   * {@code <pos="NNPS?"> is equivalent to "<pos="NNP" | pos="NNPS">} and
+   * {@code (?:<pos="NNP"> | <pos="NNPS">)}.
+   * <p>
+   * Here are some equivalent examples:
+   * <ol>
+   * <li> {@code <pos="JJ">* <pos="NNP.">+}
+   * <li> {@code <pos="JJ">* <pos="NNPS?">+}
+   * <li> {@code <pos="JJ">* <pos="NNP" | pos="NNPS">+}
+   * <li> {@code <pos="JJ">* (?:<pos="NNP"> | <pos="NNPS">)+}
+   * </ol>
+   * Note that (3) and (4) are not preferred for efficiency reasons. Regex OR
+   * (in example (4)) should only be used on multi-token sequences.
+   * <p>
+   * The Regular Expressions support named groups (<name>: ... ), unnamed
+   * groups (?: ... ), and capturing groups ( ... ). The operators allowed are
+   * +, ?, *, and |. The Logic Expressions (that describe each token) allow
+   * grouping "( ... )", not '!', or '|', and and '&'.
+   *
+   * @param regex
+   * @return
+   */
+  /*
     public static RegularExpression<TypedToken> makeRegex(String regex) {
         return RegularExpression.compile(regex,
                 new ExpressionFactory<TypedToken>() {
@@ -583,4 +508,5 @@ public class PatternTagger extends Tagger {
         }
 
     }
+    */
 }
