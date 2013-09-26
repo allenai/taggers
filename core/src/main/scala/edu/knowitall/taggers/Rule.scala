@@ -7,6 +7,7 @@ import edu.knowitall.taggers.constraint.Constraint
 import edu.knowitall.taggers.tag.PatternTagger
 import scala.util.control.Exception
 import edu.knowitall.taggers.tag.Tagger
+import java.io.Reader
 
 class RuleParser extends JavaTokenParsers {
   val descriptor = ident
@@ -30,9 +31,10 @@ class RuleParser extends JavaTokenParsers {
 
 object ParseRule extends RuleParser {
   def parse(string: String) = parseAll(collection, string)
+  def parse(reader: Reader) = parseAll(collection, reader)
   def main(args: Array[String]) = {
     val reader = new FileReader(args(0))
-    val rules = parseAll(collection, reader) match {
+    val rules = this.parse(reader) match {
       case Success(rules, _) => rules
       case fail: Failure =>
         throw new IllegalArgumentException("improper syntax. " + fail.msg)

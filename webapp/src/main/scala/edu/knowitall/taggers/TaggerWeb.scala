@@ -69,7 +69,7 @@ class TaggerWeb(port: Int) {
         def getMessageChain(throwable: Throwable): List[String] = {
           Option(throwable) match {
             case Some(throwable) => Option(throwable.getMessage) match {
-              case Some(message) => message :: getMessageChain(throwable.getCause)
+              case Some(message) => (throwable.getClass + ": " + message) :: getMessageChain(throwable.getCause)
               case None => getMessageChain(throwable.getCause)
             }
             case None => Nil
