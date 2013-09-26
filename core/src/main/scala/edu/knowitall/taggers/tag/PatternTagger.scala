@@ -38,14 +38,9 @@ import edu.knowitall.taggers.TypeHelper
  *
  */
 case class PatternTagger(name: String, expressions: Seq[String]) extends Tagger {
-  override val source = null
+  override def source = null
 
   val patterns: Seq[openregex.Pattern[PatternBuilder.Token]] = this.compile(expressions)
-
-  // for reflection
-  def this(name: String, expressions: java.util.List[String]) = {
-    this(name, expressions.asScala.toSeq)
-  }
 
   protected def this(name: String) {
     this(name, null: Seq[String])

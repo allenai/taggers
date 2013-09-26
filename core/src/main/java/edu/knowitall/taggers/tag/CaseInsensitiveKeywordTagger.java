@@ -1,6 +1,5 @@
 package edu.knowitall.taggers.tag;
 
-import java.util.Collections;
 import java.util.List;
 import com.google.common.collect.Lists;
 import edu.knowitall.taggers.SentenceFunctions;
@@ -20,8 +19,13 @@ public class CaseInsensitiveKeywordTagger extends KeywordTagger {
                 .transform(keywords, StringFunctions.toLowerCase));
     }
 
-    public CaseInsensitiveKeywordTagger(String name, String keyword) {
-        super(name, Collections.singletonList(keyword.toLowerCase()));
+    /**
+     * Constructor used by reflection.
+     * @param name name of the tagger
+     * @param args arguments to the tagger
+     */
+    public CaseInsensitiveKeywordTagger(String name, scala.collection.Seq<String> args) {
+        this(name, scala.collection.JavaConversions.asJavaList(args));
     }
 
     @Override

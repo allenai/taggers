@@ -14,6 +14,7 @@ abstract class Tagger {
 
   def sort(): this.type = this
 
+  override def toString = this.getClass.getName + ":=" + name
   override def equals(that: Any): Boolean = {
     if (that == null) return false
     if (this == that) return true
@@ -23,11 +24,14 @@ abstract class Tagger {
     return this.name.equals(tagger.name)
   }
 
-  override def hashCode = HashCodeHelper(name, source, constraints)
+  override def hashCode = HashCodeHelper(name, constraints)
 
   def constrain(constraint: Constraint) {
     this.constraints :+= constraint
   }
+
+  def apply(sentence: Seq[Lemmatized[ChunkedToken]]): Seq[Type] = this.tags(sentence)
+  def apply(sentence: Seq[Lemmatized[ChunkedToken]], tags: Seq[Type]): Seq[Type] = this.tags(sentence, tags)
 
   /**
    * *
@@ -79,7 +83,9 @@ abstract class Tagger {
     tags.filter { tag =>
       tags.find { other =>
         other != tag &&
-          (other.tokenInterval superset tag.tokenInterval)
+        other.name == tag.name &&
+        other.source == tag.source &&
+        (other.tokenInterval superset tag.tokenInterval)
       } match {
         case Some(superType) => false
         case None => true
@@ -108,8 +114,8 @@ object Tagger {
     }
   }
 
-  def create(classname: String, pack: String, argValues: Array[Object]): Tagger = {
-    create(getTaggerClass(classname, pack), Array[Class[_]](classOf[String], List.getClass), argValues)
+  def create(classname: String, pack: String, name: String, args: Seq[String]): Tagger = {
+    create(getTaggerClass(classname, pack), Array[Class[_]](classOf[String], classOf[Seq[String]]), Array[Object](name, args))
   }
 
   def create(classname: String, pack: String, argTypes: Array[Class[_]], argValues: Array[Object]): Tagger = {
@@ -118,6 +124,6 @@ object Tagger {
 
   def create(tagger: Class[_], argTypes: Array[Class[_]], argValues: Array[Object]): Tagger = {
     val constructor = tagger.getConstructor(argTypes :_*)
-    constructor.newInstance(argValues).asInstanceOf[Tagger]
+    constructor.newInstance(argValues :_*).asInstanceOf[Tagger]
   }
 }

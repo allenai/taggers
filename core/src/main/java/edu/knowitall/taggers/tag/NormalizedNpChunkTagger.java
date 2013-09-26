@@ -18,8 +18,13 @@ public class NormalizedNpChunkTagger extends NormalizedKeywordTagger {
         super(name, keywords);
     }
 
-    public NormalizedNpChunkTagger(String name, String keyword) {
-        super(name, keyword);
+    /**
+     * Constructor used by reflection.
+     * @param name name of the tagger
+     * @param args arguments to the tagger
+     */
+    public NormalizedNpChunkTagger(String name, scala.collection.Seq<String> args) {
+        this(name, scala.collection.JavaConversions.asJavaList(args));
     }
 
     @Override

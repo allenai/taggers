@@ -3,14 +3,10 @@ package edu.knowitall.taggers.tag;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import org.apache.commons.lang3.StringUtils;
-import org.jdom2.Element;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -37,6 +33,15 @@ public class KeywordTagger extends JavaTagger {
         super(name, null);
 
         setKeywords(new TreeSet<String>(keywords));
+    }
+
+    /**
+     * Constructor used by reflection.
+     * @param name name of the tagger
+     * @param args arguments to the tagger
+     */
+    public KeywordTagger(String name, scala.collection.Seq<String> args) {
+        this(name, scala.collection.JavaConversions.asJavaList(args));
     }
 
     protected void setKeywords(Set<String> keywords) {

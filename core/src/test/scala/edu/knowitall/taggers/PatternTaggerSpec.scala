@@ -5,7 +5,6 @@ import scala.collection.JavaConverters._
 import org.scalatest.FlatSpec
 
 import edu.knowitall.collection.immutable.Interval
-import edu.knowitall.taggers.tag.TaggerCollection
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.Lemmatized
@@ -29,7 +28,7 @@ class PatternTaggerSpec extends FlatSpec {
           <type='Nationality'>+ <type='Candy'>+
         }
       """
-    val taggerCollection = CompactTaggerCollection.fromString(taggers).toTaggerCollection
+    val taggerCollection = TaggerCollection.fromString(taggers)
 
     //test sentence that should be tagged as
     // WorldCandy{(3,5)}
@@ -38,7 +37,7 @@ class PatternTaggerSpec extends FlatSpec {
     val tokens = chunker.chunk(testSentence) map MorphaStemmer.lemmatizeToken
 
     //Tag the sentence with the loaded taggers
-    val types = taggerCollection.tag(tokens.asJava).asScala
+    val types = taggerCollection.tag(tokens)
 
     //matching interval should be [3,5)
     val worldCandyInterval = Interval.open(3, 5)
@@ -46,12 +45,12 @@ class PatternTaggerSpec extends FlatSpec {
     //iterate over all the types returned
     //searching for a type that matches
     //the worldCandyInterval
-    val targetTypeOption = types.find(_.interval == worldCandyInterval)
+    val targetTypeOption = types.find(_.tokenInterval == worldCandyInterval)
 
     //assert that the worldCandyInterval has been matched
     //and that it has been tagged as a ''World Candy''
     assert(targetTypeOption.isDefined)
-    assert(targetTypeOption.get.name() === "WorldCandy")
+    assert(targetTypeOption.get.name === "WorldCandy")
   }
 
   "type fields in PatternTagger" should "match correctly" in {
@@ -73,13 +72,13 @@ class PatternTaggerSpec extends FlatSpec {
          }
       """
 
-    val taggerCollection = CompactTaggerCollection.fromString(taggers).toTaggerCollection
+    val taggerCollection = TaggerCollection.fromString(taggers)
 
     val testSentence = "I once saw the large cat on a couch ."
 
     val tokens = chunker.chunk(testSentence) map MorphaStemmer.lemmatizeToken
 
-    val types = taggerCollection.tag(tokens.asJava).asScala
+    val types = taggerCollection.tag(tokens)
 
     val typeTypes = types.filter(_.name == "TypeTaggerTest")
     assert(typeTypes.size === 3)
@@ -92,7 +91,7 @@ class PatternTaggerSpec extends FlatSpec {
     val typeEndTypes = types.filter(_.name == "TypeEndTaggerTest")
     assert(typeEndTypes.size === 1)
     assert(typeEndTypes.headOption.map(_.text).get == "cat")
-    
+
     val typeEndANameTypes = types.filter(_.name == "TypeEndTaggerTest.aName")
     assert((typeEndANameTypes.size == 1))
     assert(typeEndANameTypes.headOption.map(_.text).get == "cat")

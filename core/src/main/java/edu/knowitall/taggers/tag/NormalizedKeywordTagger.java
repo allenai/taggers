@@ -1,6 +1,5 @@
 package edu.knowitall.taggers.tag;
 
-import java.util.Collections;
 import java.util.List;
 import edu.knowitall.taggers.SentenceFunctions;
 import edu.knowitall.tool.typer.Type;
@@ -18,8 +17,13 @@ public class NormalizedKeywordTagger extends KeywordTagger {
         super(name, keywords);
     }
 
-    public NormalizedKeywordTagger(String name, String keyword) {
-        super(name, Collections.singletonList(keyword.toLowerCase()));
+    /**
+     * Constructor used by reflection.
+     * @param name name of the tagger
+     * @param args arguments to the tagger
+     */
+    public NormalizedKeywordTagger(String name, scala.collection.Seq<String> args) {
+        this(name, scala.collection.JavaConversions.asJavaList(args));
     }
 
     @Override

@@ -85,7 +85,7 @@ case class TaggerRule(name: String, taggerIdentifier: String, constraints: Seq[C
 
   def instantiate(definitions: Iterable[DefinitionRule]) = {
     val substituted = arguments.map(arg => definitions.foldLeft(arg) { case (arg, defn) => defn.replace(arg) })
-    val tagger = Tagger.create(this.taggerIdentifier, "edu.knowitall.taggers.tag", Array[Object](name, substituted.asJava))
+    val tagger = Tagger.create(this.taggerIdentifier, "edu.knowitall.taggers.tag", name, substituted)
 
     // apply constraints
     constraints foreach tagger.constrain
