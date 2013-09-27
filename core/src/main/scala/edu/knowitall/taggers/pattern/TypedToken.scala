@@ -25,5 +25,5 @@ case class TypedToken(token: Lemmatized[ChunkedToken], index: Int, types: Set[Ty
   lazy val typesEndingAtToken = {
     types.filter(_.tokenInterval.last == this.index)
   }
-  lazy val typesContinuingAtToken = types -- typesBeginningAtToken -- typesEndingAtToken
+  lazy val typesContinuingAtToken = types -- typesBeginningAtToken
 }
