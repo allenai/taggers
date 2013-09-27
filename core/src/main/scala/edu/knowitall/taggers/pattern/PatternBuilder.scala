@@ -81,9 +81,7 @@ object PatternBuilder {
             case singleQuoteStringLiteralRegex(string) =>
               new Expressions.StringExpression(field, string)
             case regexLiteralRegex(string) =>
-              println(string)
               val unescapedString = string.replace("""\\""", """\""").replace("""\/""", "/")
-              println(unescapedString)
               new Expressions.RegularExpression(field, string)
             case _ => throw new IllegalArgumentException("Value not enclosed in quote (\") or (') or (/): " + argument)
           }
