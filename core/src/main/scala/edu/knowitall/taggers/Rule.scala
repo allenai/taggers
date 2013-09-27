@@ -65,9 +65,10 @@ case class DefinitionRule(name: String, definition: String) extends Rule {
 }
 
 object TaggerRule {
+  val constraintPrefix = "constraint:"
+  val commentPrefix = "//"
   def parse(name: String, tagger: String, allArguments: Seq[String]) = {
-    val constraintPrefix = "constraint:"
-    val (constraintStrings, arguments) = allArguments.partition(_.startsWith(constraintPrefix))
+    val (constraintStrings, arguments) = allArguments.map(_.trim).filter(!_.startsWith(commentPrefix)).partition(_.startsWith(constraintPrefix))
     val constraints = constraintStrings.map(_.drop("constraint:".length)) map (constraint => Constraint.create(constraint.trim))
     TaggerRule(name, tagger, constraints, arguments)
   }
