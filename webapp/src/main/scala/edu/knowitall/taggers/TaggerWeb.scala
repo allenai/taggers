@@ -4,6 +4,7 @@ import scala.collection.JavaConverters._
 
 import edu.knowitall.tool.stem.MorphaStemmer
 import edu.knowitall.tool.chunk.OpenNlpChunker
+import edu.knowitall.tool.typer.Type
 
 import unfiltered.request._
 import unfiltered.response._
@@ -19,10 +20,10 @@ class TaggerWeb(port: Int) {
   def page(params: Map[String, Seq[String]] = Map.empty, errors: Seq[String] = Seq.empty, result: String = "") = {
     val sentenceText = params.get("sentences").flatMap(_.headOption).getOrElse("")
     val patternText = params.get("patterns").flatMap(_.headOption).getOrElse("")
-    """<html><head><title>Tagger Web</title></head>
-       <body><h1>Tagger Web</h1><form method='POST'>""" +
-         s"<br /><b>Patterns:</b><br /><textarea name='patterns' cols='120' rows='20'>$patternText</textarea>" +
-         s"<br /><b>Sentences:</b><br /><textarea name='sentences' cols='120' rows='20'>$sentenceText</textarea>" +
+    """<html><head><title>Tagger Web</title><script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.1/jquery.min.js"></script></head>
+       <body><h1>Tagger Web</h1><form method='POST'><p><a href='#' onclick="javascript:$('#patterns').val('Animal := NormalizedKeywordTagger { \n  cat\n  dot\n  frog\n}\n\nDescribedAnimal := PatternTagger ( <pos=\'JJ\'>+ <type=\'Animal\'>+ )'); $('#sentences').val('The large black cat rested on the desk.\nThe frogs start to ribbit in the spring.')">example</a></p>""" +
+         s"<br /><b>Patterns:</b><br /><textarea id='patterns' name='patterns' cols='120' rows='20'>$patternText</textarea>" +
+         s"<br /><b>Sentences:</b><br /><textarea id='sentences' name='sentences' cols='120' rows='20'>$sentenceText</textarea>" +
       """<br />
          <input type='submit'>""" +
          s"<p style='color:red'>${errors.mkString("<br />")}</p>" +
@@ -55,9 +56,12 @@ class TaggerWeb(port: Int) {
         (line, types)
       }
 
+      def formatType(typ: Type) = {
+        typ.name + "(" + typ.text + ")"
+      }
       val resultText =
         results.map { case (sentence, typs) =>
-          sentence + "\n" + typs.mkString("\n")
+          sentence + "\n\n" + typs.map(formatType).mkString("\n")
         }.mkString("\n\n")
 
       page(params, Seq.empty, resultText)
