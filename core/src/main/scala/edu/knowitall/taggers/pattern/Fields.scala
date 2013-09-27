@@ -47,25 +47,25 @@ object Fields {
 
   object TypeField extends Field {
     override def field(token: PatternBuilder.Token): Iterable[String] = {
-      token.types.map(_.descriptor)
+      token.types.map(_.name)
     }
   }
 
   object TypeStartField extends Field {
     override def field(token: PatternBuilder.Token): Iterable[String] = {
-      token.typesBeginningAtToken.map(_.descriptor)
+      token.typesBeginningAtToken.map(_.name)
     }
   }
 
   object TypeContField extends Field {
     override def field(token: PatternBuilder.Token): Iterable[String] = {
-      token.typesContinuingAtToken.map(_.descriptor)
+      token.typesContinuingAtToken.map(_.name)
     }
   }
 
   object TypeEndField extends Field {
     override def field(token: PatternBuilder.Token): Iterable[String] = {
-      token.typesEndingAtToken.map(_.descriptor)
+      token.typesEndingAtToken.map(_.name)
     }
   }
 }

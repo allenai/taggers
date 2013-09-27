@@ -14,7 +14,7 @@ import java.util.regex.Pattern
 import org.jdom2.Element
 import com.google.common.base.Predicate
 import com.google.common.collect.ImmutableList
-import edu.knowitall.taggers.Type
+import edu.knowitall.tool.typer.Type
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.stem.Lemmatized
 import edu.washington.cs.knowitall.logic.ArgFactory
@@ -28,6 +28,7 @@ import edu.knowitall.openregex
 import edu.knowitall.taggers.pattern.PatternBuilder
 import edu.knowitall.taggers.pattern.TypedToken
 import scala.collection.JavaConverters._
+import edu.knowitall.taggers.TypeHelper
 
 /**
  * *
@@ -36,26 +37,21 @@ import scala.collection.JavaConverters._
  * @author schmmd
  *
  */
-class PatternTagger(descriptor: String, expressions: Seq[String]) extends Tagger(descriptor, null) {
+case class PatternTagger(name: String, expressions: Seq[String]) extends Tagger {
+  override def source = null
+
   val patterns: Seq[openregex.Pattern[PatternBuilder.Token]] = this.compile(expressions)
 
-  // for reflection
-  def this(descriptor: String, expressions: java.util.List[String]) = {
-    this(descriptor, expressions.asScala.toSeq)
+  protected def this(name: String) {
+    this(name, null: Seq[String])
   }
-
-  protected def this(descriptor: String) {
-    this(descriptor, null: Seq[String])
-  }
-
-  override def sort() = {}
 
   private def compile(expressions: Seq[String]) = {
     expressions map PatternBuilder.compile
   }
 
-  override def findTags(sentence: java.util.List[Lemmatized[ChunkedToken]]) = {
-    this.findTagsWithTypes(sentence, Collections.emptyList[Type])
+  override def findTags(sentence: Seq[Lemmatized[ChunkedToken]]) = {
+    this.findTagsWithTypes(sentence, Seq.empty[Type])
   }
 
   /**
@@ -63,15 +59,15 @@ class PatternTagger(descriptor: String, expressions: Seq[String]) extends Tagger
    * implementation uses information from the Types that have been assigned to
    * the sentence so far.
    */
-  override def findTagsWithTypes(sentence: java.util.List[Lemmatized[ChunkedToken]],
-    originalTags: java.util.List[Type]): java.util.List[Type] = {
+  override def findTagsWithTypes(sentence: Seq[Lemmatized[ChunkedToken]],
+    originalTags: Seq[Type]): Seq[Type] = {
 
     // create a java set of the original tags
-    val originalTagSet = originalTags.asScala.toSet
+    val originalTagSet = originalTags.toSet
 
     // convert tokens to TypedTokens
-    val typedTokens = for ((token, i) <- sentence.asScala.zipWithIndex) yield {
-      new TypedToken(token, i, originalTagSet.filter(_.interval contains i))
+    val typedTokens = for ((token, i) <- sentence.zipWithIndex) yield {
+      new TypedToken(token, i, originalTagSet.filter(_.tokenInterval contains i))
     }
 
     val tags = for {
@@ -79,7 +75,7 @@ class PatternTagger(descriptor: String, expressions: Seq[String]) extends Tagger
       tag <- this.findTags(typedTokens, sentence, pattern)
     } yield (tag)
 
-    return tags.asJava;
+    return tags
   }
 
   /**
@@ -87,7 +83,7 @@ class PatternTagger(descriptor: String, expressions: Seq[String]) extends Tagger
    * pattern and a List of TypedTokens.
    *
    * Matching groups will create a type with the name or index
-   * appended to the descriptor.
+   * appended to the name.
    *
    * @param typedTokenSentence
    * @param sentence
@@ -95,7 +91,7 @@ class PatternTagger(descriptor: String, expressions: Seq[String]) extends Tagger
    * @return
    */
   protected def findTags(typedTokenSentence: Seq[TypedToken],
-    sentence: List[Lemmatized[ChunkedToken]],
+    sentence: Seq[Lemmatized[ChunkedToken]],
     pattern: openregex.Pattern[TypedToken]) = {
 
     var tags = Seq.empty[Type]
@@ -106,13 +102,13 @@ class PatternTagger(descriptor: String, expressions: Seq[String]) extends Tagger
       for (i <- 0 until groupSize) {
         val group = m.groups(i);
 
-        val postfix = 
+        val postfix =
         group.expr match {
           case _ if i == 0 => ""
           case namedGroup: NamedGroup[_] => "." + namedGroup.name
           case _ => "." + i
         }
-        val tag = Type.fromSentence(sentence, this.descriptor + postfix,
+        val tag = TypeHelper.fromSentence(sentence, this.name + postfix,
           this.source, group.interval);
         tags = tags :+ tag
       }

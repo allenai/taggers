@@ -6,10 +6,13 @@ import edu.knowitall.common.Resource.using
 import edu.knowitall.taggers.tag.Tagger
 import edu.knowitall.taggers.constraint.Constraint
 import java.io.FileReader
-import edu.knowitall.taggers.tag.TaggerCollection
 import java.io.Reader
+import edu.knowitall.taggers.tag.Tagger
+import edu.knowitall.tool.stem.Lemmatized
+import edu.knowitall.tool.typer.Type
+import edu.knowitall.tool.chunk.ChunkedToken
 
-object CompactTaggerCollection {
+object TaggerCollection {
   def fromFile(file: File) = {
     using(Source.fromFile(file)) { input =>
       this.fromReader(input.bufferedReader)
@@ -25,32 +28,32 @@ object CompactTaggerCollection {
   }
 
   def fromRules(rules: List[Rule]) = {
-    rules.foldLeft(new CompactTaggerCollection()) { case (col, rule) => col + rule }
+    rules.foldLeft(new TaggerCollection()) { case (col, rule) => col + rule }
   }
 }
 
-case class CompactTaggerCollection(taggers: Seq[Tagger], definitions: Seq[DefinitionRule]) {
+case class TaggerCollection(taggers: Seq[Tagger], definitions: Seq[DefinitionRule]) {
   def this() = this(Seq.empty, Seq.empty)
 
-  def +(tagger: Tagger): CompactTaggerCollection = {
+  def +(tagger: Tagger): TaggerCollection = {
     this.copy(taggers :+ tagger)
   }
 
-  def +(rule: Rule): CompactTaggerCollection = {
+  def +(rule: Rule): TaggerCollection = {
     rule match {
       case defn @ DefinitionRule(_, _) =>
         this.copy(definitions = definitions :+ defn)
-      case rule @ TaggerRule(descriptor, _, _, _) =>
+      case rule @ TaggerRule(name, _, _, _) =>
         val tagger = rule.instantiate(definitions)
         this + tagger
     }
   }
 
-  def toTaggerCollection: TaggerCollection = {
-    val col = new TaggerCollection()
-
-    taggers foreach col.addTagger
-
-    col
+  def tag(sentence: Seq[Lemmatized[ChunkedToken]]): Seq[Type] = {
+    var tags = Seq.empty[Type]
+    for (tagger <- this.taggers) {
+      tags = tags ++ tagger.tags(sentence, tags)
+    }
+    tags
   }
 }

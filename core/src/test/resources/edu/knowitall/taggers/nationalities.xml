@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <taggers>
-    <CaseInsensitiveKeywordTagger descriptor="Nationality">
+    <CaseInsensitiveKeywordTagger name="Nationality">
         <keywords>
             <keyword>Abkhazian</keyword>
             <keyword>Abkhaz</keyword>

@@ -10,19 +10,19 @@ import edu.knowitall.taggers.tag.Tagger
 import java.io.Reader
 
 class RuleParser extends JavaTokenParsers {
-  val descriptor = ident
+  val name = ident
   val taggerIdent = ident
 
-  val valn = descriptor ~ Rule.definitionSyntax ~ ".+".r ^^ { case name ~ Rule.definitionSyntax ~ valn => DefinitionRule(name, valn) }
+  val valn = name ~ Rule.definitionSyntax ~ ".+".r ^^ { case name ~ Rule.definitionSyntax ~ valn => DefinitionRule(name, valn) }
 
   val singlearg = ".+(?=\\s*\\))".r
   val singleline = "(" ~> singlearg <~ ")"
   val multiarg = "[^}].*".r
   val multiline = "{" ~> rep(multiarg) <~ "}" ^^ { seq => seq.map(_.trim) }
   val args = singleline ^^ { arg => Seq(arg.trim) } | multiline
-  val tagger = descriptor ~ Rule.taggerSyntax ~ taggerIdent ~ args ^^ {
-    case descriptor ~ Rule.taggerSyntax ~ taggerIdent ~ args =>
-      TaggerRule.parse(descriptor, taggerIdent, args)
+  val tagger = name ~ Rule.taggerSyntax ~ taggerIdent ~ args ^^ {
+    case name ~ Rule.taggerSyntax ~ taggerIdent ~ args =>
+      TaggerRule.parse(name, taggerIdent, args)
   }
 
   val rule: Parser[Rule] = valn | tagger
@@ -85,7 +85,7 @@ case class TaggerRule(name: String, taggerIdentifier: String, constraints: Seq[C
 
   def instantiate(definitions: Iterable[DefinitionRule]) = {
     val substituted = arguments.map(arg => definitions.foldLeft(arg) { case (arg, defn) => defn.replace(arg) })
-    val tagger = Tagger.create(this.taggerIdentifier, "edu.knowitall.taggers.tag", Array[Object](name, substituted.asJava))
+    val tagger = Tagger.create(this.taggerIdentifier, "edu.knowitall.taggers.tag", name, substituted)
 
     // apply constraints
     constraints foreach tagger.constrain

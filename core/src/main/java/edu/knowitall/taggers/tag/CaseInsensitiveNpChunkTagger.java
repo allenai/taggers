@@ -2,9 +2,7 @@ package edu.knowitall.taggers.tag;
 
 import java.util.List;
 
-import org.jdom2.Element;
-
-import edu.knowitall.taggers.Type;
+import edu.knowitall.tool.typer.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
 
@@ -15,24 +13,22 @@ import edu.knowitall.tool.stem.Lemmatized;
  *
  */
 public class CaseInsensitiveNpChunkTagger extends CaseInsensitiveKeywordTagger {
-    public CaseInsensitiveNpChunkTagger(String descriptor, List<String> keywords) {
-        super(descriptor, keywords);
+    public CaseInsensitiveNpChunkTagger(String name, List<String> keywords) {
+        super(name, keywords);
     }
 
-    public CaseInsensitiveNpChunkTagger(String descriptor, String keyword) {
-        super(descriptor, keyword);
+    /**
+     * Constructor used by reflection.
+     * @param name name of the tagger
+     * @param args arguments to the tagger
+     */
+    public CaseInsensitiveNpChunkTagger(String name, scala.collection.Seq<String> args) {
+        this(name, scala.collection.JavaConversions.asJavaList(args));
     }
 
     @Override
-    public List<Type> findTags(final List<Lemmatized<ChunkedToken>>  sentence) {
-        List<Type> keywordTags = super.findTags(sentence);
+    public List<Type> findTagsJava(final List<Lemmatized<ChunkedToken>>  sentence) {
+        List<Type> keywordTags = super.findTagsJava(sentence);
         return AfterTaggers.tagChunks(keywordTags, sentence);
-    }
-
-
-    /// XML
-
-    public CaseInsensitiveNpChunkTagger(Element e) throws ParseTagException {
-        super(e);
     }
 }
