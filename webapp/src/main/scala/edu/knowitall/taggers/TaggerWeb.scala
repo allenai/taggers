@@ -50,12 +50,12 @@ class TaggerWeb(port: Int) {
 
       val results = for (line <- sentenceText.split("\n")) yield {
         val tokens = chunker(line) map stemmer.lemmatizeToken
-        val types = col.tag(tokens)
+        val types = col.tag(tokens).reverse
 
         (line, types)
       }
 
-      val resultText = 
+      val resultText =
         results.map { case (sentence, typs) =>
           sentence + "\n" + typs.mkString("\n")
         }.mkString("\n\n")
@@ -82,7 +82,7 @@ class TaggerWeb(port: Int) {
 object TaggerWebMain extends App {
   case class Config(port: Int = 8080)
   val parser = new scopt.OptionParser[Config]("taggerweb") {
-    opt[Int]('p', "port").action { (x, c) => 
+    opt[Int]('p', "port").action { (x, c) =>
       c.copy(port = x)
     }.text("port for web server")
   }
