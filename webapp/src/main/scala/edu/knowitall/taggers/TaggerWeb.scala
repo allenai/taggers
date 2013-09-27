@@ -46,17 +46,16 @@ class TaggerWeb(port: Int) {
       val patternText = params("patterns").headOption.get
 
       val rules = ParseRule.parse(patternText).get
-      val ctc = rules.foldLeft(new CompactTaggerCollection()){ case (ctc, rule) => ctc + rule }
-      val col = ctc.toTaggerCollection
+      val col = rules.foldLeft(new TaggerCollection()){ case (ctc, rule) => ctc + rule }
 
       val results = for (line <- sentenceText.split("\n")) yield {
         val tokens = chunker(line) map stemmer.lemmatizeToken
-        val types = col.tag(tokens.asJava).asScala
+        val types = col.tag(tokens)
 
         (line, types)
       }
 
-      val resultText = ctc.taggers.mkString("\n") + "\n\n" +
+      val resultText = 
         results.map { case (sentence, typs) =>
           sentence + "\n" + typs.mkString("\n")
         }.mkString("\n\n")
