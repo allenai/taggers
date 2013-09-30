@@ -1,3 +1,14 @@
+# Taggers
+
+The `taggers` project is composed of two subprojects: `tagger-core`, which 
+contains the algorithms, and `tagger-webapp`, which contains the web demo.
+The project is built with `sbt`.  For example, to run the web demo, you can
+execute the following command.
+
+```
+sbt compile 'project tagger-webapp' run
+```
+
 ## PatternTagger
 
 This tagger compiles regular expressions over the tokens in a sentence into an
