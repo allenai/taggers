@@ -14,18 +14,18 @@ class TaggerSpec extends FlatSpec {
   val chunker = new OpenNlpChunker();
   val morpha = new MorphaStemmer();
 
-  val runTagger = new KeywordTagger("Run", "run")
-  runTagger.constrain(new VerbPhraseConstraint());
+  val runTagger = new KeywordTagger("Run", Seq("run"))
+  runTagger.constrain(new VerbPhraseConstraint())
 
   "runTagger" should "match verb run" in {
     val sentence = "The man had run down the road."
 
     val tokens = chunker.chunk(sentence) map MorphaStemmer.lemmatizeToken
 
-    val types = runTagger.tags(tokens.asJava)
+    val types = runTagger.tags(tokens)
 
-    assert(types.asScala.head.descriptor === "Run")
-    assert(types.asScala.head.text === "run")
+    assert(types.head.name === "Run")
+    assert(types.head.text === "run")
   }
 
   "runTagger" should "not match noun run" in {
@@ -33,8 +33,8 @@ class TaggerSpec extends FlatSpec {
 
     val tokens = chunker.chunk(sentence) map MorphaStemmer.lemmatizeToken
 
-    val types = runTagger.tags(tokens.asJava)
+    val types = runTagger.tags(tokens)
 
-    assert(types.isEmpty())
+    assert(types.isEmpty)
   }
 }

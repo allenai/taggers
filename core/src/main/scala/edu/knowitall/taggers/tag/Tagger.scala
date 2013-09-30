@@ -99,7 +99,8 @@ abstract class Tagger {
   private def filterWithConstraints(sentence: Seq[Lemmatized[ChunkedToken]], types: Seq[Type]) = {
     for {
       tag <- types
-      if this.constraints.forall(_.apply(sentence, tag))
+      tokens = sentence.slice(tag.tokenInterval.start, tag.tokenInterval.end)
+      if this.constraints.forall(_(tokens, tag))
     } yield (tag)
   }
 }
