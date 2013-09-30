@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jdom2.Element;
 
 import com.google.common.collect.ImmutableList;
 

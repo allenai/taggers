@@ -12,7 +12,6 @@ libraryDependencies ++= Seq(
     "edu.washington.cs.knowitall.nlptools" %% "nlptools-typer-stanford" % "2.4.2",
     "edu.washington.cs.knowitall" %% "openregex-scala" % "1.0.4",
     "org.apache.commons" % "commons-lang3" % "3.1",
-    "org.jdom" % "jdom2" % "2.0.5",
     "junit" % "junit" % "4.11" % "test",
     "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test",
     "org.specs2" % "specs2" % "1.12.3" % "test" cross CrossVersion.binaryMapped {
