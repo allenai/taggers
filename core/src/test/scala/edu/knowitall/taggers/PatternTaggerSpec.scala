@@ -97,7 +97,7 @@ class PatternTaggerSpec extends FlatSpec {
     assert(typeEndANameTypes.headOption.map(_.text).get == "cat")
 
     val typeContTypes = types.filter(_.name == "TypeContTaggerTest")
-    assert(typeContTypes.size === 1)
+    assert(typeContTypes.size === 2)
     assert(typeContTypes.headOption.map(_.text).get == "large")
   }
 }
