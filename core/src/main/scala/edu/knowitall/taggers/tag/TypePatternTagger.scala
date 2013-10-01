@@ -16,7 +16,7 @@ class TypePatternTagger(name: String, typePatternExpressions: Seq[String]) exten
 
 object TypePatternTagger{
   
-    val wholeTypeSyntaxPattern = new Regex("\\{([^\\}]+)\\}")
+    val wholeTypeSyntaxPattern = new Regex("\\{([^\\}]+)\\}(?!\\S)")
 
     private def expandWholeTypeSyntax(str: String) :String = {
     wholeTypeSyntaxPattern.replaceAllIn(str, m => {
