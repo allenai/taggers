@@ -36,7 +36,10 @@ import edu.knowitall.taggers.TypeHelper
  * @author schmmd
  *
  */
-case class PatternTagger(name: String, expressions: Seq[String]) extends Tagger {
+class PatternTagger(patternTaggerName: String, patternTaggerExpressions: Seq[String]) extends Tagger {
+  
+  def expressions = patternTaggerExpressions
+  override def name = patternTaggerName
   override def source = null
 
   val patterns: Seq[openregex.Pattern[PatternBuilder.Token]] = this.compile(expressions)
