@@ -112,7 +112,7 @@ class PatternTaggerSpec extends FlatSpec {
     		<string='delicious'> <pos='NN'>
     	}
          TypePatternPhrase := TypePatternTagger{
-    		{VerbPhrase} {TastyNounPhrase} <pos='RB'>
+    		@VerbPhrase @TastyNounPhrase <pos='RB'>
     	}
       """
       
