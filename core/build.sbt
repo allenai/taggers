@@ -16,6 +16,6 @@ libraryDependencies ++= Seq(
     "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test",
     "org.specs2" % "specs2" % "1.12.3" % "test" cross CrossVersion.binaryMapped {
       case "2.9.3" => "2.9.2"
-      case "2.10.1" => "2.10"
+      case "2.10.2" => "2.10"
       case x => x
     })
