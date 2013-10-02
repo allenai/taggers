@@ -21,9 +21,18 @@ class PatternTaggerSpec extends FlatSpec {
           taffy
           licorice
         }
+
+        //coments
+      
+        //more comments
+      
+      
         Nationality := CaseInsensitiveKeywordTagger {
           argentinian
+          //do inTagger comments also still work?
         }
+      
+      //more crazy := {comments} <asdf>+
         WorldCandy := PatternTagger {
           <type='Nationality'>+ <type='Candy'>+
         }

@@ -12,15 +12,17 @@ import java.io.Reader
 class RuleParser extends JavaTokenParsers {
   val name = ident
   val taggerIdent = ident
+  
+  val comment = "(?:(?:\\s*//.*\\n)|(?:\\s*\\n))*".r
 
-  val valn = name ~ Rule.definitionSyntax ~ ".+".r ^^ { case name ~ Rule.definitionSyntax ~ valn => DefinitionRule(name, valn) }
+  val valn = comment ~> name ~ Rule.definitionSyntax ~ ".+".r ^^ { case name ~ Rule.definitionSyntax ~ valn => DefinitionRule(name, valn) }
 
   val singlearg = ".+(?=\\s*\\))".r
   val singleline = "(" ~> singlearg <~ ")"
   val multiarg = "[^}].*".r
   val multiline = "{" ~> rep(multiarg) <~ "}" ^^ { seq => seq.map(_.trim) }
   val args = singleline ^^ { arg => Seq(arg.trim) } | multiline
-  val tagger = name ~ Rule.taggerSyntax ~ taggerIdent ~ args ^^ {
+  val tagger = comment ~> name ~ Rule.taggerSyntax ~ taggerIdent ~ args ^^ {
     case name ~ Rule.taggerSyntax ~ taggerIdent ~ args =>
       TaggerRule.parse(name, taggerIdent, args)
   }
