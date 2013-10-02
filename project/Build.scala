@@ -6,7 +6,7 @@ object TaggerBuild extends Build {
     Seq(
       organization := "edu.washington.cs.knowitall.taggers",
       version := "0.2-SNAPSHOT",
-      crossScalaVersions := Seq("2.10.2", "2.9.3"),
+      crossScalaVersions := Seq("2.10.2"),
       scalaVersion <<= crossScalaVersions { (vs: Seq[String]) => vs.head },
       scalacOptions ++= Seq("-unchecked", "-deprecation"),
       licenses := Seq("Academic License" -> url("http://reverb.cs.washington.edu/LICENSE.txt")),

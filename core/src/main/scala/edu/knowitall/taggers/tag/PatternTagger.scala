@@ -14,6 +14,7 @@ import java.util.regex.Pattern
 import com.google.common.base.Predicate
 import com.google.common.collect.ImmutableList
 import edu.knowitall.tool.typer.Type
+import edu.knowitall.taggers.LinkedType
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.stem.Lemmatized
 import edu.washington.cs.knowitall.logic.ArgFactory
@@ -28,6 +29,7 @@ import edu.knowitall.taggers.pattern.PatternBuilder
 import edu.knowitall.taggers.pattern.TypedToken
 import scala.collection.JavaConverters._
 import edu.knowitall.taggers.TypeHelper
+import edu.knowitall.tool.tokenize.Tokenizer
 
 /**
  * *
@@ -101,14 +103,19 @@ case class PatternTagger(name: String, expressions: Seq[String]) extends Tagger 
       for (i <- 0 until groupSize) {
         val group = m.groups(i);
 
-        val postfix =
-        group.expr match {
-          case _ if i == 0 => ""
-          case namedGroup: NamedGroup[_] => "." + namedGroup.name
-          case _ => "." + i
+        val tokens = sentence.slice(group.interval.start, group.interval.end).map(_.token)
+        val text = Tokenizer.originalText(tokens, tokens.head.offsets.start)
+        val tag = group.expr match {
+          // create the main type for the group
+          case _ if i == 0 =>
+            Type(this.name, this.source, group.interval, text)
+          case namedGroup: NamedGroup[_] =>
+            val name = this.name + "." + namedGroup.name
+            LinkedType(Type(name, this.source, group.interval, text), tags.headOption)
+          case _ =>
+            val name = this.name + "." + i
+            LinkedType(Type(name, this.source, group.interval, text), tags.headOption)
         }
-        val tag = TypeHelper.fromSentence(sentence, this.name + postfix,
-          this.source, group.interval);
         tags = tags :+ tag
       }
     }
