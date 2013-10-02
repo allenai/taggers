@@ -100,4 +100,31 @@ class PatternTaggerSpec extends FlatSpec {
     assert(typeContTypes.size === 2)
     assert(typeContTypes.headOption.map(_.text).get == "large")
   }
+  
+  
+  "TypePatternTagger expressions" should "expand correctly" in {
+    
+    val taggers  =
+      """VerbPhrase := PatternTagger{
+    		<pos='VBD'> || <pos='VBZ'>
+    	}
+         TastyNounPhrase := PatternTagger{
+    		<string='delicious'> <pos='NN'>
+    	}
+         TypePatternPhrase := TypePatternTagger{
+    		@VerbPhrase @TastyNounPhrase <pos='RB'>
+    	}
+      """
+      
+    val taggerCollection = TaggerCollection.fromString(taggers)
+    
+    val testSentence = "James gives delicious candy frequently."
+      
+    val tokens = chunker.chunk(testSentence) map MorphaStemmer.lemmatizeToken
+
+    val types = taggerCollection.tag(tokens)
+    
+    val typeTypes = types.filter(_.name == "TypePatternPhrase")
+    assert(typeTypes.size === 1)
+  }
 }
