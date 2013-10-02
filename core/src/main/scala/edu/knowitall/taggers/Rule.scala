@@ -13,7 +13,7 @@ class RuleParser extends JavaTokenParsers {
   val name = ident
   val taggerIdent = ident
   
-  val comment = "((.*//.*\\n)|(\\s*\\n))*".r
+  val comment = "(?:(?:\\s*//.*\\n)|(?:\\s*\\n))*".r
 
   val valn = comment ~> name ~ Rule.definitionSyntax ~ ".+".r ^^ { case name ~ Rule.definitionSyntax ~ valn => DefinitionRule(name, valn) }
 
