@@ -9,6 +9,9 @@ execute the following command.
 sbt compile 'project tagger-webapp' run
 ```
 
+If you want an example of how to use the taggers project as a dependency,
+please look at `tagger-webapp`.
+
 ## PatternTagger
 
 This tagger compiles regular expressions over the tokens in a sentence into an
