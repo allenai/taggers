@@ -20,7 +20,7 @@ object TypePatternTagger{
 
     private def expandWholeTypeSyntax(str: String) :String = {
     wholeTypeSyntaxPattern.replaceAllIn(str, m => {
-      "<typeStart='"+m.group(1)+"'> <typeCont='"+m.group(1)+"'>*"
+      "(?:(?:<typeStart='"+m.group(1)+"' & typeEnd='"+m.group(1)+"'>) | (?: <typeStart='"+m.group(1)+"'> <typeCont='"+m.group(1)+"'>* <typeEnd='"+m.group(1)+"'>))"
     })
   }
   
