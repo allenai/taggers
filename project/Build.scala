@@ -5,7 +5,7 @@ object TaggerBuild extends Build {
   override lazy val settings = super.settings ++
     Seq(
       organization := "edu.washington.cs.knowitall.taggers",
-      version := "0.3",
+      version := "0.4-SNAPSHOT",
       crossScalaVersions := Seq("2.10.2"),
       scalaVersion <<= crossScalaVersions { (vs: Seq[String]) => vs.head },
       scalacOptions ++= Seq("-unchecked", "-deprecation"),
