@@ -15,10 +15,7 @@ import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.MorphaStemmer
 
 object TaggerCollection {
-  
-  lazy val chunker = new OpenNlpChunker()
-  lazy val morpha = new MorphaStemmer()
-  
+
   def fromFile(file: File) = {
     using(Source.fromFile(file)) { input =>
       this.fromReader(input.bufferedReader)
@@ -39,6 +36,9 @@ object TaggerCollection {
 }
 
 case class TaggerCollection(taggers: Seq[Tagger], definitions: Seq[DefinitionRule]) {
+  
+  lazy val chunker = new OpenNlpChunker()
+  
   def this() = this(Seq.empty, Seq.empty)
 
   def +(tagger: Tagger): TaggerCollection = {
@@ -65,12 +65,7 @@ case class TaggerCollection(taggers: Seq[Tagger], definitions: Seq[DefinitionRul
   
   def tag(sentence: String): Seq[Type] = {
     var tags = Seq.empty[Type]
-    var processedSentence = Seq[Lemmatized[ChunkedToken]]()
-    val chunkedTokens = TaggerCollection.chunker.chunk(sentence)
-    for(chunkedToken <- chunkedTokens){
-      val lemma = TaggerCollection.morpha.lemmatizeToken(chunkedToken)
-      processedSentence = processedSentence :+ lemma
-    }
+    val processedSentence = chunker.chunk(sentence) map MorphaStemmer.lemmatizeToken
     for (tagger <- this.taggers) {
       tags = tags ++ tagger.tags(processedSentence, tags)
     }
