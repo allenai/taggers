@@ -70,10 +70,11 @@ A field can be matched in one of three ways.
     regular expression.  Backslash is the escape character so `\\` becomes a single
     backslash and `\/` escapes the forward slash.
 
-A pattern tagger makes types with the tagger name, but also types for each matching
-group.  If the tagger is named `T` and a matching group is named `G1` for example, the
-tagger will create `T.G1`.  If there is an unnamed matching group a type will be created
-with the group number (i.e. `T.1`).
+A pattern tagger makes types with the tagger name, but also `LinkedType`s for each matching
+group. A `LinkedType` has an Optional `Type` field that points to its parent `Type` and a name 
+field with a special syntax. If the tagger is named `T` and a matching group is named `G1` for example, 
+the tagger will create a `LinkedType` with the name `T.G1`.  If there is an unnamed matching group a `LinkedType`
+will be created with the group number (i.e. `T.1`).
 
 There is a lot of redundancy in their expressiveness. For example,
 PatternTagger supports pattern matching on the fields .This is not necessary
@@ -118,3 +119,97 @@ Matching many types quickly makes unreadable patterns, so the `TypePatternTagger
 the syntax `@Type` which, if the type is Animal (`@Animal`) it would expand into the above.
 With this syntax, it's easy to match on types.  For an implementation of `ReVerb`, see
 `examples/reverb.tc`.
+
+## Extended Example
+
+The following example demonstrates how to use the API for collecting and manipulating Type
+objects with a specified TaggerCollection and test input.
+```
+import edu.knowitall.taggers.TaggerCollection
+import edu.knowitall.taggers.LinkedType
+
+object Example {
+  val pattern = """
+	Animal := NormalizedKeywordTagger {
+	  cat
+	  kitten
+	  dog
+	  puppy
+	}
+    Color := NormalizedKeywordTagger{
+      blue
+      red
+      yellow
+      green
+    }
+    ColorfulAnimal := PatternTagger {
+      //namedGroup color will yield a Type object
+      //that is linked to the ColorfulAnimal Type object
+      (<color>:<type='Color'>) <type='Animal'>
+    }
+    ColorfulAnimalAction := TypePatternTagger{
+      //TypePatternTagger supports @ syntax to capture
+      // the entire Type
+      @ColorfulAnimal <pos='VBD'>
+    }
+    """
+    
+  val input = """
+    I have a red dog.
+    Cliff has a yellow puppy.
+    The yellow puppy ran.
+    """
+  def main(args: Array[String]){
+
+    //instantiate TaggerCollection with the pattern input string
+    val t = TaggerCollection.fromString(pattern)
+    
+    // collect lines from input string
+    val lines = input.split("\n").map(f => f.trim()).filter(f => f!= "").toList
+    
+
+    for (line <- lines){
+      //Run the patterns over the line and get resulting Type objects
+	    val types = t.tag(line).toList
+	    
+	    //output Type information
+	    println("Line: " + line)
+	    for(typ <- types){
+	      println("TaggerName: " +typ.name + "\tTypeInterval: " + typ.tokenInterval + "\t TypeText: " + typ.text)
+	    }
+	    
+	    //filter out the LinkedTypes
+	    for(typ <- types.filter(p => p.isInstanceOf[LinkedType])){
+	      val linkedTyp = typ.asInstanceOf[LinkedType]
+	      val linkedTypName = linkedTyp.name.split("\\.")(1)
+	      if(linkedTypName == "color"){
+	        println("COLOR:\t" + linkedTyp.text)
+	      }
+	    }
+    }
+  }
+}
+
+Line: I have a red dog.
+TaggerName: Animal	TypeInterval: {4}	 TypeText: dog
+TaggerName: Color	TypeInterval: {3}	 TypeText: red
+TaggerName: ColorfulAnimal	TypeInterval: [3, 5)	 TypeText: red dog
+TaggerName: ColorfulAnimal.color	TypeInterval: {3}	 TypeText: red
+COLOR:	red
+Line: Cliff has a yellow puppy.
+TaggerName: Animal	TypeInterval: {4}	 TypeText: puppy
+TaggerName: Color	TypeInterval: {3}	 TypeText: yellow
+TaggerName: ColorfulAnimal	TypeInterval: [3, 5)	 TypeText: yellow puppy
+TaggerName: ColorfulAnimal.color	TypeInterval: {3}	 TypeText: yellow
+COLOR:	yellow
+Line: The yellow puppy ran.
+TaggerName: Animal	TypeInterval: {2}	 TypeText: puppy
+TaggerName: Color	TypeInterval: {1}	 TypeText: yellow
+TaggerName: ColorfulAnimal	TypeInterval: [1, 3)	 TypeText: yellow puppy
+TaggerName: ColorfulAnimal.color	TypeInterval: {1}	 TypeText: yellow
+TaggerName: ColorfulAnimalAction	TypeInterval: [1, 4)	 TypeText: yellow puppy ran
+COLOR:	yellow
+
+```
+
+
