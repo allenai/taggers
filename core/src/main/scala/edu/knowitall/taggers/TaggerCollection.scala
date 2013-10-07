@@ -64,11 +64,7 @@ case class TaggerCollection(taggers: Seq[Tagger], definitions: Seq[DefinitionRul
   }
   
   def tag(sentence: String): Seq[Type] = {
-    var tags = Seq.empty[Type]
     val processedSentence = chunker.chunk(sentence) map MorphaStemmer.lemmatizeToken
-    for (tagger <- this.taggers) {
-      tags = tags ++ tagger.tags(processedSentence, tags)
-    }
-    tags
+    this.tag(processedSentence)
   }
 }
