@@ -1,0 +1,32 @@
+NounChunk := PatternTagger {
+  <chunk='B-NP'> <chunk='I-NP'>*
+}
+Verb := PatternTagger {
+        // Optional adverb
+        <pos="RB">
+        // Modal or other verbs
+        <pos="MD" | pos=/VB[DPZGN]?/>
+        // Optional particle/adverb
+        <pos="RP">? <pos="RB">?
+
+}
+Word := PatternTagger {
+  <pos="$" | pos="PRP$" | pos="CD" | pos="DT" | pos=/JJS?R?/ | pos=/NNP?S?/ | pos="POS" | pos="PRP" | pos="RB" | pos=/RB[RS]/ | pos=/VB[NG]/>
+}
+Prep := PatternTagger {
+  <pos="RB">? <pos="IN" | pos="TO" | pos="RP"> <pos="RB">?
+}
+ShortRelation := TypePatternTagger {
+  // (VP?)+
+  (?:@Verb (?:@Prep)?)+
+}
+LongRelation := TypePatternTagger {
+  // (V(W*P)?)+
+  (?:@Verb (?:(?:@Word)* (?:@Prep)+))+
+}
+Relation := TypePatternTagger {
+  @ShortRelation | @LongRelation
+}
+ReVerbExtraction := TypePatternTagger {
+  (<Arg1>:@NounChunk) (<Rel>:@Relation) (<Arg2>:@NounChunk)
+}
