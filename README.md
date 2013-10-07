@@ -130,12 +130,12 @@ import edu.knowitall.taggers.LinkedType
 
 object Example {
   val pattern = """
-	Animal := NormalizedKeywordTagger {
-	  cat
-	  kitten
-	  dog
-	  puppy
-	}
+    Animal := NormalizedKeywordTagger {
+      cat
+      kitten
+      dog
+      puppy
+    }
     Color := NormalizedKeywordTagger{
       blue
       red
@@ -170,38 +170,44 @@ object Example {
 
     for (line <- lines){
       //Run the patterns over the line and get resulting Type objects
-	    val types = t.tag(line).toList
-	    
-	    //output Type information
-	    println("Line: " + line)
-	    for(typ <- types){
-	      println("TaggerName: " +typ.name + "\tTypeInterval: " + typ.tokenInterval + "\t TypeText: " + typ.text)
-	    }
-	    
-	    //filter out the LinkedTypes
-	    for(typ <- types.filter(p => p.isInstanceOf[LinkedType])){
-	      val linkedTyp = typ.asInstanceOf[LinkedType]
-	      val linkedTypName = linkedTyp.name.split("\\.")(1)
-	      if(linkedTypName == "color"){
-	        println("COLOR:\t" + linkedTyp.text)
-	      }
-	    }
+      val types = t.tag(line).toList
+      
+      //output Type information
+      println("Line: " + line)
+      for(typ <- types){
+        println("TaggerName: " +typ.name + "\tTypeInterval: " + typ.tokenInterval + "\t TypeText: " + typ.text)
+      }
+      
+      //filter out the LinkedTypes
+      for(typ <- types.filter(p => p.isInstanceOf[LinkedType])){
+        val linkedTyp = typ.asInstanceOf[LinkedType]
+        val linkedTypName = linkedTyp.name.split("\\.")(1)
+        if(linkedTypName == "color"){
+          println("COLOR:\t" + linkedTyp.text)
+        }
+
+        println()
+      }
     }
   }
 }
+```
 
+```
 Line: I have a red dog.
 TaggerName: Animal	TypeInterval: {4}	 TypeText: dog
 TaggerName: Color	TypeInterval: {3}	 TypeText: red
 TaggerName: ColorfulAnimal	TypeInterval: [3, 5)	 TypeText: red dog
 TaggerName: ColorfulAnimal.color	TypeInterval: {3}	 TypeText: red
 COLOR:	red
+
 Line: Cliff has a yellow puppy.
 TaggerName: Animal	TypeInterval: {4}	 TypeText: puppy
 TaggerName: Color	TypeInterval: {3}	 TypeText: yellow
 TaggerName: ColorfulAnimal	TypeInterval: [3, 5)	 TypeText: yellow puppy
 TaggerName: ColorfulAnimal.color	TypeInterval: {3}	 TypeText: yellow
 COLOR:	yellow
+
 Line: The yellow puppy ran.
 TaggerName: Animal	TypeInterval: {2}	 TypeText: puppy
 TaggerName: Color	TypeInterval: {1}	 TypeText: yellow
@@ -211,5 +217,3 @@ TaggerName: ColorfulAnimalAction	TypeInterval: [1, 4)	 TypeText: yellow puppy ra
 COLOR:	yellow
 
 ```
-
-
