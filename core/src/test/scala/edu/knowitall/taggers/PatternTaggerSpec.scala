@@ -135,5 +135,14 @@ class PatternTaggerSpec extends FlatSpec {
     
     val typeTypes = types.filter(_.name == "TypePatternPhrase")
     assert(typeTypes.size === 1)
+    
+    val typesFromOverloadedTagMethod = taggerCollection.tag(testSentence)
+    
+    for((typ1,typ2) <- types.zip(typesFromOverloadedTagMethod)){
+      assert(typ1.name == typ2.name)
+      assert(typ1.text == typ2.text)
+      assert(typ1.tokenInterval == typ2.tokenInterval)
+    }
+    
   }
 }

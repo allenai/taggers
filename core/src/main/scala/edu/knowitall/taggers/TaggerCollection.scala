@@ -11,8 +11,14 @@ import edu.knowitall.taggers.tag.Tagger
 import edu.knowitall.tool.stem.Lemmatized
 import edu.knowitall.tool.typer.Type
 import edu.knowitall.tool.chunk.ChunkedToken
+import edu.knowitall.tool.chunk.OpenNlpChunker
+import edu.knowitall.tool.stem.MorphaStemmer
 
 object TaggerCollection {
+  
+  lazy val chunker = new OpenNlpChunker()
+  lazy val morpha = new MorphaStemmer()
+  
   def fromFile(file: File) = {
     using(Source.fromFile(file)) { input =>
       this.fromReader(input.bufferedReader)
@@ -53,6 +59,20 @@ case class TaggerCollection(taggers: Seq[Tagger], definitions: Seq[DefinitionRul
     var tags = Seq.empty[Type]
     for (tagger <- this.taggers) {
       tags = tags ++ tagger.tags(sentence, tags)
+    }
+    tags
+  }
+  
+  def tag(sentence: String): Seq[Type] = {
+    var tags = Seq.empty[Type]
+    var processedSentence = Seq[Lemmatized[ChunkedToken]]()
+    val chunkedTokens = TaggerCollection.chunker.chunk(sentence)
+    for(chunkedToken <- chunkedTokens){
+      val lemma = TaggerCollection.morpha.lemmatizeToken(chunkedToken)
+      processedSentence = processedSentence :+ lemma
+    }
+    for (tagger <- this.taggers) {
+      tags = tags ++ tagger.tags(processedSentence, tags)
     }
     tags
   }
