@@ -30,6 +30,7 @@ import edu.knowitall.taggers.pattern.TypedToken
 import scala.collection.JavaConverters._
 import edu.knowitall.taggers.TypeHelper
 import edu.knowitall.tool.tokenize.Tokenizer
+import edu.knowitall.taggers.NamedGroupType
 
 /**
  * *
@@ -113,10 +114,10 @@ class PatternTagger(patternTaggerName: String, expressions: Seq[String]) extends
             Type(this.name, this.source, group.interval, text)
           case namedGroup: NamedGroup[_] =>
             val name = this.name + "." + namedGroup.name
-            LinkedType(Type(name, this.source, group.interval, text), tags.headOption)
+            new NamedGroupType(namedGroup.name,Type(name, this.source, group.interval, text), tags.headOption)
           case _ =>
             val name = this.name + "." + i
-            LinkedType(Type(name, this.source, group.interval, text), tags.headOption)
+            new LinkedType(Type(name, this.source, group.interval, text), tags.headOption)
         }
         tags = tags :+ tag
       }

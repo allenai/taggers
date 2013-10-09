@@ -104,6 +104,10 @@ class PatternTaggerSpec extends FlatSpec {
     val typeEndANameTypes = types.filter(_.name == "TypeEndTaggerTest.aName")
     assert((typeEndANameTypes.size == 1))
     assert(typeEndANameTypes.headOption.map(_.text).get == "cat")
+    
+    val allNamedTypes = types.filter(p => p.isInstanceOf[NamedGroupType])
+    assert((allNamedTypes.size ==1))
+    assert((allNamedTypes.head.asInstanceOf[NamedGroupType].groupName == "aName"))
 
     val typeContTypes = types.filter(_.name == "TypeContTaggerTest")
     assert(typeContTypes.size === 2)
