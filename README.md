@@ -127,15 +127,18 @@ objects with a specified TaggerCollection and test input.
 ```
 import edu.knowitall.taggers.TaggerCollection
 import edu.knowitall.taggers.LinkedType
+import edu.knowitall.taggers.NamedGroupType
 
 object Example {
+  
+  
   val pattern = """
-    Animal := NormalizedKeywordTagger {
-      cat
-      kitten
-      dog
-      puppy
-    }
+	Animal := NormalizedKeywordTagger {
+	  cat
+	  kitten
+	  dog
+	  puppy
+	}
     Color := NormalizedKeywordTagger{
       blue
       red
@@ -161,32 +164,20 @@ object Example {
     """
   def main(args: Array[String]){
 
-    //instantiate TaggerCollection with the pattern input string
     val t = TaggerCollection.fromString(pattern)
-    
-    // collect lines from input string
     val lines = input.split("\n").map(f => f.trim()).filter(f => f!= "").toList
-    
-
     for (line <- lines){
-      //Run the patterns over the line and get resulting Type objects
-      val types = t.tag(line).toList
-      
-      //output Type information
-      println("Line: " + line)
-      for(typ <- types){
-        println("TaggerName: " +typ.name + "\tTypeInterval: " + typ.tokenInterval + "\t TypeText: " + typ.text)
-      }
-      
-      //filter out the LinkedTypes
-      for(typ <- types.filter(p => p.isInstanceOf[LinkedType])){
-        val linkedTyp = typ.asInstanceOf[LinkedType]
-        val linkedTypName = linkedTyp.name.split("\\.")(1)
-        if(linkedTypName == "color"){
-          println("COLOR:\t" + linkedTyp.text)
+	    val types = t.tag(line).toList
+	    println("Line: " + line)
+	    for(typ <- types){
+	      println("TaggerName: " +typ.name + "\tTypeInterval: " + typ.tokenInterval + "\t TypeText: " + typ.text)
+	    }
+	  //filter out the NamedGroupTypes
+      for(typ <- types.filter(p => p.isInstanceOf[NamedGroupType])){
+        val namedGroupType = typ.asInstanceOf[NamedGroupType]
+        if(namedGroupType.groupName == "color"){
+          println("COLOR:\t" + namedGroupType.text)
         }
-
-        println()
       }
     }
   }
