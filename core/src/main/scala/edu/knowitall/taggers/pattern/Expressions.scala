@@ -22,4 +22,9 @@ object Expressions {
       field(token).exists(_ == string)
     }
   }
+  case class StringCIExpression(field: Field, string: String) extends Expression {
+    def apply(token: PatternBuilder.Token) = {
+      field(token).exists(_ equalsIgnoreCase string)
+    }
+  }
 }

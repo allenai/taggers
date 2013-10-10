@@ -22,6 +22,19 @@ object PatternBuilder {
     override def apply(a: A) = f(a)
   }
 
+  // mostly copied from scala.util.parsing.combinator.JavaTokenParser
+  val doubleQuoteStringLiteralPattern = "\"" + """((?:[^"\p{Cntrl}\\]|\\[\\'"bfnrt]|\\u[a-fA-F0-9]{4})*)""" + "\""
+  val doubleQuoteStringLiteralRegex = doubleQuoteStringLiteralPattern.r
+
+  val singleQuoteStringLiteralPattern = "'" + """([^']*)""" + "'"
+  val singleQuoteStringLiteralRegex = singleQuoteStringLiteralPattern.r
+
+  val caseInsensitiveDoubleQuoteStringLiteralRegex = ("i" + doubleQuoteStringLiteralPattern).r
+  val caseInsensitiveSingleQuoteStringLiteralRegex = ("i" + singleQuoteStringLiteralPattern).r
+
+  val regexLiteralRegex = ("/" + """((?:[^/\\]*(?:\\)*(?:\\/)*)*)""" + "/").r
+
+
   /**
    * *
    * This class compiles regular expressions over the tokens in a sentence
@@ -51,11 +64,6 @@ object PatternBuilder {
   **/
   def compile(pattern: String) =
     openregex.Pattern.compile(pattern, (expression: String) => {
-      // mostly copied from scala.util.parsing.combinator.JavaTokenParser
-      val doubleQuoteStringLiteralRegex = ("\"" + """((?:[^"\p{Cntrl}\\]|\\[\\'"bfnrt]|\\u[a-fA-F0-9]{4})*)""" + "\"").r
-      val singleQuoteStringLiteralRegex = ("'" + """([^']*)""" + "'").r
-      val regexLiteralRegex = ("/" + """((?:[^/\\]*(?:\\)*(?:\\/)*)*)""" + "/").r
-
       val baseExpr = new Expression.BaseExpression[Token](expression) {
         val deserializeToken: String => (Token => Boolean) = (argument: String) => {
           val Array(base, value) = argument.split("=").map(_.trim)
@@ -80,6 +88,11 @@ object PatternBuilder {
               new Expressions.StringExpression(field, unescapedString)
             case singleQuoteStringLiteralRegex(string) =>
               new Expressions.StringExpression(field, string)
+            case caseInsensitiveDoubleQuoteStringLiteralRegex(string) =>
+              val unescapedString = StringEscapeUtils.unescapeJava(string)
+              new Expressions.StringCIExpression(field, unescapedString)
+            case caseInsensitiveSingleQuoteStringLiteralRegex(string) =>
+              new Expressions.StringCIExpression(field, string)
             case regexLiteralRegex(string) =>
               val unescapedString = string.replace("""\\""", """\""").replace("""\/""", "/")
               new Expressions.RegularExpression(field, string)
