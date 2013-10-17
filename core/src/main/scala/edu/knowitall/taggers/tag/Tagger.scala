@@ -14,7 +14,6 @@ abstract class Tagger[-S <: Sentence] {
 
   def name: String
   def source: String
-  // var constraints: Seq[Constraint[S]] = Seq.empty
 
   def sort(): this.type = this
 
@@ -29,12 +28,6 @@ abstract class Tagger[-S <: Sentence] {
   def canEqual(that: Any) = that.isInstanceOf[Tagger[_]]
 
   override def hashCode = HashCodeHelper(name/*, constraints*/)
-
-  /*
-  def constrain(constraint: Constraint[S]) {
-    this.constraints :+= constraint
-  }
-  */
 
   def apply(sentence: S): Seq[Type] = this.tags(sentence)
   def apply(sentence: S, tags: Seq[Type]): Seq[Type] = this.tags(sentence, tags)
@@ -67,7 +60,7 @@ abstract class Tagger[-S <: Sentence] {
     tags
   }
 
-  protected def findTags(sentence: S): Seq[Type]
+  def findTags(sentence: S): Seq[Type]
 
   /**
    * This method should be overridden by any Tagger that wants to use the

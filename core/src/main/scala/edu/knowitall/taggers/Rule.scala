@@ -9,6 +9,7 @@ import scala.util.control.Exception
 import edu.knowitall.taggers.tag.Tagger
 import java.io.Reader
 import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.taggers.tag.ConstrainedTagger
 
 class RuleParser[S <: Sentence] extends JavaTokenParsers {
   val name = ident
@@ -92,9 +93,10 @@ case class TaggerRule[S <: Sentence](name: String, taggerIdentifier: String, con
     val tagger = Tagger.create[S](this.taggerIdentifier, "edu.knowitall.taggers.tag", name, substituted)
 
     // apply constraints
-    // constraints foreach tagger.constrain
-
-    tagger
+    constraints match {
+      case Seq() => tagger
+      case constraints => new ConstrainedTagger(tagger, constraints)
+    }
   }
 
   override def toString = {

@@ -14,8 +14,8 @@ import edu.knowitall.repr.sentence
 abstract class JavaTagger(val name: String, val source: String)
 extends Tagger[Sentence with Chunked with sentence.Lemmatized] {
   override def findTags(sentence: TheSentence): Seq[Type] = {
-    val javaSentence = sentence.lemmatizedTokens.asJava
-    this.findTagsJava(sentence.lemmatizedTokens.asJava).asScala
+    val lemmatizedTokens = sentence.lemmatizedTokens
+    this.findTagsJava(lemmatizedTokens.asJava).asScala
   }
 
   def findTagsJava(sentence: java.util.List[Lemmatized[ChunkedToken]]): java.util.List[Type]

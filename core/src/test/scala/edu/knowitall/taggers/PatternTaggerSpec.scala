@@ -41,14 +41,15 @@ class PatternTaggerSpec extends FlatSpec {
     val opennlpChunker = new OpenNlpChunker
 
     val taggerCollection =
-      TaggerCollection.fromString[Sentence with sentence.Chunked](taggers)
+      TaggerCollection.fromString[Sentence with sentence.Chunked with sentence.Lemmatized](taggers)
 
     //test sentence that should be tagged as
     // WorldCandy{(3,5)}
     val testSentence = "Vernon enjoys eating Argentinian Licorice."
 
-    val s = new Sentence(testSentence) with sentence.Chunker {
+    val s = new Sentence(testSentence) with sentence.Chunker with sentence.Lemmatizer {
       override val chunker = new OpenNlpChunker
+      override val lemmatizer = MorphaStemmer
     }
 
     //Tag the sentence with the loaded taggers
@@ -89,12 +90,13 @@ class PatternTaggerSpec extends FlatSpec {
 
     val opennlpChunker = new OpenNlpChunker
 
-    val taggerCollection = TaggerCollection.fromString[Sentence with sentence.Chunked](taggers)
+    val taggerCollection = TaggerCollection.fromString[Sentence with sentence.Chunked with sentence.Lemmatizer](taggers)
 
     val testSentence = "I once saw the large cat on a couch ."
 
-    val s = new Sentence(testSentence) with sentence.Chunker {
+    val s = new Sentence(testSentence) with sentence.Chunker with sentence.Lemmatizer {
       override val chunker = new OpenNlpChunker
+      override val lemmatizer = MorphaStemmer
     }
 
     val types = taggerCollection.tag(s)
@@ -141,12 +143,13 @@ class PatternTaggerSpec extends FlatSpec {
 
     val opennlpChunker = new OpenNlpChunker
 
-    val taggerCollection = TaggerCollection.fromString[Sentence with sentence.Chunked](taggers)
+    val taggerCollection = TaggerCollection.fromString[Sentence with sentence.Chunked with sentence.Lemmatized](taggers)
 
     val testSentence = "James gives delicious candy frequently."
 
-    val s = new Sentence(testSentence) with sentence.Chunker {
+    val s = new Sentence(testSentence) with sentence.Chunker with sentence.Lemmatizer {
       override val chunker = new OpenNlpChunker
+      override val lemmatizer = MorphaStemmer
     }
 
     val types = taggerCollection.tag(s)
