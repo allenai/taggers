@@ -1,12 +1,9 @@
 package edu.knowitall.taggers.tag;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.ImmutableList;
 

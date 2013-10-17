@@ -9,6 +9,7 @@ import edu.knowitall.tool.typer.Type
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.stem.Lemmatized
 import edu.knowitall.taggers.TypeHelper
+import edu.knowitall.repr.sentence.Sentence
 
 /**
  *
@@ -16,17 +17,17 @@ import edu.knowitall.taggers.TypeHelper
  * @author schmmd
  *
  */
-case class RedefineTagger(name: String, target: String) extends Tagger {
+case class RedefineTagger(name: String, target: String) extends Tagger[Sentence] {
   override val source = null
 
   // needed for reflection
   def this(name: String, args: Seq[String]) = this(name, args.head)
 
-  def findTags(sentence: Seq[Lemmatized[ChunkedToken]]): Seq[Type] = {
+  def findTags(sentence: TheSentence): Seq[Type] = {
     Seq.empty
   }
 
-  override def findTagsWithTypes(sentence: Seq[Lemmatized[ChunkedToken]], tags: Seq[Type]): Seq[Type] = {
+  override def findTagsWithTypes(sentence: TheSentence, tags: Seq[Type]): Seq[Type] = {
     // links will be lost
     tags.filter(_.name == this.target).map(typ => Type(typ.name, typ.source, typ.tokenInterval, typ.text))
   }

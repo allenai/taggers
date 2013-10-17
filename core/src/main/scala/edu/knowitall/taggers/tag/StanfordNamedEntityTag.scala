@@ -8,8 +8,10 @@ import org.slf4j.LoggerFactory
 import edu.knowitall.tool.typer.Type
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.stem.Lemmatized
-import edu.knowitall.tool.typer.StanfordNer;
+import edu.knowitall.tool.typer.StanfordNer
 import edu.knowitall.taggers.TypeHelper
+import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.repr.sentence.Tokenized
 
 /**
  * *
@@ -17,7 +19,7 @@ import edu.knowitall.taggers.TypeHelper
  * @author schmmd
  *
  */
-case class StanfordNamedEntityTagger(name: String) extends Tagger {
+case class StanfordNamedEntityTagger(name: String) extends Tagger[Sentence with Tokenized] {
   // needed for reflection
   def this(name: String, args: Seq[String]) = this(name)
 
@@ -28,8 +30,8 @@ case class StanfordNamedEntityTagger(name: String) extends Tagger {
 
   val typer = StanfordNer.withDefaultModel
 
-  def findTags(sentence: Seq[Lemmatized[ChunkedToken]]) = {
-    val types = typer.apply(sentence.map(_.token))
+  def findTags(sentence: TheSentence) = {
+    val types = typer.apply(sentence.tokens)
     for (typ <- types) yield {
       TypeHelper.fromSentence(sentence, typ.name, typ.source, typ.tokenInterval)
     }

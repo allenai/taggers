@@ -15,7 +15,6 @@ import edu.knowitall.taggers.TaggerCollection
 class TypePatternTagger(name: String, typePatternExpressions: Seq[String]) extends PatternTagger(name, typePatternExpressions map TypePatternTagger.expandWholeTypeSyntax)
 
 object TypePatternTagger{
-  
     val wholeTypeSyntaxPattern = new Regex("@(\\w+)(?![^<]*>)")
 
     private def expandWholeTypeSyntax(str: String) :String = {
@@ -23,5 +22,4 @@ object TypePatternTagger{
       "(?:(?:<typeStart='"+m.group(1)+"' & typeEnd='"+m.group(1)+"'>) | (?: <typeStart='"+m.group(1)+"'> <typeCont='"+m.group(1)+"'>* <typeEnd='"+m.group(1)+"'>))"
     })
   }
-  
 }

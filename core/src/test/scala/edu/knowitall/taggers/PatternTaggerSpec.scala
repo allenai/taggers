@@ -1,14 +1,14 @@
 package edu.knowitall.taggers
 
 import scala.collection.JavaConverters._
-
 import org.scalatest.FlatSpec
-
 import edu.knowitall.collection.immutable.Interval
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.Lemmatized
 import edu.knowitall.tool.stem.MorphaStemmer
+import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.repr.sentence
 
 class PatternTaggerSpec extends FlatSpec {
   val chunker = new OpenNlpChunker();
@@ -23,30 +23,36 @@ class PatternTaggerSpec extends FlatSpec {
         }
 
         //coments
-      
+
         //more comments
-      
-      
+
+
         Nationality := CaseInsensitiveKeywordTagger {
           argentinian
           //do inTagger comments also still work?
         }
-      
+
       //more crazy := {comments} <asdf>+
         WorldCandy := PatternTagger {
           <type='Nationality'>+ <type='Candy'>+
         }
       """
-    val taggerCollection = TaggerCollection.fromString(taggers)
+
+    val opennlpChunker = new OpenNlpChunker
+
+    val taggerCollection =
+      TaggerCollection.fromString[Sentence with sentence.Chunked](taggers)
 
     //test sentence that should be tagged as
     // WorldCandy{(3,5)}
     val testSentence = "Vernon enjoys eating Argentinian Licorice."
 
-    val tokens = chunker.chunk(testSentence) map MorphaStemmer.lemmatizeToken
+    val s = new Sentence(testSentence) with sentence.Chunker {
+      override val chunker = new OpenNlpChunker
+    }
 
     //Tag the sentence with the loaded taggers
-    val types = taggerCollection.tag(tokens)
+    val types = taggerCollection.tag(s)
 
     //matching interval should be [3,5)
     val worldCandyInterval = Interval.open(3, 5)
@@ -81,13 +87,17 @@ class PatternTaggerSpec extends FlatSpec {
          }
       """
 
-    val taggerCollection = TaggerCollection.fromString(taggers)
+    val opennlpChunker = new OpenNlpChunker
+
+    val taggerCollection = TaggerCollection.fromString[Sentence with sentence.Chunked](taggers)
 
     val testSentence = "I once saw the large cat on a couch ."
 
-    val tokens = chunker.chunk(testSentence) map MorphaStemmer.lemmatizeToken
+    val s = new Sentence(testSentence) with sentence.Chunker {
+      override val chunker = new OpenNlpChunker
+    }
 
-    val types = taggerCollection.tag(tokens)
+    val types = taggerCollection.tag(s)
 
     val typeTypes = types.filter(_.name == "TypeTaggerTest")
     assert(typeTypes.size === 3)
@@ -104,7 +114,7 @@ class PatternTaggerSpec extends FlatSpec {
     val typeEndANameTypes = types.filter(_.name == "TypeEndTaggerTest.aName")
     assert((typeEndANameTypes.size == 1))
     assert(typeEndANameTypes.headOption.map(_.text).get == "cat")
-    
+
     val allNamedTypes = types.filter(p => p.isInstanceOf[NamedGroupType])
     assert((allNamedTypes.size ==1))
     assert((allNamedTypes.head.asInstanceOf[NamedGroupType].groupName == "aName"))
@@ -113,10 +123,10 @@ class PatternTaggerSpec extends FlatSpec {
     assert(typeContTypes.size === 2)
     assert(typeContTypes.headOption.map(_.text).get == "large")
   }
-  
-  
+
+
   "TypePatternTagger expressions" should "expand correctly" in {
-    
+
     val taggers  =
       """VerbPhrase := PatternTagger{
     		<pos='VBD'> || <pos='VBZ'>
@@ -128,25 +138,20 @@ class PatternTaggerSpec extends FlatSpec {
     		@VerbPhrase @TastyNounPhrase <pos='RB'>
     	}
       """
-      
-    val taggerCollection = TaggerCollection.fromString(taggers)
-    
-    val testSentence = "James gives delicious candy frequently."
-      
-    val tokens = chunker.chunk(testSentence) map MorphaStemmer.lemmatizeToken
 
-    val types = taggerCollection.tag(tokens)
-    
+    val opennlpChunker = new OpenNlpChunker
+
+    val taggerCollection = TaggerCollection.fromString[Sentence with sentence.Chunked](taggers)
+
+    val testSentence = "James gives delicious candy frequently."
+
+    val s = new Sentence(testSentence) with sentence.Chunker {
+      override val chunker = new OpenNlpChunker
+    }
+
+    val types = taggerCollection.tag(s)
+
     val typeTypes = types.filter(_.name == "TypePatternPhrase")
     assert(typeTypes.size === 1)
-    
-    val typesFromOverloadedTagMethod = taggerCollection.tag(testSentence)
-    
-    for((typ1,typ2) <- types.zip(typesFromOverloadedTagMethod)){
-      assert(typ1.name == typ2.name)
-      assert(typ1.text == typ2.text)
-      assert(typ1.tokenInterval == typ2.tokenInterval)
-    }
-    
   }
 }

@@ -13,58 +13,54 @@ import edu.knowitall.tool.typer.Type
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.MorphaStemmer
+import edu.knowitall.repr.sentence.Sentence
 
 object TaggerCollection {
-
-  def fromFile(file: File) = {
+  def fromFile[S <: Sentence](file: File): TaggerCollection[S] = {
     using(Source.fromFile(file)) { input =>
-      this.fromReader(input.bufferedReader)
+      this.fromReader[S](input.bufferedReader)
     }
   }
 
-  def fromReader(reader: Reader) = {
-    this.fromRules(ParseRule.parse(reader).get)
+  def fromReader[S <: Sentence](reader: Reader): TaggerCollection[S] = {
+    this.fromRules(new ParseRule[S].parse(reader).get)
   }
 
-  def fromString(string: String) = {
-    this.fromRules(ParseRule.parse(string).get)
+  def fromString[S <: Sentence](string: String): TaggerCollection[S] = {
+    this.fromRules(new ParseRule[S].parse(string).get)
   }
 
-  def fromRules(rules: List[Rule]) = {
-    rules.foldLeft(new TaggerCollection()) { case (col, rule) => col + rule }
+  def fromRules[S <: Sentence](rules: List[Rule[S]]): TaggerCollection[S] = {
+    val tc = new TaggerCollection[S]()
+    rules.foldLeft(tc) { case (col, rule) => col + rule }
   }
 }
 
-case class TaggerCollection(taggers: Seq[Tagger], definitions: Seq[DefinitionRule]) {
-  
+case class TaggerCollection[S <: Sentence](taggers: Seq[Tagger[S]], definitions: Seq[DefinitionRule[S]]) {
+
   lazy val chunker = new OpenNlpChunker()
-  
+
   def this() = this(Seq.empty, Seq.empty)
 
-  def +(tagger: Tagger): TaggerCollection = {
-    this.copy(taggers :+ tagger)
+  def +[SS <: S](tagger: Tagger[SS]): TaggerCollection[SS] = {
+    TaggerCollection[SS](taggers :+ tagger, definitions)
   }
 
-  def +(rule: Rule): TaggerCollection = {
+  def +[SS <: S](rule: Rule[SS]): TaggerCollection[SS] = {
     rule match {
-      case defn @ DefinitionRule(_, _) =>
-        this.copy(definitions = definitions :+ defn)
-      case rule @ TaggerRule(name, _, _, _) =>
+      case defn: DefinitionRule[SS] =>
+        TaggerCollection[SS](taggers, definitions :+ defn)
+      case rule: TaggerRule[SS] =>
         val tagger = rule.instantiate(definitions)
         this + tagger
     }
   }
 
-  def tag(sentence: Seq[Lemmatized[ChunkedToken]]): Seq[Type] = {
+  def tag(sentence: S): Seq[Type] = {
     var tags = Seq.empty[Type]
     for (tagger <- this.taggers) {
       tags = tags ++ tagger.tags(sentence, tags)
     }
     tags
-  }
-  
-  def tag(sentence: String): Seq[Type] = {
-    val processedSentence = chunker.chunk(sentence) map MorphaStemmer.lemmatizeToken
-    this.tag(processedSentence)
   }
 }
