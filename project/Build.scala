@@ -9,7 +9,6 @@ object TaggerBuild extends Build {
       crossScalaVersions := Seq("2.10.2"),
       scalaVersion <<= crossScalaVersions { (vs: Seq[String]) => vs.head },
       scalacOptions ++= Seq("-unchecked", "-deprecation"),
-      licenses := Seq("Academic License" -> url("http://reverb.cs.washington.edu/LICENSE.txt")),
       homepage := Some(url("http://github.com/knowitall/taggers")),
       resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
       publishMavenStyle := true,
