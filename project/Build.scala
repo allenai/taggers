@@ -2,12 +2,20 @@ import sbt._
 import Keys._
 
 object TaggerBuild extends Build {
-  override lazy val settings = super.settings ++
-    Seq(
+  val nlptoolsVersion = SettingKey[String]("nlptools-version", "The version of nlptools used for building.")
+
+  lazy val root = Project(id = "taggers", base = file(".")).settings (
+    publish := { },
+    publishTo := Some("bogus" at "http://nowhere.com"),
+    publishLocal := { }
+  ).aggregate(core, webapp)
+
+  val buildSettings = Defaults.defaultSettings ++ Seq(
       organization := "edu.washington.cs.knowitall.taggers",
       version := "0.4-SNAPSHOT",
       crossScalaVersions := Seq("2.10.2"),
       scalaVersion <<= crossScalaVersions { (vs: Seq[String]) => vs.head },
+      nlptoolsVersion := "2.4.4-SNAPSHOT",
       scalacOptions ++= Seq("-unchecked", "-deprecation"),
       homepage := Some(url("http://github.com/knowitall/taggers")),
       resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
@@ -32,14 +40,12 @@ object TaggerBuild extends Build {
         </developers>))
 
   lazy val core = Project(
-    id = "tagger-core",
+    id = "taggers-core",
     base = file("core"),
-    settings = Project.defaultSettings ++
-      Seq())
+    settings = buildSettings)
 
   lazy val webapp = Project(
-    id = "tagger-webapp",
+    id = "taggers-webapp",
     base = file("webapp"),
-    settings = Project.defaultSettings ++
-      Seq()) dependsOn(core)
+    settings = buildSettings) dependsOn(core)
 }

@@ -8,14 +8,16 @@ import edu.knowitall.taggers.tag.PatternTagger
 import scala.util.control.Exception
 import edu.knowitall.taggers.tag.Tagger
 import java.io.Reader
+import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.taggers.tag.ConstrainedTagger
 
-class RuleParser extends JavaTokenParsers {
+class RuleParser[S <: Sentence] extends JavaTokenParsers {
   val name = ident
   val taggerIdent = ident
-  
+
   val comment = "(?:(?:\\s*//.*\\n)|(?:\\s*\\n))*".r
 
-  val valn = comment ~> name ~ Rule.definitionSyntax ~ ".+".r ^^ { case name ~ Rule.definitionSyntax ~ valn => DefinitionRule(name, valn) }
+  val valn = comment ~> name ~ Rule.definitionSyntax ~ ".+".r ^^ { case name ~ Rule.definitionSyntax ~ valn => DefinitionRule[S](name, valn) }
 
   val singlearg = ".+(?=\\s*\\))".r
   val singleline = "(" ~> singlearg <~ ")"
@@ -24,14 +26,14 @@ class RuleParser extends JavaTokenParsers {
   val args = singleline ^^ { arg => Seq(arg.trim) } | multiline
   val tagger = comment ~> name ~ Rule.taggerSyntax ~ taggerIdent ~ args ^^ {
     case name ~ Rule.taggerSyntax ~ taggerIdent ~ args =>
-      TaggerRule.parse(name, taggerIdent, args)
+      TaggerRule.parse[S](name, taggerIdent, args)
   }
 
-  val rule: Parser[Rule] = valn | tagger
+  val rule: Parser[Rule[S]] = valn | tagger
   val collection = rep(rule)
 }
 
-object ParseRule extends RuleParser {
+class ParseRule[S <: Sentence] extends RuleParser[S] {
   def parse(string: String) = parseAll(collection, string)
   def parse(reader: Reader) = parseAll(collection, reader)
   def main(args: Array[String]) = {
@@ -53,12 +55,12 @@ object Rule {
   val taggerSyntax = ":="
 }
 
-abstract class Rule {
+abstract class Rule[-S <: Sentence] {
   def name: String
   def definition: String
 }
 
-case class DefinitionRule(name: String, definition: String) extends Rule {
+case class DefinitionRule[-S <: Sentence](name: String, definition: String) extends Rule[S] {
   override def toString = s"$name ${Rule.definitionSyntax} $definition"
 
   def replace(string: String) = {
@@ -69,14 +71,14 @@ case class DefinitionRule(name: String, definition: String) extends Rule {
 object TaggerRule {
   val constraintPrefix = "constraint:"
   val commentPrefix = "//"
-  def parse(name: String, tagger: String, allArguments: Seq[String]) = {
+  def parse[S <: Sentence](name: String, tagger: String, allArguments: Seq[String]) = {
     val (constraintStrings, arguments) = allArguments.map(_.trim).filter(!_.startsWith(commentPrefix)).partition(_.startsWith(constraintPrefix))
-    val constraints = constraintStrings.map(_.drop("constraint:".length)) map (constraint => Constraint.create(constraint.trim))
-    TaggerRule(name, tagger, constraints, arguments)
+    val constraints = constraintStrings.map(_.drop("constraint:".length)) map (constraint => Constraint.create[S](constraint.trim))
+    TaggerRule[S](name, tagger, constraints, arguments)
   }
 }
 
-case class TaggerRule(name: String, taggerIdentifier: String, constraints: Seq[Constraint], arguments: Seq[String]) extends Rule {
+case class TaggerRule[S <: Sentence](name: String, taggerIdentifier: String, constraints: Seq[Constraint[S]], arguments: Seq[String]) extends Rule[S] {
   def definition = {
     if (constraints.isEmpty && arguments.size == 1) {
       s"${Rule.taggerSyntax} $taggerIdentifier( ${arguments.head} )"
@@ -86,14 +88,15 @@ case class TaggerRule(name: String, taggerIdentifier: String, constraints: Seq[C
     }
   }
 
-  def instantiate(definitions: Iterable[DefinitionRule]) = {
+  def instantiate(definitions: Iterable[DefinitionRule[S]]): Tagger[S] = {
     val substituted = arguments.map(arg => definitions.foldLeft(arg) { case (arg, defn) => defn.replace(arg) })
-    val tagger = Tagger.create(this.taggerIdentifier, "edu.knowitall.taggers.tag", name, substituted)
+    val tagger = Tagger.create[S](this.taggerIdentifier, "edu.knowitall.taggers.tag", name, substituted)
 
     // apply constraints
-    constraints foreach tagger.constrain
-
-    tagger
+    constraints match {
+      case Seq() => tagger
+      case constraints => new ConstrainedTagger(tagger, constraints)
+    }
   }
 
   override def toString = {

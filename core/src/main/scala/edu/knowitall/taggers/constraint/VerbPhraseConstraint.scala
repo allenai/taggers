@@ -1,18 +1,19 @@
 package edu.knowitall.taggers.constraint;
 
-import java.util.List;
+import java.util.List
+import edu.knowitall.tool.typer.Type
+import edu.knowitall.tool.chunk.ChunkedToken
+import edu.knowitall.tool.stem.Lemmatized
+import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.repr.sentence.Chunked
 
-import edu.knowitall.tool.typer.Type;
-import edu.knowitall.tool.chunk.ChunkedToken;
-import edu.knowitall.tool.stem.Lemmatized;
-
-class VerbPhraseConstraint extends Constraint {
-  override def apply(tokens: Seq[Lemmatized[ChunkedToken]], tag: Type): Boolean = {
+object VerbPhraseConstraint extends Constraint[Sentence with Chunked] {
+  override def apply(sentence: TheSentence, tag: Type): Boolean = {
     // make sure at least one tag is VP
     // and no tags are NP
     var result = false;
-    for (token <- tokens) {
-      val chunkTag = token.token.chunk;
+    for (token <- sentence.tokens.slice(tag.tokenInterval.start, tag.tokenInterval.end)) {
+      val chunkTag = token.chunk;
       if (chunkTag.endsWith("NP")) {
         return false;
       }

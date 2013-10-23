@@ -1,19 +1,20 @@
 package edu.knowitall.taggers.constraint;
 
-import java.util.List;
-import java.util.regex.Pattern;
+import java.util.List
+import java.util.regex.Pattern
+import edu.knowitall.tool.typer.Type
+import edu.knowitall.tool.chunk.ChunkedToken
+import edu.knowitall.tool.stem.Lemmatized
+import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.repr.sentence.Postagged
 
-import edu.knowitall.tool.typer.Type;
-import edu.knowitall.tool.chunk.ChunkedToken;
-import edu.knowitall.tool.stem.Lemmatized;
-
-class CommonNounConstraint extends Constraint {
-  override def apply(tokens: Seq[Lemmatized[ChunkedToken]], tag: Type): Boolean = {
+object CommonNounConstraint extends Constraint[Sentence with Postagged] {
+  override def apply(sentence: TheSentence, tag: Type): Boolean = {
     val commonNounPattern = Pattern.compile("NNS?", Pattern.CASE_INSENSITIVE)
 
     // make sure all tags are NN
-    for (token <- tokens) {
-      if (!commonNounPattern.matcher(token.token.postag).matches()) {
+    for (token <- sentence.tokens.slice(tag.tokenInterval.start, tag.tokenInterval.end)) {
+      if (!commonNounPattern.matcher(token.postag).matches()) {
         return false
       }
     }

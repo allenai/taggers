@@ -31,6 +31,9 @@ import scala.collection.JavaConverters._
 import edu.knowitall.taggers.TypeHelper
 import edu.knowitall.tool.tokenize.Tokenizer
 import edu.knowitall.taggers.NamedGroupType
+import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.repr.sentence.Chunked
+import edu.knowitall.repr.sentence
 
 /**
  * *
@@ -39,8 +42,7 @@ import edu.knowitall.taggers.NamedGroupType
  * @author schmmd
  *
  */
-class PatternTagger(patternTaggerName: String, expressions: Seq[String]) extends Tagger {
-  
+class PatternTagger(patternTaggerName: String, expressions: Seq[String]) extends Tagger[Sentence with Chunked with sentence.Lemmatized] {
   override def name = patternTaggerName
   override def source = null
 
@@ -54,7 +56,7 @@ class PatternTagger(patternTaggerName: String, expressions: Seq[String]) extends
     expressions map PatternBuilder.compile
   }
 
-  override def findTags(sentence: Seq[Lemmatized[ChunkedToken]]) = {
+  override def findTags(sentence: TheSentence) = {
     this.findTagsWithTypes(sentence, Seq.empty[Type])
   }
 
@@ -63,14 +65,14 @@ class PatternTagger(patternTaggerName: String, expressions: Seq[String]) extends
    * implementation uses information from the Types that have been assigned to
    * the sentence so far.
    */
-  override def findTagsWithTypes(sentence: Seq[Lemmatized[ChunkedToken]],
+  override def findTagsWithTypes(sentence: TheSentence,
     originalTags: Seq[Type]): Seq[Type] = {
 
     // create a java set of the original tags
     val originalTagSet = originalTags.toSet
 
     // convert tokens to TypedTokens
-    val typedTokens = for ((token, i) <- sentence.zipWithIndex) yield {
+    val typedTokens = for ((token, i) <- sentence.lemmatizedTokens.zipWithIndex) yield {
       new TypedToken(token, i, originalTagSet.filter(_.tokenInterval contains i))
     }
 
@@ -95,7 +97,7 @@ class PatternTagger(patternTaggerName: String, expressions: Seq[String]) extends
    * @return
    */
   protected def findTags(typedTokenSentence: Seq[TypedToken],
-    sentence: Seq[Lemmatized[ChunkedToken]],
+    sentence: TheSentence,
     pattern: openregex.Pattern[TypedToken]) = {
 
     var tags = Seq.empty[Type]
@@ -106,7 +108,7 @@ class PatternTagger(patternTaggerName: String, expressions: Seq[String]) extends
       for (i <- 0 until groupSize) {
         val group = m.groups(i);
 
-        val tokens = sentence.slice(group.interval.start, group.interval.end).map(_.token)
+        val tokens = sentence.lemmatizedTokens.slice(group.interval.start, group.interval.end).map(_.token)
         val text = Tokenizer.originalText(tokens, tokens.head.offsets.start)
         val tag = group.expr match {
           // create the main type for the group
