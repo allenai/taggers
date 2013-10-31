@@ -64,7 +64,7 @@ object PatternBuilder {
   **/
   def compile(pattern: String) =
     openregex.Pattern.compile(pattern, (expression: String) => {
-      val baseExpr = new Expression.BaseExpression[Token](expression) {
+      new Function[Token, Boolean] {
         val deserializeToken: String => (Token => Boolean) = (argument: String) => {
           val Array(base, value) = argument.split("=").map(_.trim)
 
@@ -105,8 +105,6 @@ object PatternBuilder {
 
         override def apply(token: Token): Boolean = logic.apply(token)
       }
-
-      baseExpr: Expression.BaseExpression[Token]
     })
 
   def intervalFromGroup(group: openregex.Pattern.Group[_]): Interval = {
