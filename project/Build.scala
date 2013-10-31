@@ -10,9 +10,9 @@ object TaggerBuild extends Build {
     publishLocal := { }
   ).aggregate(core, webapp)
 
-  val buildSettings = Defaults.defaultSettings ++ Seq(
+  val buildSettings = Defaults.defaultSettings ++ ReleaseSettings.defaults ++
+    Seq(
       organization := "edu.washington.cs.knowitall.taggers",
-      version := "0.4-SNAPSHOT",
       crossScalaVersions := Seq("2.10.2"),
       scalaVersion <<= crossScalaVersions { (vs: Seq[String]) => vs.head },
       nlptoolsVersion := "2.4.4-SNAPSHOT",
