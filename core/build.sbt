@@ -1,3 +1,5 @@
+ReleaseSettings.defaults
+
 name := "taggers-core"
 
 description := "Tag sentences with XML-specified logic."
