@@ -11,7 +11,6 @@ libraryDependencies ++= Seq(
     "edu.washington.cs.knowitall.nlptools" %% "nlptools-core" % nlptoolsVersion.value,
     "edu.washington.cs.knowitall.nlptools" %% "nlptools-chunk-opennlp" % nlptoolsVersion.value,
     "edu.washington.cs.knowitall.nlptools" %% "nlptools-stem-morpha" % nlptoolsVersion.value,
-    "edu.washington.cs.knowitall.nlptools" %% "nlptools-typer-stanford" % nlptoolsVersion.value,
     "edu.washington.cs.knowitall" %% "openregex-scala" % "1.1.2",
     "org.apache.commons" % "commons-lang3" % "3.1",
     "junit" % "junit" % "4.11" % "test",
