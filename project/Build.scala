@@ -15,7 +15,7 @@ object TaggerBuild extends Build {
       organization := "edu.washington.cs.knowitall.taggers",
       crossScalaVersions := Seq("2.10.2"),
       scalaVersion <<= crossScalaVersions { (vs: Seq[String]) => vs.head },
-      nlptoolsVersion := "2.4.4-SNAPSHOT",
+      nlptoolsVersion := "2.4.4",
       scalacOptions ++= Seq("-unchecked", "-deprecation"),
       homepage := Some(url("http://github.com/knowitall/taggers")),
       resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
