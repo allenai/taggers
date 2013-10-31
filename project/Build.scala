@@ -19,6 +19,7 @@ object TaggerBuild extends Build {
       scalacOptions ++= Seq("-unchecked", "-deprecation"),
       homepage := Some(url("http://github.com/knowitall/taggers")),
       resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+      licenses := Seq("Apache 2.0" -> url("https://raw.github.com/knowitall/ollie/master/LICENSE")),
       publishMavenStyle := true,
       publishTo <<= version { (v: String) =>
         val nexus = "https://oss.sonatype.org/"
