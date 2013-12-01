@@ -35,17 +35,17 @@ Type(name=Animal, text="cats", interval=[10, 11))
 
 ## Running
 
-The `taggers` project is composed of two subprojects: `tagger-core`, which 
-contains the algorithms, and `tagger-webapp`, which contains the web demo.
+The `taggers` project is composed of two subprojects: `taggers-core`, which 
+contains the algorithms, and `taggers-webapp`, which contains the web demo.
 The project is built with `sbt`.  For example, to run the web demo, you can
 execute the following command.
 
 ```
-sbt compile 'project tagger-webapp' run
+sbt compile 'project taggers-webapp' run
 ```
 
 If you want an example of how to use the taggers project as a dependency,
-please look at `tagger-webapp`.
+please look at `taggers-webapp`.
 
 ## PatternTagger
 
