@@ -35,13 +35,19 @@ Type(name=Animal, text="cats", interval=[10, 11))
 
 ## Running
 
-The `taggers` project is composed of two subprojects: `taggers-core`, which 
-contains the algorithms, and `taggers-webapp`, which contains the web demo.
-The project is built with `sbt`.  For example, to run the web demo, you can
-execute the following command.
+The `taggers` project is composed of three subprojects: `core`, which contains
+the algorithms, `cli` which has a small cli application, and `webapp`, which
+contains the web demo.  The project is built with `sbt`.  For example, to run
+the web demo, you can execute the following command.
 
 ```
-sbt compile 'project taggers-webapp' run
+sbt compile 'project webapp' run
+```
+
+You can also run taggers as a cli.
+
+```
+sbt compile 'project cli' 'run examples/reverb.tc'
 ```
 
 If you want an example of how to use the taggers project as a dependency,
