@@ -1,15 +1,18 @@
 package edu.knowitall.taggers
 
-import java.io.FileReader
-import scala.collection.JavaConverters.seqAsJavaListConverter
-import scala.util.parsing.combinator.JavaTokenParsers
-import edu.knowitall.taggers.constraint.Constraint
-import edu.knowitall.taggers.tag.PatternTagger
-import scala.util.control.Exception
-import edu.knowitall.taggers.tag.Tagger
-import java.io.Reader
 import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.taggers.constraint.Constraint
 import edu.knowitall.taggers.tag.ConstrainedTagger
+import edu.knowitall.taggers.tag.PatternTagger
+import edu.knowitall.taggers.tag.Tagger
+
+import java.io.FileReader
+import java.io.Reader
+import java.io.StringReader
+import scala.collection.JavaConverters.seqAsJavaListConverter
+import scala.util.control.Exception
+import scala.util.parsing.combinator.JavaTokenParsers
+import scala.util.{ Try, Success }
 
 class RuleParser[S <: Sentence] extends JavaTokenParsers {
   val name = ident
@@ -34,17 +37,17 @@ class RuleParser[S <: Sentence] extends JavaTokenParsers {
 }
 
 class ParseRule[S <: Sentence] extends RuleParser[S] {
-  def parse(string: String) = parseAll(collection, string)
-  def parse(reader: Reader) = parseAll(collection, reader)
+  def parse(string: String): Try[List[Rule[S]]] = this.parse(new StringReader(string))
+  def parse(reader: Reader): Try[List[Rule[S]]] = parseAll(collection, reader) match {
+    case this.Success(ast, _) => scala.util.Success(ast)
+    case this.NoSuccess(err, next) => Try(throw new IllegalArgumentException("failed to parse rule " +
+        "(line " + next.pos.line + ", column " + next.pos.column + "):\n" +
+        err + "\n" +
+        next.pos.longString))
+  }
   def main(args: Array[String]) = {
     val reader = new FileReader(args(0))
-    val rules = this.parse(reader) match {
-      case Success(rules, _) => rules
-      case fail: Failure =>
-        throw new IllegalArgumentException("improper syntax. " + fail.msg)
-      case error: Error =>
-        throw new IllegalArgumentException("error")
-    }
+    val rules = this.parse(reader).get
 
     rules foreach println
   }
