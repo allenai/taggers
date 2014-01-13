@@ -12,11 +12,10 @@ import edu.knowitall.taggers.TypeHelper
 import edu.knowitall.repr.sentence.Sentence
 
 /**
- *
- * Rename a type to another name.
- * @author schmmd
- *
- */
+  * Rename a type to another name.
+  * @author schmmd
+  *
+  */
 case class RedefineTagger(name: String, target: String) extends Tagger[Sentence] {
   override val source = null
 
