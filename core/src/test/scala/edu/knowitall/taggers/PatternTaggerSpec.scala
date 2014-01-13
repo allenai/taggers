@@ -69,6 +69,31 @@ class PatternTaggerSpec extends FlatSpec {
     assert(targetTypeOption.get.name === "WorldCandy")
   }
 
+  "expressions in PatternTagger" should "be able to span multiple lines" in {
+    val taggers =
+      """SimpleTagger := PatternTagger {
+           // first line
+           <string = 'a'>
+           // second line
+           <string = 'b'>
+         }"""
+
+    val opennlpChunker = new OpenNlpChunker
+
+    val taggerCollection = TaggerCollection.fromString[Sentence with sentence.Chunked with sentence.Lemmatizer](taggers)
+
+    val testSentence = "c a b c"
+
+    val s = new Sentence(testSentence) with sentence.Chunker with sentence.Lemmatizer {
+      override val chunker = new OpenNlpChunker
+      override val lemmatizer = MorphaStemmer
+    }
+
+    val types = taggerCollection.tag(s)
+
+    assert(types.size === 1)
+  }
+
   "type fields in PatternTagger" should "match correctly" in {
     val taggers =
       """AnimalTagger := KeywordTagger{
