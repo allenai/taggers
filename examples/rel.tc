@@ -1,0 +1,58 @@
+And := PatternTagger {
+  <string=/and|that|which/>
+}
+Help := PatternTagger {
+  <string=/(help|aid|allow|assist|enable)(s)?/>
+}
+
+EffectRel := TypePatternTagger {
+// in order for
+(?:<string="in"> <string="order"> <string=/for|that/> ) 
+// which helps with
+| (?:<string=/and|that|which|to/>? @Help <string=/with|in/> ) 
+// which results in
+| (?:@And? <string="results"> <string="in"> )
+// so that
+| (?:<string="so"> <string="that"> )
+// and by doing so
+| (?:<string="and"> <string="by"> <string="doing"> <string="so"> )
+// may be one way that 
+| (?:<pos="MD">? <string=/be|is|are/> <pos="DT"> <string=/way(s)?/> <string="that"> )
+// which is why
+| (?:<string=/and|which/>? <pos="MD">? <string=/be|is|are/> <string="why"> )
+}
+EffectRelTo := TypePatternTagger {
+// in order to
+(?:<string="in"> <string="order"> <string="to"> )
+// which helps to
+| (?:<string=/and|that|which|to/>? @Help <string="to"> )
+// may be one way to
+| (?:<pos="MD">? <string=/be|is|are/> <pos="DT"> <string=/way(s)?/> <string="to"> )
+}
+
+CauseRel := TypePatternTagger {
+// may be because of
+(?:(?:<pos="MD">? <string=/be|is|are/>)? <string="because"> <string="of">? )
+// may be caused by
+| (?:<pos="MD">? <string=/be|is|are/> <string="caused"> <string="by"> )
+// which causes
+| (?:@And? <string=/cause(s)?/> )
+}
+
+FunctionRel := TypePatternTagger {
+// which may be responsible for
+(?:@And? <pos="MD">? <string=/be|is|are/> <string=/used|responsible/> <string="for"> )
+}
+FunctionRelTo := TypePatternTagger {
+// which may be used to
+(?:@And? <pos="MD">? <string=/be|is|are/> <string="used"> <string="to"> )
+}
+
+ExampleRel := TypePatternTagger {
+// which may include
+(?:@And? <pos="MD">? <string=/include(s)?/> )
+// such as
+| (?:<string="such"> <string="as"> )
+// is an example of
+| (?:@And? <pos="MD">? <string=/be|is|are/> <pos="DT"> <string=/example(s)?/> <string="of"> )
+}
