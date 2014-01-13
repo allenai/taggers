@@ -46,7 +46,7 @@ object TaggerCliMain {
   def main(args: Array[String]): Unit = {
     val parser = new scopt.OptionParser[Config]("taggers") {
       arg[File]("<file>") action { (x, c) =>
-        c.copy(patternFile = x) 
+        c.copy(patternFile = x)
       } text("file specifying patterns")
 
       opt[File]('s', "sentences-file") action { (x, c) =>
@@ -75,7 +75,7 @@ object TaggerCliMain {
     }
 
     // load patterns
-    val patterns = 
+    val patterns =
       using (config.patternSource()) { source =>
         loadPatterns(source.getLines.mkString("\n"))
       }

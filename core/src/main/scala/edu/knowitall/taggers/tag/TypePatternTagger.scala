@@ -13,8 +13,16 @@ import edu.knowitall.taggers.TaggerCollection
 import edu.knowitall.taggers.constraint.Constraint
 
 
-class TypePatternTagger(name: String, typePatternExpressions: Seq[String])
-extends PatternTagger(name, typePatternExpressions map TypePatternTagger.expandWholeTypeSyntax)
+class TypePatternTagger(name: String, expression: String)
+extends PatternTagger(name, TypePatternTagger.expandWholeTypeSyntax(expression)) {
+  /** The constructor used by reflection.
+    *
+    * Multiple lines are collapsed to create a single expression.
+    */
+  def this(name: String, expressions: Seq[String]) = {
+    this(name, expressions.mkString(" "))
+  }
+}
 
 object TypePatternTagger{
   val wholeTypeSyntaxPattern = new Regex("@(\\w+)(?![^<]*>)")
