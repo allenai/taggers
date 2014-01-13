@@ -32,13 +32,13 @@ class TaggerWeb(port: Int) {
     val patternText = params.get("patterns").flatMap(_.headOption).getOrElse("")
     """<html><head><title>Tagger Web</title><script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.1/jquery.min.js"></script></head>
        <body><h1>Tagger Web</h1><form method='POST'><p><a href='#' onclick="javascript:$('#patterns').val('Animal := NormalizedKeywordTagger { \n  cat\n  dot\n  frog\n}\n\nDescribedAnimal := PatternTagger ( <pos=\'JJ\'>+ <type=\'Animal\'>+ )'); $('#sentences').val('The large black cat rested on the desk.\nThe frogs start to ribbit in the spring.')">example</a></p>""" +
-         s"<br /><b>Patterns:</b><br /><textarea id='patterns' name='patterns' cols='120' rows='20'>$patternText</textarea>" +
-         s"<br /><b>Sentences:</b><br /><textarea id='sentences' name='sentences' cols='120' rows='20'>$sentenceText</textarea>" +
+      s"<br /><b>Patterns:</b><br /><textarea id='patterns' name='patterns' cols='120' rows='20'>$patternText</textarea>" +
+      s"<br /><b>Sentences:</b><br /><textarea id='sentences' name='sentences' cols='120' rows='20'>$sentenceText</textarea>" +
       """<br />
          <input type='submit'>""" +
-         s"<p style='color:red'>${errors.mkString("<br />")}</p>" +
-         s"<pre>$result</pre>" +
-       """</form></body></html>"""
+      s"<p style='color:red'>${errors.mkString("<br />")}</p>" +
+      s"<pre>$result</pre>" +
+      """</form></body></html>"""
   }
 
   def run() {
@@ -57,7 +57,7 @@ class TaggerWeb(port: Int) {
       val patternText = params("patterns").headOption.get
 
       val rules = new ParseRule[Sentence with Chunked with Lemmatized].parse(patternText).get
-      val col = rules.foldLeft(new TaggerCollection[Sentence with Chunked with Lemmatized]()){ case (ctc, rule) => ctc + rule }
+      val col = rules.foldLeft(new TaggerCollection[Sentence with Chunked with Lemmatized]()) { case (ctc, rule) => ctc + rule }
 
       val results = for (line <- sentenceText.split("\n")) yield {
         val sentence = process(line)
@@ -70,13 +70,13 @@ class TaggerWeb(port: Int) {
         typ.name + "(" + typ.text + ")"
       }
       val resultText =
-        results.map { case (sentence, typs) =>
-          sentence + "\n\n" + typs.map(formatType).mkString("\n")
+        results.map {
+          case (sentence, typs) =>
+            sentence + "\n\n" + typs.map(formatType).mkString("\n")
         }.mkString("\n\n")
 
       page(params, Seq.empty, resultText)
-    }
-    catch {
+    } catch {
       case e: Throwable =>
         e.printStackTrace()
         def getMessageChain(throwable: Throwable): List[String] = {

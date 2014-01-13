@@ -14,7 +14,6 @@ import edu.knowitall.taggers.ParseRule
 
 object Example {
 
-
   val pattern = """
     Animal := NormalizedKeywordTagger {
       cat
@@ -45,31 +44,31 @@ object Example {
     Cliff has a yellow puppy.
     The yellow puppy ran.
     """
-  
+
   val chunker = new OpenNlpChunker()
-  
+
   def process(text: String): Sentence with Chunked with Lemmatized = {
     new Sentence(text) with Chunker with Lemmatizer {
       val chunker = Example.this.chunker
       val lemmatizer = MorphaStemmer
     }
   }
-    
-  def main(args: Array[String]){
+
+  def main(args: Array[String]) {
 
     val rules = new ParseRule[Sentence with Chunked with Lemmatized].parse(pattern).get
-    val t = rules.foldLeft(new TaggerCollection[Sentence with Chunked with Lemmatized]()){ case (ctc, rule) => ctc + rule }
-    val lines = input.split("\n").map(f => f.trim()).filter(f => f!= "").toList
-    for (line <- lines){
-        val types = t.tag(process(line)).toList
-        println("Line: " + line)
-        for(typ <- types){
-          println("TaggerName: " +typ.name + "\tTypeInterval: " + typ.tokenInterval + "\t TypeText: " + typ.text)
-        }
+    val t = rules.foldLeft(new TaggerCollection[Sentence with Chunked with Lemmatized]()) { case (ctc, rule) => ctc + rule }
+    val lines = input.split("\n").map(f => f.trim()).filter(f => f != "").toList
+    for (line <- lines) {
+      val types = t.tag(process(line)).toList
+      println("Line: " + line)
+      for (typ <- types) {
+        println("TaggerName: " + typ.name + "\tTypeInterval: " + typ.tokenInterval + "\t TypeText: " + typ.text)
+      }
       //filter out the NamedGroupTypes
-      for(typ <- types.filter(p => p.isInstanceOf[NamedGroupType])){
+      for (typ <- types.filter(p => p.isInstanceOf[NamedGroupType])) {
         val namedGroupType = typ.asInstanceOf[NamedGroupType]
-        if(namedGroupType.groupName == "color"){
+        if (namedGroupType.groupName == "color") {
           println("COLOR:\t" + namedGroupType.text)
         }
       }

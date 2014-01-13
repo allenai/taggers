@@ -27,29 +27,25 @@ abstract class Tagger[-S <: Sentence] {
   }
   def canEqual(that: Any) = that.isInstanceOf[Tagger[_]]
 
-  override def hashCode = HashCodeHelper(name/*, constraints*/)
+  override def hashCode = HashCodeHelper(name /*, constraints*/ )
 
   def apply(sentence: S): Seq[Type] = this.tags(sentence)
   def apply(sentence: S, tags: Seq[Type]): Seq[Type] = this.tags(sentence, tags)
 
-  /**
-   * *
-   * Public method for finding tags in a sentence.
-   * @param sentence
-   * @return a list of the tags found
-   */
+  /** Public method for finding tags in a sentence.
+    * @param sentence
+    * @return a list of the tags found
+    */
   def tags(sentence: S): Seq[Type] = {
     tags(sentence, Seq.empty)
   }
 
-  /**
-   * *
-   * Public method for finding tags in a sentence with types.
-   * This method also filters out types by constraint.
-   *
-   * @param sentence
-   * @return a list of the tags found
-   */
+  /** Public method for finding tags in a sentence with types.
+    * This method also filters out types by constraint.
+    *
+    * @param sentence
+    * @return a list of the tags found
+    */
   def tags(sentence: S, types: Seq[Type]) = {
     var tags = findTagsWithTypes(sentence, types)
 
@@ -62,29 +58,27 @@ abstract class Tagger[-S <: Sentence] {
 
   def findTags(sentence: S): Seq[Type]
 
-  /**
-   * This method should be overridden by any Tagger that wants to use the
-   * Types accumulated from previous Taggers. If it's not overridden the sentence
-   * will be tagged without type information.
-   * @param sentence
-   * @param types
-   * @return
-   */
+  /** This method should be overridden by any Tagger that wants to use the
+    * Types accumulated from previous Taggers. If it's not overridden the sentence
+    * will be tagged without type information.
+    * @param sentence
+    * @param types
+    * @return
+    */
   protected def findTagsWithTypes(sentence: S, types: Seq[Type]): Seq[Type] = {
     findTags(sentence)
   }
 
-  /**
-   * Remove types that cover over types.
-   * @param tags
-   */
+  /** Remove types that cover over types.
+    * @param tags
+    */
   private def filterCovered(tags: Seq[Type]): Seq[Type] = {
     tags.filter { tag =>
       tags.find { other =>
         other != tag &&
-        other.name == tag.name &&
-        other.source == tag.source &&
-        (other.tokenInterval superset tag.tokenInterval)
+          other.name == tag.name &&
+          other.source == tag.source &&
+          (other.tokenInterval superset tag.tokenInterval)
       } match {
         case Some(superType) => false
         case None => true
@@ -92,9 +86,8 @@ abstract class Tagger[-S <: Sentence] {
     }
   }
 
-  /**
-   * Remove types that do not pass the constraints.
-   */
+  /** Remove types that do not pass the constraints.
+    */
   private def filterWithConstraints(sentence: S, types: Seq[Type]) = {
     for {
       tag <- types
@@ -122,7 +115,7 @@ object Tagger {
   }
 
   def create[S <: Sentence](tagger: Class[_], argTypes: Array[Class[_]], argValues: Array[Object]): Tagger[S] = {
-    val constructor = tagger.getConstructor(argTypes :_*)
-    constructor.newInstance(argValues :_*).asInstanceOf[Tagger[S]]
+    val constructor = tagger.getConstructor(argTypes: _*)
+    constructor.newInstance(argValues: _*).asInstanceOf[Tagger[S]]
   }
 }

@@ -14,7 +14,7 @@ import edu.knowitall.taggers.constraint.Constraint
 import edu.knowitall.repr.sentence.Sentence
 
 class ConstrainedTagger[S <: Sentence](val tagger: Tagger[S], val constraints: Seq[Constraint[S]])
-extends Tagger[S] {
+    extends Tagger[S] {
   override def name = tagger.name
   override def source = tagger.source
 

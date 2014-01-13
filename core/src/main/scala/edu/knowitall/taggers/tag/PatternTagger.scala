@@ -35,36 +35,33 @@ import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.repr.sentence.Chunked
 import edu.knowitall.repr.sentence
 
-/**
- * *
- * Run a token-based pattern over the text and tag matches.
- *
- * @author schmmd
- *
- */
-class PatternTagger(patternTaggerName: String, expressions: Seq[String]) extends Tagger[Sentence with Chunked with sentence.Lemmatized] {
+/** Run a token-based pattern over the text and tag matches.
+  *
+  * @author schmmd
+  *
+  */
+class PatternTagger(patternTaggerName: String, expression: String) extends Tagger[Sentence with Chunked with sentence.Lemmatized] {
   override def name = patternTaggerName
   override def source = null
 
-  val patterns: Seq[openregex.Pattern[PatternBuilder.Token]] = this.compile(expressions)
+  val pattern: openregex.Pattern[PatternBuilder.Token] = PatternBuilder.compile(expression)
 
-  protected def this(name: String) {
-    this(name, null: Seq[String])
-  }
-
-  private def compile(expressions: Seq[String]) = {
-    expressions map PatternBuilder.compile
+  /** The constructor used by reflection.
+    *
+    * Multiple lines are collapsed to create a single expression.
+    */
+  def this(name: String, expressionLines: Seq[String]) {
+    this(name, expressionLines.mkString(" "))
   }
 
   override def findTags(sentence: TheSentence) = {
     this.findTagsWithTypes(sentence, Seq.empty[Type])
   }
 
-  /**
-   * This method overrides Tagger's default implementation. This
-   * implementation uses information from the Types that have been assigned to
-   * the sentence so far.
-   */
+  /** This method overrides Tagger's default implementation. This
+    * implementation uses information from the Types that have been assigned to
+    * the sentence so far.
+    */
   override def findTagsWithTypes(sentence: TheSentence,
     originalTags: Seq[Type]): Seq[Type] = {
 
@@ -77,25 +74,23 @@ class PatternTagger(patternTaggerName: String, expressions: Seq[String]) extends
     }
 
     val tags = for {
-      pattern <- patterns
       tag <- this.findTags(typedTokens, sentence, pattern)
     } yield (tag)
 
     return tags
   }
 
-  /**
-   * This is a helper method that creates the Type objects from a given
-   * pattern and a List of TypedTokens.
-   *
-   * Matching groups will create a type with the name or index
-   * appended to the name.
-   *
-   * @param typedTokenSentence
-   * @param sentence
-   * @param pattern
-   * @return
-   */
+  /** This is a helper method that creates the Type objects from a given
+    * pattern and a List of TypedTokens.
+    *
+    * Matching groups will create a type with the name or index
+    * appended to the name.
+    *
+    * @param typedTokenSentence
+    * @param sentence
+    * @param pattern
+    * @return
+    */
   protected def findTags(typedTokenSentence: Seq[TypedToken],
     sentence: TheSentence,
     pattern: openregex.Pattern[TypedToken]) = {
@@ -116,7 +111,7 @@ class PatternTagger(patternTaggerName: String, expressions: Seq[String]) extends
             Type(this.name, this.source, group.interval, text)
           case namedGroup: NamedGroup[_] =>
             val name = this.name + "." + namedGroup.name
-            new NamedGroupType(namedGroup.name,Type(name, this.source, group.interval, text), tags.headOption)
+            new NamedGroupType(namedGroup.name, Type(name, this.source, group.interval, text), tags.headOption)
           case _ =>
             val name = this.name + "." + i
             new LinkedType(Type(name, this.source, group.interval, text), tags.headOption)

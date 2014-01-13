@@ -10,7 +10,7 @@ object TaggerBuild extends Build {
     publishLocal := { }
   ).aggregate(core, cli, webapp)
 
-  val buildSettings = Defaults.defaultSettings ++ ReleaseSettings.defaults ++
+  val buildSettings = Defaults.defaultSettings ++ ReleaseSettings.defaults ++ Format.settings ++
     Seq(
       organization := "edu.washington.cs.knowitall.taggers",
       crossScalaVersions := Seq("2.10.2"),

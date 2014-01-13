@@ -46,12 +46,12 @@ object TaggerCliMain {
   def main(args: Array[String]): Unit = {
     val parser = new scopt.OptionParser[Config]("taggers") {
       arg[File]("<file>") action { (x, c) =>
-        c.copy(patternFile = x) 
-      } text("file specifying patterns")
+        c.copy(patternFile = x)
+      } text ("file specifying patterns")
 
       opt[File]('s', "sentences-file") action { (x, c) =>
         c.copy(sentencesFile = Some(x))
-      } text("file containing sentences")
+      } text ("file containing sentences")
     }
 
     parser.parse(args, Config()) match {
@@ -75,8 +75,8 @@ object TaggerCliMain {
     }
 
     // load patterns
-    val patterns = 
-      using (config.patternSource()) { source =>
+    val patterns =
+      using(config.patternSource()) { source =>
         loadPatterns(source.getLines.mkString("\n"))
       }
 
