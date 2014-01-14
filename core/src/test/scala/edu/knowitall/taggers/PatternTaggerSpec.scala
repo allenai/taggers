@@ -41,7 +41,7 @@ class PatternTaggerSpec extends FlatSpec {
     val opennlpChunker = new OpenNlpChunker
 
     val taggerCollection =
-      TaggerCollection.fromString[Sentence with sentence.Chunked with sentence.Lemmatized](taggers)
+      new Cascade(Taggers.fromString[Sentence with sentence.Chunked with sentence.Lemmatized](taggers))
 
     //test sentence that should be tagged as
     // WorldCandy{(3,5)}
@@ -80,7 +80,7 @@ class PatternTaggerSpec extends FlatSpec {
 
     val opennlpChunker = new OpenNlpChunker
 
-    val taggerCollection = TaggerCollection.fromString[Sentence with sentence.Chunked with sentence.Lemmatizer](taggers)
+    val taggerCollection = new Cascade(Taggers.fromString[Sentence with sentence.Chunked with sentence.Lemmatizer](taggers))
 
     val testSentence = "c a b c"
 
@@ -115,7 +115,7 @@ class PatternTaggerSpec extends FlatSpec {
 
     val opennlpChunker = new OpenNlpChunker
 
-    val taggerCollection = TaggerCollection.fromString[Sentence with sentence.Chunked with sentence.Lemmatizer](taggers)
+    val taggerCollection = new Cascade(Taggers.fromString[Sentence with sentence.Chunked with sentence.Lemmatizer](taggers))
 
     val testSentence = "I once saw the large cat on a couch ."
 
@@ -168,7 +168,7 @@ class PatternTaggerSpec extends FlatSpec {
 
     val opennlpChunker = new OpenNlpChunker
 
-    val taggerCollection = TaggerCollection.fromString[Sentence with sentence.Chunked with sentence.Lemmatized](taggers)
+    val taggerCollection = new Cascade(Taggers.fromString[Sentence with sentence.Chunked with sentence.Lemmatized](taggers))
 
     val testSentence = "James gives delicious candy frequently."
 

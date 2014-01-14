@@ -6,14 +6,17 @@ import edu.knowitall.repr.sentence.Chunker
 import edu.knowitall.repr.sentence.Lemmatized
 import edu.knowitall.repr.sentence.Lemmatizer
 import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.taggers.rule._
 import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.MorphaStemmer
 import edu.knowitall.tool.typer.Type
-import java.io.File
-import scala.io.Source
+
 import edu.knowitall.common.Resource.using
 
-class TaggerApp(col: TaggerCollection[Sentence with Chunked with Lemmatized]) {
+import java.io.File
+import scala.io.Source
+
+class TaggerApp(col: Cascade[Sentence with Chunked with Lemmatized]) {
   type Sent = Sentence with Chunked with Lemmatized
   val chunker = new OpenNlpChunker()
 
@@ -47,7 +50,7 @@ object TaggerCliMain {
     val parser = new scopt.OptionParser[Config]("taggers") {
       arg[File]("<file>") action { (x, c) =>
         c.copy(patternFile = x)
-      } text ("file specifying patterns")
+      } text("file specifying patterns")
 
       opt[File]('s', "sentences-file") action { (x, c) =>
         c.copy(sentencesFile = Some(x))
@@ -63,10 +66,10 @@ object TaggerCliMain {
   def run(config: Config): Unit = {
     def loadPatterns(text: String) = {
       // parse taggers
-      val rules = new ParseRule[Sentence with Chunked with Lemmatized].parse(text).get
+      val rules = new RuleParser[Sentence with Chunked with Lemmatized].parse(text).get
 
       // build a tagger collection
-      val col = rules.foldLeft(new TaggerCollection[Sentence with Chunked with Lemmatized]()) {
+      val col = Taggers.fromRules(rules).foldLeft(new Cascade[Sentence with Chunked with Lemmatized]()) {
         case (ctc, rule) =>
           ctc + rule
       }

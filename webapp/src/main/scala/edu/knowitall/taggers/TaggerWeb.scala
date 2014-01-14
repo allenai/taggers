@@ -1,18 +1,21 @@
 package edu.knowitall.taggers
 
-import scala.collection.JavaConverters._
-import edu.knowitall.tool.stem.MorphaStemmer
-import edu.knowitall.tool.chunk.OpenNlpChunker
-import edu.knowitall.tool.typer.Type
-import unfiltered.request._
-import unfiltered.response._
-import unfiltered.filter.Planify
-import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.repr.sentence
-import edu.knowitall.repr.sentence.Lemmatized
 import edu.knowitall.repr.sentence.Chunked
 import edu.knowitall.repr.sentence.Chunker
+import edu.knowitall.repr.sentence.Lemmatized
 import edu.knowitall.repr.sentence.Lemmatizer
+import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.taggers.rule._
+import edu.knowitall.tool.chunk.OpenNlpChunker
+import edu.knowitall.tool.stem.MorphaStemmer
+import edu.knowitall.tool.typer.Type
+
+import unfiltered.filter.Planify
+import unfiltered.request._
+import unfiltered.response._
+
+import scala.collection.JavaConverters._
 
 // This is a separate class so that optional dependencies are not loaded
 // unless a server instance is being create.
@@ -56,8 +59,8 @@ class TaggerWeb(port: Int) {
       val sentenceText = params("sentences").headOption.get
       val patternText = params("patterns").headOption.get
 
-      val rules = new ParseRule[Sentence with Chunked with Lemmatized].parse(patternText).get
-      val col = rules.foldLeft(new TaggerCollection[Sentence with Chunked with Lemmatized]()) { case (ctc, rule) => ctc + rule }
+      val rules = new RuleParser[Sentence with Chunked with Lemmatized].parse(patternText).get
+      val col = Taggers.fromRules(rules).foldLeft(new Cascade[Sentence with Chunked with Lemmatized]()) { case (ctc, rule) => ctc + rule }
 
       val results = for (line <- sentenceText.split("\n")) yield {
         val sentence = process(line)

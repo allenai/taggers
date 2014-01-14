@@ -1,4 +1,4 @@
-package edu.knowitall.taggers
+package edu.knowitall.taggers.rule
 
 import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.taggers.constraint.Constraint
@@ -14,7 +14,7 @@ import scala.util.control.Exception
 import scala.util.parsing.combinator.JavaTokenParsers
 import scala.util.{ Try, Success }
 
-class RuleParser[S <: Sentence] extends JavaTokenParsers {
+class RuleParserCombinator[S <: Sentence] extends JavaTokenParsers {
   val name = ident
   val taggerIdent = ident
 
@@ -36,7 +36,7 @@ class RuleParser[S <: Sentence] extends JavaTokenParsers {
   val collection = rep(rule)
 }
 
-class ParseRule[S <: Sentence] extends RuleParser[S] {
+class RuleParser[S <: Sentence] extends RuleParserCombinator[S] {
   def parse(string: String): Try[List[Rule[S]]] = this.parse(new StringReader(string))
   def parse(reader: Reader): Try[List[Rule[S]]] = parseAll(collection, reader) match {
     case this.Success(ast, _) => scala.util.Success(ast)
@@ -61,48 +61,4 @@ object Rule {
 abstract class Rule[-S <: Sentence] {
   def name: String
   def definition: String
-}
-
-case class DefinitionRule[-S <: Sentence](name: String, definition: String) extends Rule[S] {
-  override def toString = s"$name ${Rule.definitionSyntax} $definition"
-
-  def replace(string: String) = {
-    string.replaceAll("\\$\\{" + name + "}", definition)
-  }
-}
-
-object TaggerRule {
-  val constraintPrefix = "constraint:"
-  val commentPrefix = "//"
-  def parse[S <: Sentence](name: String, tagger: String, allArguments: Seq[String]) = {
-    val (constraintStrings, arguments) = allArguments.map(_.trim).filter(!_.startsWith(commentPrefix)).partition(_.startsWith(constraintPrefix))
-    val constraints = constraintStrings.map(_.drop("constraint:".length)) map (constraint => Constraint.create[S](constraint.trim))
-    TaggerRule[S](name, tagger, constraints, arguments)
-  }
-}
-
-case class TaggerRule[S <: Sentence](name: String, taggerIdentifier: String, constraints: Seq[Constraint[S]], arguments: Seq[String]) extends Rule[S] {
-  def definition = {
-    if (constraints.isEmpty && arguments.size == 1) {
-      s"${Rule.taggerSyntax} $taggerIdentifier( ${arguments.head} )"
-    } else {
-      val list = constraints.map(_.toString) ++ arguments
-      s"${Rule.taggerSyntax} $taggerIdentifier {\n${list.map(" " * 4 + _).mkString("\n")}\n}"
-    }
-  }
-
-  def instantiate(definitions: Iterable[DefinitionRule[S]]): Tagger[S] = {
-    val substituted = arguments.map(arg => definitions.foldLeft(arg) { case (arg, defn) => defn.replace(arg) })
-    val tagger = Tagger.create[S](this.taggerIdentifier, "edu.knowitall.taggers.tag", name, substituted)
-
-    // apply constraints
-    constraints match {
-      case Seq() => tagger
-      case constraints => new ConstrainedTagger(tagger, constraints)
-    }
-  }
-
-  override def toString = {
-    s"$name $definition"
-  }
 }

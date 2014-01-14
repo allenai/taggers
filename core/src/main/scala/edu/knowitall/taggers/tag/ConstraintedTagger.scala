@@ -9,7 +9,7 @@ import edu.knowitall.taggers.pattern.PatternBuilder
 import edu.washington.cs.knowitall.regex.Expression.NamedGroup
 import edu.knowitall.taggers.TypeHelper
 import scala.util.matching.Regex
-import edu.knowitall.taggers.TaggerCollection
+import edu.knowitall.taggers.Cascade
 import edu.knowitall.taggers.constraint.Constraint
 import edu.knowitall.repr.sentence.Sentence
 
