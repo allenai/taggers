@@ -11,6 +11,7 @@ import edu.knowitall.tool.stem.MorphaStemmer
 import org.scalatest.FlatSpec
 
 import scala.collection.JavaConverters._
+import scala.collection.immutable.IntMap
 
 class PatternTaggerSpec extends FlatSpec {
   type MySentence = Sentence with sentence.Chunked with sentence.Lemmatized
@@ -113,7 +114,7 @@ class PatternTaggerSpec extends FlatSpec {
         (<Tuple1>:@Tuple) (<TupleRel>:@TupleRelation) (<Tuple2>:@Tuple)
       }"""
 
-    val cascade = new Cascade(Map(
+    val cascade = new Cascade(IntMap(
       0 -> Taggers.fromString[MySentence](l0),
       1 -> Taggers.fromString[MySentence](l1)))
 
