@@ -17,6 +17,7 @@ import io.Source
 import java.io.File
 import java.io.FileReader
 import java.io.Reader
+import scala.collection.immutable.IntMap
 
 /** Represents a sequence of taggers applied in order.
   * After each level of taggers, PatternTaggers can only use
@@ -24,19 +25,29 @@ import java.io.Reader
   *
   * @param  taggers  stores the taggers applied on each level
   */
-case class Cascade[S <: Sentence](taggers: Map[Int, Seq[Tagger[S]]]) {
+case class Cascade[-S <: Sentence](taggers: IntMap[Seq[Tagger[S]]]) {
   lazy val chunker = new OpenNlpChunker()
 
   /** Convenience constructor to make an empty Cascade. */
-  def this() = this(Map.empty[Int, Seq[Tagger[S]]])
+  def this() = this(IntMap.empty[Seq[Tagger[S]]])
 
   /** Convenience constructor for a single tagger level. */
-  def this(taggers: Seq[Tagger[S]]) = this(Map(0 -> taggers))
+  def this(taggers: Seq[Tagger[S]]) = this(IntMap(0 -> taggers))
 
   /** Add a tagger to a particular level. */
-  def add[SS <: S](level: Int, tagger: Tagger[SS]): Cascade[SS] = {
+  def plus[SS <: S](level: Int, tagger: Tagger[SS]): Cascade[SS] = {
     val entry = taggers.get(level).getOrElse(Seq.empty) :+ tagger
     Cascade[SS](taggers + (level -> entry))
+  }
+
+  /** Add taggers to a particular level. */
+  def plus[SS <: S](level: Int, taggers: Seq[Tagger[SS]]): Cascade[SS] = {
+    var cascade: Cascade[SS] = this
+    for (tagger <- taggers) {
+      cascade = cascade.plus(level, tagger)
+    }
+
+    cascade
   }
 
   /** Apply the cascade to a sentence.
