@@ -50,7 +50,7 @@ object TaggerCliMain {
     val parser = new scopt.OptionParser[Config]("taggers") {
       arg[File]("<file>") action { (x, c) =>
         c.copy(patternFile = x)
-      } text("file specifying patterns")
+      } text ("file specifying patterns")
 
       opt[File]('s', "sentences-file") action { (x, c) =>
         c.copy(sentencesFile = Some(x))

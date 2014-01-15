@@ -11,8 +11,7 @@ import edu.knowitall.tool.stem.Lemmatized
 import edu.knowitall.taggers.TypeHelper
 import edu.knowitall.repr.sentence.Sentence
 
-/**
-  * Rename a type to another name.
+/** Rename a type to another name.
   * @author schmmd
   *
   */

@@ -41,9 +41,9 @@ class RuleParser[S <: Sentence] extends RuleParserCombinator[S] {
   def parse(reader: Reader): Try[List[Rule[S]]] = parseAll(collection, reader) match {
     case this.Success(ast, _) => scala.util.Success(ast)
     case this.NoSuccess(err, next) => Try(throw new IllegalArgumentException("failed to parse rule " +
-        "(line " + next.pos.line + ", column " + next.pos.column + "):\n" +
-        err + "\n" +
-        next.pos.longString))
+      "(line " + next.pos.line + ", column " + next.pos.column + "):\n" +
+      err + "\n" +
+      next.pos.longString))
   }
   def main(args: Array[String]) = {
     val reader = new FileReader(args(0))
