@@ -3,7 +3,7 @@ NounChunk := PatternTagger {
 }
 Verb := PatternTagger {
         // Optional adverb
-        <pos="RB">
+        <pos="RB">?
         // Modal or other verbs
         <pos="MD" | pos=/VB[DPZGN]?/>
         // Optional particle/adverb
