@@ -13,7 +13,7 @@ object TaggerBuild extends Build {
   val buildSettings = Defaults.defaultSettings ++ ReleaseSettings.defaults ++ Format.settings ++
     Seq(
       organization := "org.allenai.taggers",
-      crossScalaVersions := Seq("2.10.2"),
+      crossScalaVersions := Seq("2.10.3"),
       scalaVersion <<= crossScalaVersions { (vs: Seq[String]) => vs.head },
       nlptoolsVersion := "2.4.4",
       scalacOptions ++= Seq("-unchecked", "-deprecation"),
