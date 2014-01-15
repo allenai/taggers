@@ -30,14 +30,14 @@ class RuleParserCombinator[S <: Sentence] extends JavaTokenParsers {
 
   val comment = "(?:(?:\\s*//.*\\n)|(?:\\s*\\n))*".r
 
-  val valn = comment ~> name ~ Rule.definitionSyntax ~ ".+".r ^^ { case name ~ Rule.definitionSyntax ~ valn => DefinitionRule[S](name, valn) }
+  val valn = comment ~> name ~ Rule.definitionSyntax ~! ".+".r ^^ { case name ~ Rule.definitionSyntax ~ valn => DefinitionRule[S](name, valn) }
 
   val singlearg = ".+(?=\\s*\\))".r
   val singleline = "(" ~> singlearg <~ ")"
   val multiarg = "[^}].*".r
   val multiline = "{" ~> rep(multiarg) <~ "}" ^^ { seq => seq.map(_.trim) }
   val args = singleline ^^ { arg => Seq(arg.trim) } | multiline
-  val tagger = comment ~> name ~ Rule.taggerSyntax ~ taggerIdent ~ args ^^ {
+  val tagger = comment ~> name ~ Rule.taggerSyntax ~! taggerIdent ~! args ^^ {
     case name ~ Rule.taggerSyntax ~ taggerIdent ~ args =>
       TaggerRule.parse[S](name, taggerIdent, args)
   }
