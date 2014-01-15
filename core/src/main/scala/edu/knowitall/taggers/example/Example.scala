@@ -58,10 +58,10 @@ object Example {
   def main(args: Array[String]) {
 
     val rules = new RuleParser[Sentence with Chunked with Lemmatized].parse(pattern).get
-    val t = new Cascade[Sentence with Chunked with Lemmatized](Taggers.fromRules(rules))
+    val cascade = new Cascade[Sentence with Chunked with Lemmatized](Taggers.fromRules(rules))
     val lines = input.split("\n").map(f => f.trim()).filter(f => f != "").toList
     for (line <- lines) {
-      val types = t.tag(process(line)).toList
+      val types = cascade.apply(process(line)).toList
       println("Line: " + line)
       for (typ <- types) {
         println("TaggerName: " + typ.name + "\tTypeInterval: " + typ.tokenInterval + "\t TypeText: " + typ.text)

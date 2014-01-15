@@ -27,7 +27,7 @@ class TaggerSpec extends FlatSpec {
       override val lemmatizer = MorphaStemmer
     }
 
-    val types = runTagger.tags(s)
+    val types = runTagger.apply(s)
 
     assert(types.head.name === "Run")
     assert(types.head.text === "run")
@@ -41,7 +41,7 @@ class TaggerSpec extends FlatSpec {
       override val lemmatizer = MorphaStemmer
     }
 
-    val types = runTagger.tags(s)
+    val types = runTagger.apply(s)
 
     assert(types.isEmpty)
   }

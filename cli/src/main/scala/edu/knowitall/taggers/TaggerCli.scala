@@ -16,7 +16,7 @@ import edu.knowitall.common.Resource.using
 import java.io.File
 import scala.io.Source
 
-class TaggerApp(col: Cascade[Sentence with Chunked with Lemmatized]) {
+class TaggerApp(cascade: Cascade[Sentence with Chunked with Lemmatized]) {
   type Sent = Sentence with Chunked with Lemmatized
   val chunker = new OpenNlpChunker()
 
@@ -32,7 +32,7 @@ class TaggerApp(col: Cascade[Sentence with Chunked with Lemmatized]) {
   }
 
   def apply(sentence: Sent) = {
-    (col tag sentence).reverse map format
+    (cascade apply sentence).reverse map format
   }
 }
 

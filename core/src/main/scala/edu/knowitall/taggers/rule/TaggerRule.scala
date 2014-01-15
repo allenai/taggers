@@ -15,6 +15,7 @@ object TaggerRule {
   }
 }
 
+/** A representation of a parsed tagger rule in the DSL. */
 case class TaggerRule[S <: Sentence](name: String, taggerIdentifier: String, constraints: Seq[Constraint[S]], arguments: Seq[String]) extends Rule[S] {
   def definition = {
     if (constraints.isEmpty && arguments.size == 1) {

@@ -47,7 +47,7 @@ class PatternTaggerSpec extends FlatSpec {
         }
       """
 
-    val taggerCollection =
+    val cascade =
       new Cascade(Taggers.fromString[MySentence](taggers))
 
     //test sentence that should be tagged as
@@ -57,7 +57,7 @@ class PatternTaggerSpec extends FlatSpec {
     val s = makeSentence(testSentence)
 
     //Tag the sentence with the loaded taggers
-    val types = taggerCollection.tag(s)
+    val types = cascade.apply(s)
 
     //matching interval should be [3,5)
     val worldCandyInterval = Interval.open(3, 5)
@@ -82,13 +82,13 @@ class PatternTaggerSpec extends FlatSpec {
            <string = 'b'>
          }"""
 
-    val taggerCollection = new Cascade(Taggers.fromString[MySentence](taggers))
+    val cascade = new Cascade(Taggers.fromString[MySentence](taggers))
 
     val testSentence = "c a b c"
 
     val s = makeSentence(testSentence)
 
-    val types = taggerCollection.tag(s)
+    val types = cascade.apply(s)
 
     assert(types.size === 1)
   }
@@ -121,9 +121,8 @@ class PatternTaggerSpec extends FlatSpec {
 
     val s = makeSentence(testSentence)
 
-    val types = cascade.tag(s)
+    val types = cascade.apply(s)
 
-    types foreach println
     assert(types.exists(_.name == "RelatedTuples"), "RelatedTuples type not found.")
   }
 
@@ -146,13 +145,13 @@ class PatternTaggerSpec extends FlatSpec {
          }
       """
 
-    val taggerCollection = new Cascade(Taggers.fromString[MySentence](taggers))
+    val cascade = new Cascade(Taggers.fromString[MySentence](taggers))
 
     val testSentence = "I once saw the large cat on a couch ."
 
     val s = makeSentence(testSentence)
 
-    val types = taggerCollection.tag(s)
+    val types = cascade.apply(s)
 
     val typeTypes = types.filter(_.name == "TypeTaggerTest")
     assert(typeTypes.size === 3)
@@ -194,13 +193,13 @@ class PatternTaggerSpec extends FlatSpec {
     	}
       """
 
-    val taggerCollection = new Cascade(Taggers.fromString[MySentence](taggers))
+    val cascade = new Cascade(Taggers.fromString[MySentence](taggers))
 
     val testSentence = "James gives delicious candy frequently."
 
     val s = makeSentence(testSentence)
 
-    val types = taggerCollection.tag(s)
+    val types = cascade.apply(s)
 
     val typeTypes = types.filter(_.name == "TypePatternPhrase")
     assert(typeTypes.size === 1)

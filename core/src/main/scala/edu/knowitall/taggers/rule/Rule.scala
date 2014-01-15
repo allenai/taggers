@@ -14,6 +14,16 @@ import scala.util.control.Exception
 import scala.util.parsing.combinator.JavaTokenParsers
 import scala.util.{ Try, Success }
 
+/** A parser combinator for parsing rules.
+  *
+  * There are two types of rules, definitions and tagger rules.
+  *  1.  Definitions are used as a text subsitution on subsequent lines.
+  *  2.  Tagger rules provide the necessary information to instantiate a tagger.
+  *
+  * The DSL also allows coments with //.
+  *
+  * For examples, see test cases.
+  */
 class RuleParserCombinator[S <: Sentence] extends JavaTokenParsers {
   val name = ident
   val taggerIdent = ident
@@ -36,6 +46,7 @@ class RuleParserCombinator[S <: Sentence] extends JavaTokenParsers {
   val collection = rep(rule)
 }
 
+/** A helper class for parsing rules using RuleParserCombinator. */
 class RuleParser[S <: Sentence] extends RuleParserCombinator[S] {
   def parse(string: String): Try[List[Rule[S]]] = this.parse(new StringReader(string))
   def parse(reader: Reader): Try[List[Rule[S]]] = parseAll(collection, reader) match {
@@ -44,12 +55,6 @@ class RuleParser[S <: Sentence] extends RuleParserCombinator[S] {
       "(line " + next.pos.line + ", column " + next.pos.column + "):\n" +
       err + "\n" +
       next.pos.longString))
-  }
-  def main(args: Array[String]) = {
-    val reader = new FileReader(args(0))
-    val rules = this.parse(reader).get
-
-    rules foreach println
   }
 }
 
