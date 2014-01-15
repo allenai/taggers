@@ -1,16 +1,17 @@
 package edu.knowitall.taggers.tag
 
-import edu.knowitall.tool.typer.Type
-import edu.knowitall.tool.chunk.ChunkedToken
-import edu.knowitall.tool.stem.Lemmatized
-import edu.knowitall.taggers.pattern.TypedToken
 import edu.knowitall.openregex
-import edu.knowitall.taggers.pattern.PatternBuilder
-import edu.washington.cs.knowitall.regex.Expression.NamedGroup
-import edu.knowitall.taggers.TypeHelper
-import scala.util.matching.Regex
 import edu.knowitall.taggers.Cascade
 import edu.knowitall.taggers.constraint.Constraint
+import edu.knowitall.taggers.pattern.PatternBuilder
+import edu.knowitall.taggers.pattern.TypedToken
+import edu.knowitall.taggers.TypeHelper
+import edu.knowitall.tool.chunk.ChunkedToken
+import edu.knowitall.tool.stem.Lemmatized
+import edu.knowitall.tool.typer.Type
+import edu.washington.cs.knowitall.regex.Expression.NamedGroup
+
+import scala.util.matching.Regex
 
 class TypePatternTagger(name: String, expression: String)
     extends PatternTagger(name, TypePatternTagger.expandWholeTypeSyntax(expression)) {

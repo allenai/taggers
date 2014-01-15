@@ -1,9 +1,9 @@
 package edu.knowitall.taggers.pattern
 
+import edu.knowitall.collection.immutable.Interval
+import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.stem.Lemmatized
 import edu.knowitall.tool.typer.Type
-import edu.knowitall.tool.chunk.ChunkedToken
-import edu.knowitall.collection.immutable.Interval
 
 /** A representation of a token that includes information about the
   * types at that token.

@@ -1,15 +1,17 @@
 package edu.knowitall.taggers.pattern
 
-import edu.knowitall.tool.stem.Lemmatized
-import edu.knowitall.tool.chunk.ChunkedToken
-import edu.knowitall.openregex
-import java.util.regex.Pattern
-import edu.washington.cs.knowitall.logic.LogicExpression
 import edu.knowitall.collection.immutable.Interval
-import edu.washington.cs.knowitall.regex.Expression
+import edu.knowitall.openregex
+import edu.knowitall.tool.chunk.ChunkedToken
+import edu.knowitall.tool.stem.Lemmatized
 import edu.washington.cs.knowitall.logic
+import edu.washington.cs.knowitall.logic.LogicExpression
+import edu.washington.cs.knowitall.regex.Expression
+
 import com.google.common.base.{ Function => GuavaFunction }
 import org.apache.commons.lang3.StringEscapeUtils
+
+import java.util.regex.Pattern
 
 object PatternBuilder {
   type Token = TypedToken

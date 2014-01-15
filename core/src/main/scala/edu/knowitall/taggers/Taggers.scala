@@ -2,8 +2,8 @@ package edu.knowitall.taggers
 
 import edu.knowitall.common.Resource
 import edu.knowitall.repr.sentence.Sentence
-import edu.knowitall.taggers.tag._
 import edu.knowitall.taggers.rule._
+import edu.knowitall.taggers.tag._
 
 import java.io.File
 import java.io.Reader

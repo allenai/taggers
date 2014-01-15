@@ -1,13 +1,14 @@
 package edu.knowitall.taggers.tag
 
-import edu.knowitall.taggers.constraint.Constraint
 import edu.knowitall.common.HashCodeHelper
-import edu.knowitall.tool.stem.Lemmatized
+import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.taggers.constraint.Constraint
 import edu.knowitall.tool.chunk.ChunkedToken
-import collection.JavaConverters._
+import edu.knowitall.tool.stem.Lemmatized
 import edu.knowitall.tool.typer.Type
 import edu.knowitall.tool.typer.Typer
-import edu.knowitall.repr.sentence.Sentence
+
+import scala.collection.JavaConverters._
 
 abstract class Tagger[-S <: Sentence] {
   type TheSentence = S

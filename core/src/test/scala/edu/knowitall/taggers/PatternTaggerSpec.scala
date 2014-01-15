@@ -1,14 +1,16 @@
 package edu.knowitall.taggers
 
-import scala.collection.JavaConverters._
-import org.scalatest.FlatSpec
 import edu.knowitall.collection.immutable.Interval
+import edu.knowitall.repr.sentence
+import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.Lemmatized
 import edu.knowitall.tool.stem.MorphaStemmer
-import edu.knowitall.repr.sentence.Sentence
-import edu.knowitall.repr.sentence
+
+import org.scalatest.FlatSpec
+
+import scala.collection.JavaConverters._
 
 class PatternTaggerSpec extends FlatSpec {
   val chunker = new OpenNlpChunker();

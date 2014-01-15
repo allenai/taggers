@@ -1,9 +1,10 @@
 package edu.knowitall.taggers.pattern
 
-import edu.knowitall.tool.stem.Lemmatized
-import edu.knowitall.tool.chunk.ChunkedToken
-import java.util.regex.Pattern
 import edu.knowitall.taggers.pattern.Fields.Field
+import edu.knowitall.tool.chunk.ChunkedToken
+import edu.knowitall.tool.stem.Lemmatized
+
+import java.util.regex.Pattern
 
 object Expressions {
   abstract class Expression extends Function[PatternBuilder.Token, Boolean] {

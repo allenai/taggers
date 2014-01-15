@@ -1,15 +1,17 @@
 package edu.knowitall.taggers
 
-import scala.collection.JavaConverters.asScalaBufferConverter
-import scala.collection.JavaConverters.seqAsJavaListConverter
-import org.scalatest.FlatSpec
+import edu.knowitall.repr.sentence
+import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.taggers.constraint.VerbPhraseConstraint
+import edu.knowitall.taggers.tag.ConstrainedTagger
 import edu.knowitall.taggers.tag.KeywordTagger
 import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.MorphaStemmer
-import edu.knowitall.repr.sentence.Sentence
-import edu.knowitall.repr.sentence
-import edu.knowitall.taggers.tag.ConstrainedTagger
+
+import org.scalatest.FlatSpec
+
+import scala.collection.JavaConverters.asScalaBufferConverter
+import scala.collection.JavaConverters.seqAsJavaListConverter
 
 class TaggerSpec extends FlatSpec {
   val chunker = new OpenNlpChunker();
