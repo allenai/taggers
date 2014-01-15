@@ -60,10 +60,11 @@ case class Cascade[-S <: Sentence](taggers: IntMap[Seq[Tagger[S]]]) {
     var previousLevelTags = Seq.empty[Type]
     for ((level, taggers) <- levels) {
       var levelTags = Seq.empty[Type]
+      val consumedIndices = previousLevelTags.map(_.tokenInterval).flatten
+
       for (tagger <- taggers) yield {
         val allTags = previousLevelTags ++ levelTags
-        val previousIndices = previousLevelTags.map(_.tokenInterval).flatten
-        levelTags = levelTags ++ tagger(sentence, allTags, previousIndices)
+        levelTags = levelTags ++ tagger(sentence, allTags, consumedIndices)
       }
 
       previousLevelTags ++= levelTags
