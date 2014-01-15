@@ -68,13 +68,8 @@ object TaggerCliMain {
       // parse taggers
       val rules = new RuleParser[Sentence with Chunked with Lemmatized].parse(text).get
 
-      // build a tagger collection
-      val col = Taggers.fromRules(rules).foldLeft(new Cascade[Sentence with Chunked with Lemmatized]()) {
-        case (ctc, rule) =>
-          ctc + rule
-      }
-
-      col
+      // build a single-level cascade
+      new Cascade[Sentence with Chunked with Lemmatized](Taggers.fromRules(rules))
     }
 
     // load patterns

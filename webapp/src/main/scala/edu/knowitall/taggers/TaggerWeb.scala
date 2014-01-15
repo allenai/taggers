@@ -60,7 +60,7 @@ class TaggerWeb(port: Int) {
       val patternText = params("patterns").headOption.get
 
       val rules = new RuleParser[Sentence with Chunked with Lemmatized].parse(patternText).get
-      val col = Taggers.fromRules(rules).foldLeft(new Cascade[Sentence with Chunked with Lemmatized]()) { case (ctc, rule) => ctc + rule }
+      val col = new Cascade[Sentence with Chunked with Lemmatized](Taggers.fromRules(rules))
 
       val results = for (line <- sentenceText.split("\n")) yield {
         val sentence = process(line)
