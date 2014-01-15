@@ -13,7 +13,14 @@ import org.scalatest.FlatSpec
 import scala.collection.JavaConverters._
 
 class PatternTaggerSpec extends FlatSpec {
+  type MySentence = Sentence with sentence.Chunked with sentence.Lemmatized
+
   val chunker = new OpenNlpChunker();
+  def makeSentence(text: String): MySentence =
+    new Sentence(text) with sentence.Chunker with sentence.Lemmatizer {
+      override val chunker = new OpenNlpChunker
+      override val lemmatizer = MorphaStemmer
+    }
 
   "WorldCandy PatternTagger" should "match an occurrence from a sequence of Type Nationality and Type Candy" in {
     val taggers = """
@@ -40,19 +47,14 @@ class PatternTaggerSpec extends FlatSpec {
         }
       """
 
-    val opennlpChunker = new OpenNlpChunker
-
     val taggerCollection =
-      new Cascade(Taggers.fromString[Sentence with sentence.Chunked with sentence.Lemmatized](taggers))
+      new Cascade(Taggers.fromString[MySentence](taggers))
 
     //test sentence that should be tagged as
     // WorldCandy{(3,5)}
     val testSentence = "Vernon enjoys eating Argentinian Licorice."
 
-    val s = new Sentence(testSentence) with sentence.Chunker with sentence.Lemmatizer {
-      override val chunker = new OpenNlpChunker
-      override val lemmatizer = MorphaStemmer
-    }
+    val s = makeSentence(testSentence)
 
     //Tag the sentence with the loaded taggers
     val types = taggerCollection.tag(s)
@@ -80,20 +82,49 @@ class PatternTaggerSpec extends FlatSpec {
            <string = 'b'>
          }"""
 
-    val opennlpChunker = new OpenNlpChunker
-
-    val taggerCollection = new Cascade(Taggers.fromString[Sentence with sentence.Chunked with sentence.Lemmatizer](taggers))
+    val taggerCollection = new Cascade(Taggers.fromString[MySentence](taggers))
 
     val testSentence = "c a b c"
 
-    val s = new Sentence(testSentence) with sentence.Chunker with sentence.Lemmatizer {
-      override val chunker = new OpenNlpChunker
-      override val lemmatizer = MorphaStemmer
-    }
+    val s = makeSentence(testSentence)
 
     val types = taggerCollection.tag(s)
 
     assert(types.size === 1)
+  }
+
+  "cascades with PatternTagger" should "work correctly" in {
+    val l0 =
+      """TupleRelation := TypePatternTagger {
+        (?:<string="in"> <string="order"> <string="to">)
+      }"""
+
+    val l1 =
+      """NP := PatternTagger {
+        <chunk='B-NP'> <chunk='I-NP'>*
+      }
+      VG := TypePatternTagger {
+        <string="to">? <pos=/VB[DPZGN]?/> <pos=/R[PB]/>?
+      }
+      Tuple := TypePatternTagger {
+        (<Arg1>:@NP)? (<Rel>:@VG) (<Arg2>:@NP)?
+      }
+      RelatedTuples := TypePatternTagger {
+        (<Tuple1>:@Tuple) (<TupleRel>:@TupleRelation) (<Tuple2>:@Tuple)
+      }"""
+
+    val cascade = new Cascade(Map(
+      0 -> Taggers.fromString[MySentence](l0),
+      1 -> Taggers.fromString[MySentence](l1)))
+
+    val testSentence = "animals eat in order to get nutrients"
+
+    val s = makeSentence(testSentence)
+
+    val types = cascade.tag(s)
+
+    types foreach println
+    assert(types.exists(_.name == "RelatedTuples"), "RelatedTuples type not found.")
   }
 
   "type fields in PatternTagger" should "match correctly" in {
@@ -115,16 +146,11 @@ class PatternTaggerSpec extends FlatSpec {
          }
       """
 
-    val opennlpChunker = new OpenNlpChunker
-
-    val taggerCollection = new Cascade(Taggers.fromString[Sentence with sentence.Chunked with sentence.Lemmatizer](taggers))
+    val taggerCollection = new Cascade(Taggers.fromString[MySentence](taggers))
 
     val testSentence = "I once saw the large cat on a couch ."
 
-    val s = new Sentence(testSentence) with sentence.Chunker with sentence.Lemmatizer {
-      override val chunker = new OpenNlpChunker
-      override val lemmatizer = MorphaStemmer
-    }
+    val s = makeSentence(testSentence)
 
     val types = taggerCollection.tag(s)
 
@@ -168,16 +194,11 @@ class PatternTaggerSpec extends FlatSpec {
     	}
       """
 
-    val opennlpChunker = new OpenNlpChunker
-
-    val taggerCollection = new Cascade(Taggers.fromString[Sentence with sentence.Chunked with sentence.Lemmatized](taggers))
+    val taggerCollection = new Cascade(Taggers.fromString[MySentence](taggers))
 
     val testSentence = "James gives delicious candy frequently."
 
-    val s = new Sentence(testSentence) with sentence.Chunker with sentence.Lemmatizer {
-      override val chunker = new OpenNlpChunker
-      override val lemmatizer = MorphaStemmer
-    }
+    val s = makeSentence(testSentence)
 
     val types = taggerCollection.tag(s)
 

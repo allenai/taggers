@@ -31,14 +31,14 @@ abstract class Tagger[-S <: Sentence] {
   override def hashCode = HashCodeHelper(name /*, constraints*/ )
 
   def apply(sentence: S): Seq[Type] = this.tags(sentence)
-  def apply(sentence: S, tags: Seq[Type]): Seq[Type] = this.tags(sentence, tags)
+  def apply(sentence: S, tags: Seq[Type], consumedIndices: Seq[Int]): Seq[Type] = this.tags(sentence, tags, consumedIndices)
 
   /** Public method for finding tags in a sentence.
     * @param sentence
     * @return a list of the tags found
     */
   def tags(sentence: S): Seq[Type] = {
-    tags(sentence, Seq.empty)
+    tags(sentence, Seq.empty, Seq.empty)
   }
 
   /** Public method for finding tags in a sentence with types.
@@ -47,8 +47,8 @@ abstract class Tagger[-S <: Sentence] {
     * @param sentence
     * @return a list of the tags found
     */
-  def tags(sentence: S, types: Seq[Type]) = {
-    var tags = findTagsWithTypes(sentence, types)
+  def tags(sentence: S, types: Seq[Type], consumedIndices: Seq[Int]) = {
+    var tags = findTagsWithTypes(sentence, types, consumedIndices)
 
     // remove types that are covered by other types.
     tags = filterCovered(tags)
@@ -66,7 +66,7 @@ abstract class Tagger[-S <: Sentence] {
     * @param types
     * @return
     */
-  protected def findTagsWithTypes(sentence: S, types: Seq[Type]): Seq[Type] = {
+  protected def findTagsWithTypes(sentence: S, types: Seq[Type], consumedIndices: Seq[Int]): Seq[Type] = {
     findTags(sentence)
   }
 

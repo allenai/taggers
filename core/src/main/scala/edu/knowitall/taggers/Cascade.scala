@@ -38,13 +38,20 @@ case class Cascade[S <: Sentence](taggers: Map[Int, Seq[Tagger[S]]]) {
   }
 
   def tag(sentence: S): Seq[Type] = {
-    var tags = Seq.empty[Type]
     val levels = taggers.toSeq.sortBy(_._1)
+
+    var previousLevelTags = Seq.empty[Type]
     for ((level, taggers) <- levels) {
-      for (tagger <- taggers) {
-        tags = tags ++ tagger.tags(sentence, tags)
+      var levelTags = Seq.empty[Type]
+      for (tagger <- taggers) yield {
+        val allTags = previousLevelTags ++ levelTags
+        val previousIndices = previousLevelTags.map(_.tokenInterval).flatten
+        levelTags = levelTags ++ tagger.tags(sentence, allTags, previousIndices)
       }
+
+      previousLevelTags ++= levelTags
     }
-    tags
+
+    previousLevelTags
   }
 }

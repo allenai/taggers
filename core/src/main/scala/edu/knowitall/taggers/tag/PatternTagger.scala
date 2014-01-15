@@ -56,7 +56,7 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
   }
 
   override def findTags(sentence: TheSentence) = {
-    this.findTagsWithTypes(sentence, Seq.empty[Type])
+    this.findTagsWithTypes(sentence, Seq.empty[Type], Seq.empty[Int])
   }
 
   /** This method overrides Tagger's default implementation. This
@@ -64,14 +64,13 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
     * the sentence so far.
     */
   override def findTagsWithTypes(sentence: TheSentence,
-    originalTags: Seq[Type]): Seq[Type] = {
+    originalTags: Seq[Type], consumedIndices: Seq[Int]): Seq[Type] = {
 
-    // create a java set of the original tags
     val originalTagSet = originalTags.toSet
 
     // convert tokens to TypedTokens
     val typedTokens = for ((token, i) <- sentence.lemmatizedTokens.zipWithIndex) yield {
-      new TypedToken(token, i, originalTagSet.filter(_.tokenInterval contains i))
+      new TypedToken(token, i, originalTagSet.filter(_.tokenInterval contains i), consumedIndices contains i)
     }
 
     val tags = for {

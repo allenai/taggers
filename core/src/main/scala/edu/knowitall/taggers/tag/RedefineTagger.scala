@@ -27,7 +27,7 @@ case class RedefineTagger(name: String, target: String) extends Tagger[Sentence]
     Seq.empty
   }
 
-  override def findTagsWithTypes(sentence: TheSentence, tags: Seq[Type]): Seq[Type] = {
+  override def findTagsWithTypes(sentence: TheSentence, tags: Seq[Type], consumedIndices: Seq[Int]): Seq[Type] = {
     // links will be lost
     tags.filter(_.name == this.target).map(typ => Type(typ.name, typ.source, typ.tokenInterval, typ.text))
   }
