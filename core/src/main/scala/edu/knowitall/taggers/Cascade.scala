@@ -67,7 +67,7 @@ case class Cascade[-S <: Sentence](taggers: IntMap[Seq[Tagger[S]]]) {
         levelTags = levelTags ++ tagger(sentence, allTags, consumedIndices)
       }
 
-      previousLevelTags ++= levelTags
+      previousLevelTags = levelTags
     }
 
     previousLevelTags
