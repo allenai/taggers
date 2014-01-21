@@ -1,0 +1,15 @@
+NP := PatternTagger {
+  <chunk='B-NP'> <chunk='I-NP'>*
+}
+VG := TypePatternTagger {
+  <string="to">? <pos=/VB[DPZGN]?/> <pos=/R[PB]/>?
+}
+Tuple := TypePatternTagger {
+  (<Arg1>:@NP)? (<Rel>:@VG) (<Arg2>:@NP)?
+}
+TupleRelation := TypePatternTagger {
+  (?:<string="in"> <string="order"> <string="to">)
+}
+RelatedTuples := TypePatternTagger {
+  (<Tuple1>:@Tuple) (<TupleRel>:@TupleRelation) (<Tuple2>:@Tuple)
+}

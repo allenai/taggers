@@ -1,16 +1,17 @@
 package edu.knowitall.taggers.example
 
-import edu.knowitall.taggers.TaggerCollection
-import edu.knowitall.taggers.LinkedType
-import edu.knowitall.taggers.NamedGroupType
-import edu.knowitall.tool.chunk.OpenNlpChunker
-import edu.knowitall.repr.sentence.Sentence
-import edu.knowitall.repr.sentence.Lemmatized
 import edu.knowitall.repr.sentence.Chunked
 import edu.knowitall.repr.sentence.Chunker
-import edu.knowitall.tool.stem.MorphaStemmer
+import edu.knowitall.repr.sentence.Lemmatized
 import edu.knowitall.repr.sentence.Lemmatizer
-import edu.knowitall.taggers.ParseRule
+import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.taggers.Cascade
+import edu.knowitall.taggers.LinkedType
+import edu.knowitall.taggers.NamedGroupType
+import edu.knowitall.taggers.rule._
+import edu.knowitall.taggers.Taggers
+import edu.knowitall.tool.chunk.OpenNlpChunker
+import edu.knowitall.tool.stem.MorphaStemmer
 
 object Example {
 
@@ -56,11 +57,11 @@ object Example {
 
   def main(args: Array[String]) {
 
-    val rules = new ParseRule[Sentence with Chunked with Lemmatized].parse(pattern).get
-    val t = rules.foldLeft(new TaggerCollection[Sentence with Chunked with Lemmatized]()) { case (ctc, rule) => ctc + rule }
+    val rules = new RuleParser[Sentence with Chunked with Lemmatized].parse(pattern).get
+    val cascade = new Cascade[Sentence with Chunked with Lemmatized](Taggers.fromRules(rules))
     val lines = input.split("\n").map(f => f.trim()).filter(f => f != "").toList
     for (line <- lines) {
-      val types = t.tag(process(line)).toList
+      val types = cascade.apply(process(line)).toList
       println("Line: " + line)
       for (typ <- types) {
         println("TaggerName: " + typ.name + "\tTypeInterval: " + typ.tokenInterval + "\t TypeText: " + typ.text)
