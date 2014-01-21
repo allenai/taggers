@@ -1,0 +1,3 @@
+TupleRelation := TypePatternTagger {
+  (?:<string="in"> <string="order"> <string="to">)
+}
