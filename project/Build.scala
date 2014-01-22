@@ -15,10 +15,11 @@ object TaggerBuild extends Build {
       organization := "org.allenai.taggers",
       crossScalaVersions := Seq("2.10.3"),
       scalaVersion <<= crossScalaVersions { (vs: Seq[String]) => vs.head },
-      nlptoolsVersion := "2.4.4",
+      nlptoolsVersion := "2.5.0-SNAPSHOT",
       scalacOptions ++= Seq("-unchecked", "-deprecation"),
       homepage := Some(url("http://github.com/knowitall/taggers")),
       licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
+      resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
       publishMavenStyle := true,
       publishTo <<= version { (v: String) =>
         val nexus = "https://oss.sonatype.org/"

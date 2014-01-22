@@ -5,9 +5,9 @@ import edu.knowitall.tool.typer.Type
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.stem.Lemmatized
 import edu.knowitall.repr.sentence.Sentence
-import edu.knowitall.repr.sentence.Chunked
+import edu.knowitall.repr.sentence.Chunks
 
-object VerbPhraseConstraint extends Constraint[Sentence with Chunked] {
+object VerbPhraseConstraint extends Constraint[Sentence with Chunks] {
   override def apply(sentence: TheSentence, tag: Type): Boolean = {
     // make sure at least one tag is VP
     // and no tags are NP

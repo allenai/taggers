@@ -1,8 +1,8 @@
 package edu.knowitall.taggers.example
 
-import edu.knowitall.repr.sentence.Chunked
 import edu.knowitall.repr.sentence.Chunker
-import edu.knowitall.repr.sentence.Lemmatized
+import edu.knowitall.repr.sentence.Chunks
+import edu.knowitall.repr.sentence.Lemmas
 import edu.knowitall.repr.sentence.Lemmatizer
 import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.taggers.Cascade
@@ -48,7 +48,7 @@ object Example {
 
   val chunker = new OpenNlpChunker()
 
-  def process(text: String): Sentence with Chunked with Lemmatized = {
+  def process(text: String): Sentence with Chunks with Lemmas = {
     new Sentence(text) with Chunker with Lemmatizer {
       val chunker = Example.this.chunker
       val lemmatizer = MorphaStemmer
@@ -57,8 +57,8 @@ object Example {
 
   def main(args: Array[String]) {
 
-    val rules = new RuleParser[Sentence with Chunked with Lemmatized].parse(pattern).get
-    val cascade = new Cascade[Sentence with Chunked with Lemmatized](Taggers.fromRules(rules))
+    val rules = new RuleParser[Sentence with Chunks with Lemmas].parse(pattern).get
+    val cascade = new Cascade[Sentence with Chunks with Lemmas](Taggers.fromRules(rules))
     val lines = input.split("\n").map(f => f.trim()).filter(f => f != "").toList
     for (line <- lines) {
       val types = cascade.apply(process(line)).toList
