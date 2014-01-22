@@ -4,7 +4,7 @@ import com.google.common.base.Predicate
 import com.google.common.collect.ImmutableList
 import edu.knowitall.openregex
 import edu.knowitall.repr.sentence
-import edu.knowitall.repr.sentence.Chunked
+import edu.knowitall.repr.sentence.Chunks
 import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.taggers.LinkedType
 import edu.knowitall.taggers.NamedGroupType
@@ -41,7 +41,7 @@ import scala.collection.JavaConverters._
   * @author schmmd
   *
   */
-class PatternTagger(patternTaggerName: String, expression: String) extends Tagger[Sentence with Chunked with sentence.Lemmatized] {
+class PatternTagger(patternTaggerName: String, expression: String) extends Tagger[Sentence with Chunks with sentence.Lemmas] {
   override def name = patternTaggerName
   override def source = null
 

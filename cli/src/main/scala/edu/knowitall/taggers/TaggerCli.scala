@@ -1,9 +1,9 @@
 package edu.knowitall.taggers
 
 import edu.knowitall.repr.sentence
-import edu.knowitall.repr.sentence.Chunked
+import edu.knowitall.repr.sentence.Chunks
 import edu.knowitall.repr.sentence.Chunker
-import edu.knowitall.repr.sentence.Lemmatized
+import edu.knowitall.repr.sentence.Lemmas
 import edu.knowitall.repr.sentence.Lemmatizer
 import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.taggers.rule._
@@ -16,8 +16,8 @@ import edu.knowitall.common.Resource.using
 import java.io.File
 import scala.io.Source
 
-class TaggerApp(cascade: Cascade[Sentence with Chunked with Lemmatized]) {
-  type Sent = Sentence with Chunked with Lemmatized
+class TaggerApp(cascade: Cascade[Sentence with Chunks with Lemmas]) {
+  type Sent = Sentence with Chunks with Lemmas
   val chunker = new OpenNlpChunker()
 
   def format(typ: Type) = {
@@ -75,7 +75,7 @@ object TaggerCliMain {
         else new File(basePath, path)
       }
 
-      var cascade = new Cascade[Sentence with Chunked with Lemmatized]()
+      var cascade = new Cascade[Sentence with Chunks with Lemmas]()
 
       // Iterate over the level definitions, load the tagger files,
       // and add them to the cascade.
@@ -107,7 +107,7 @@ object TaggerCliMain {
 
     def loadTaggers(text: String) = {
       // parse taggers
-      val rules = new RuleParser[Sentence with Chunked with Lemmatized].parse(text).get
+      val rules = new RuleParser[Sentence with Chunks with Lemmas].parse(text).get
 
       Taggers.fromRules(rules)
     }

@@ -1,9 +1,9 @@
 package edu.knowitall.taggers
 
 import edu.knowitall.repr.sentence
-import edu.knowitall.repr.sentence.Chunked
+import edu.knowitall.repr.sentence.Chunks
 import edu.knowitall.repr.sentence.Chunker
-import edu.knowitall.repr.sentence.Lemmatized
+import edu.knowitall.repr.sentence.Lemmas
 import edu.knowitall.repr.sentence.Lemmatizer
 import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.taggers.tag.Tagger
@@ -25,7 +25,9 @@ class TaggerWeb(port: Int) {
   // NLP tools
   val chunker = new OpenNlpChunker()
 
-  def process(text: String): Sentence with Chunked with Lemmatized = {
+  type MySentence = Sentence with Chunks with Lemmas
+
+  def process(text: String): MySentence = {
     new Sentence(text) with Chunker with Lemmatizer {
       val chunker = TaggerWeb.this.chunker
       val lemmatizer = MorphaStemmer
@@ -57,7 +59,6 @@ class TaggerWeb(port: Int) {
   }
 
   def post(params: Map[String, Seq[String]]) = {
-    type MySentence = Sentence with Chunked with Lemmatized
     try {
       val sentenceText = params("sentences").headOption.get
       val patternText = params("patterns").headOption.get

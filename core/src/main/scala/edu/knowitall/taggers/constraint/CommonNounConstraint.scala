@@ -6,9 +6,9 @@ import edu.knowitall.tool.typer.Type
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.stem.Lemmatized
 import edu.knowitall.repr.sentence.Sentence
-import edu.knowitall.repr.sentence.Postagged
+import edu.knowitall.repr.sentence.Postags
 
-object CommonNounConstraint extends Constraint[Sentence with Postagged] {
+object CommonNounConstraint extends Constraint[Sentence with Postags] {
   override def apply(sentence: TheSentence, tag: Type): Boolean = {
     val commonNounPattern = Pattern.compile("NNS?", Pattern.CASE_INSENSITIVE)
 
