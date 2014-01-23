@@ -1,0 +1,7 @@
+NG := RedefineTagger(NG)
+PP := RedefineTagger(PP)
+VG := RedefineTagger(VG)
+
+S := TypePatternTagger {
+  (<Arg1>:@NG @PP?) (<Rel>:@VG) (<Arg2>:@NG @PP?)? (<Arg>:@PP)?
+}

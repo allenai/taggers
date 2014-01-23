@@ -1,0 +1,12 @@
+NG := RedefineTagger(NG)
+PP := RedefineTagger(PP)
+
+Modal := PatternTagger {
+  <pos="MD"> <pos="RB">? 
+}
+Aux := PatternTagger {
+  <string=/be|am|is|are|have|has/> <pos="RB">? <string="been">?
+}
+VG := TypePatternTagger {
+  (?:@Modal)? (?:@Aux)? (<Head>:<pos=/VB[DPZGN]?/> <pos=/R[PB]/ | pos="IN">?)
+}

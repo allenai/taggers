@@ -1,0 +1,3 @@
+NG := PatternTagger {
+  <chunk='B-NP'> <chunk='I-NP'>* (?:<string="of"> <chunk='B-NP'> <chunk='I-NP'>*)?
+}

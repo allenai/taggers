@@ -1,0 +1,9 @@
+NG := RedefineTagger(NG)
+VG := RedefineTagger(VG)
+
+Prep := PatternTagger {
+  <pos="RB">? <pos="IN" | pos="TO" | pos="RP"> <pos="RB">?
+}
+PP := TypePatternTagger {
+  (?:@Prep) (?:@NG)
+}
