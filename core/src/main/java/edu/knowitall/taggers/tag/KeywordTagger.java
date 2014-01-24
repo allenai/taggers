@@ -111,7 +111,7 @@ public class KeywordTagger extends JavaTagger {
     protected void findTagsJava(final List<Type> tags, final List<Lemmatized<ChunkedToken>>  sentence,
             List<String> tokens, final String[] keyword) {
 
-        for (int i = 0; i < tokens.size() - keyword.length; i++) {
+        for (int i = 0; i <= tokens.size() - keyword.length; i++) {
             if (match(tokens, keyword, i)) {
                 Interval range = Interval.open(i, i + keyword.length);
                 tags.add(this.createType(sentence, range));
