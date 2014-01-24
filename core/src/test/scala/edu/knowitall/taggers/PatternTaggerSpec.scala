@@ -205,4 +205,28 @@ class PatternTaggerSpec extends FlatSpec {
     val typeTypes = types.filter(_.name == "TypePatternPhrase")
     assert(typeTypes.size === 1)
   }
+
+  "TypePatternTagger expressions" should "match adjacent types seperately" in {
+
+    val taggers  =
+      """FemaleFirstName := KeywordTagger {
+           mary
+           jones
+         }
+
+         FirstName := TypePatternTagger {
+           (?:@FemaleFirstName)
+         }"""
+
+    val cascade = new Cascade(Taggers.fromString[MySentence](taggers))
+
+    val testSentence = "mary jones."
+
+    val s = makeSentence(testSentence)
+
+    val types = cascade.apply(s)
+    val filteredTypes = types.filter(_.name == "FirstName")
+
+    assert(filteredTypes.size === 2)
+  }
 }
