@@ -1,5 +1,8 @@
+Name := RedefineTagger(Name)
 NG := RedefineTagger(NG)
 VG := RedefineTagger(VG)
+Rel := RedefineTagger(Rel)
+RelTo := RedefineTagger(RelTo)
 
 Prep := PatternTagger {
   <pos="RB">? <pos="IN" | pos="TO" | pos="RP"> <pos="RB">?

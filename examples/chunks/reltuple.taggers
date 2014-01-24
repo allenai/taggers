@@ -1,0 +1,14 @@
+NP := RedefineTagger(NP)
+VP := RedefineTagger(VP)
+S := RedefineTagger(S)
+Rel := RedefineTagger(Rel)
+RelTo := RedefineTagger(RelTo)
+
+Related := TypePatternTagger {
+  (?: (<Tuple1>:@S) (<Relation>:@Rel) (<Tuple2>:@S) )
+  | (?: (<NP1>:@NP) (<Relation>:@Rel) (<Tuple2>:@S) )
+  | (?: (<Tuple1>:@S) (<Relation>:@Rel) (<NP2>:@NP) )
+  | (?: (<NP1>:@NP) (<Relation>:@Rel) (<NP2>:@NP) )
+  | (?: (<Tuple1>:@S) (<Relation>:@RelTo) (<Tuple2>:@VP) )
+  | (?: (<NP1>:@NP) (<Relation>:@RelTo) (<Tuple2>:@VP) )
+}

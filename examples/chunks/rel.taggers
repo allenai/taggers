@@ -17,7 +17,7 @@ EffectRel := TypePatternTagger {
 // and by doing so
 | (?:<string="and"> <string="by"> <string="doing"> <string="so"> )
 // may be one way that 
-| (?:<pos="MD">? <string=/be|is|are/> <pos="DT"> <string=/way(s)?/> <string="that"> )
+| (?:<pos="MD">? <string=/be|is|are/> <pos="DT" | pos="CD">? <string=/way(s)?/> <string="that"> )
 // which is why
 | (?:<string=/and|which/>? <pos="MD">? <string=/be|is|are/> <string="why"> )
 }
@@ -27,7 +27,7 @@ EffectRelTo := TypePatternTagger {
 // which helps to
 | (?:<string=/and|that|which|to/>? @Help <string="to"> )
 // may be one way to
-| (?:<pos="MD">? <string=/be|is|are/> <pos="DT"> <string=/way(s)?/> <string="to"> )
+| (?:<pos="MD">? <string=/be|is|are/> <pos="DT" | pos="CD">? <string=/way(s)?/> <string="to"> )
 }
 
 CauseRel := TypePatternTagger {
@@ -55,4 +55,13 @@ ExampleRel := TypePatternTagger {
 | (?:<string="such"> <string="as"> )
 // is an example of
 | (?:@And? <pos="MD">? <string=/be|is|are/> <pos="DT"> <string=/example(s)?/> <string="of"> )
+}
+
+
+Rel := TypePatternTagger {
+  (?:@EffectRel | @CauseRel | @FunctionRel | @ExampleRel)
+}
+
+RelTo := TypePatternTagger {
+  (?:@EffectRelTo | @FunctionRelTo)
 }

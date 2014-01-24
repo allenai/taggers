@@ -1,5 +1,8 @@
+Name := RedefineTagger(Name)
 NG := RedefineTagger(NG)
 PP := RedefineTagger(PP)
+Rel := RedefineTagger(Rel)
+RelTo := RedefineTagger(RelTo)
 
 Modal := PatternTagger {
   <pos="MD"> <pos="RB">? 
