@@ -63,7 +63,7 @@ class TaggerWeb(port: Int) {
       val sentenceText = params("sentences").headOption.get
       val patternText = params("patterns").headOption.get
 
-      val sections = patternText split ("\\n\\s*>>>\\s*\\n")
+      val sections = patternText split ("\\n\\s*>>>.*\\s*\\n")
       val taggers: Array[Seq[Tagger[MySentence]]] =
         sections map (text => Taggers.fromRules(new RuleParser[MySentence].parse(text).get))
       val levels: Array[(Int, Seq[Tagger[MySentence]])] =
