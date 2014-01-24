@@ -1,10 +1,15 @@
 package edu.knowitall.taggers.tag;
 
 import java.util.List;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+
 import edu.knowitall.taggers.SentenceFunctions;
 import edu.knowitall.tool.typer.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
+import edu.washington.cs.knowitall.morpha.MorphaStemmer;
 
 /***
  * Search for normalized keywords against a normalized sentence and tag the
@@ -14,7 +19,12 @@ import edu.knowitall.tool.stem.Lemmatized;
  */
 public class NormalizedKeywordTagger extends KeywordTagger {
     public NormalizedKeywordTagger(String name, List<String> keywords) {
-        super(name, keywords);
+        super(name, Lists
+                .transform(keywords, new Function<String, String>() {
+                    public String apply(String string) {
+                        return MorphaStemmer.stem(string);
+                    }
+                }));
     }
 
     /**
