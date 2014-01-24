@@ -14,7 +14,7 @@ import scala.collection.JavaConverters._
 import scala.collection.immutable.IntMap
 
 class PatternTaggerSpec extends FlatSpec {
-  type MySentence = Sentence with sentence.Chunked with sentence.Lemmatized
+  type MySentence = Sentence with sentence.Chunks with sentence.Lemmas
 
   val chunker = new OpenNlpChunker();
   def makeSentence(text: String): MySentence =
