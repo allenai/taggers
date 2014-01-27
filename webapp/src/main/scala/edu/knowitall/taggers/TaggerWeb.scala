@@ -19,6 +19,7 @@ import unfiltered.response._
 
 import java.io.File
 import scala.collection.immutable.IntMap
+import scala.collection.immutable.ListMap
 import scala.collection.JavaConverters._
 import scala.io.Source
 
@@ -65,31 +66,82 @@ class TaggerWeb(ruleText: String, port: Int) {
     try {
       val sentenceText = params("sentences").headOption.get
       val patternText = params("patterns").headOption.get
+      
+      def takeWhile[T](it: BufferedIterator[T], cond: T=>Boolean): Seq[T] = {
+        var result = Seq.empty[T]
+        while (it.hasNext && cond(it.head)) {
+          println(it.head)
+          result = result :+ it.head
+          
+          it.next()
+        }
+        
+        result
+      }
 
-      val sections = patternText split ("(?m)^>>>.*$")
-      val taggers: Array[Seq[Tagger[MySentence]]] =
+      def dropWhile[T](it: BufferedIterator[T], cond: T=>Boolean): Unit = {
+        while (it.hasNext && cond(it.head)) {
+          it.next()
+        }
+      }
+
+      val linesIt = patternText.split("\n").iterator.buffered
+      var sections = Seq.empty[String]
+      var Seperator = "(?m)^>>>\\s*(.*)\\s*$".r
+      var EmptyLine = "(?m)^\\s*$".r
+      if (linesIt.hasNext) {
+        while (linesIt.hasNext) {
+          // consume empty lines
+          dropWhile(linesIt, (line: String) => EmptyLine.pattern.matcher(line).matches)
+
+          // match the header
+          val header = linesIt.next()
+          header match {
+            case Seperator(header) =>
+            case _ => throw new MatchError("Header not found, rather: " + header)
+          }
+
+          val body = takeWhile(linesIt, (line: String) => !Seperator.pattern.matcher(line).matches)
+          sections = sections :+ body.mkString("\n")
+        }
+      }
+
+      val taggers: Seq[Seq[Tagger[MySentence]]] =
         sections map (text => Taggers.fromRules(new RuleParser[MySentence].parse(text).get))
-      val levels: Array[(Int, Seq[Tagger[MySentence]])] =
+      val levels: Seq[(Int, Seq[Tagger[MySentence]])] =
         taggers.zipWithIndex map (_.swap)
       val cascade = new Cascade[MySentence](IntMap(levels :_*))
 
       val results = for (line <- sentenceText.split("\n")) yield {
         val sentence = process(line)
-        val types = cascade.apply(sentence).reverse
+        val levels = cascade.levels(sentence)
 
-        (line, types)
+        (line, levels)
       }
 
       def formatType(typ: Type) = {
         typ.name + "(" + typ.text + ")"
       }
-      val resultText =
-        results.map {
-          case (sentence, typs) =>
-            sentence + "\n\n" + typs.map(formatType).mkString("\n")
-        }.mkString("\n\n")
+      val resultText = new StringBuilder()
+      for ((line, levels) <- results) {
+        resultText.append(line)
+        resultText.append("\n\n")
+        for ((level, types) <- levels.toSeq.reverse) {
+          if (levels.size > 1) {
+            resultText.append(s"  Level $level\n\n")
+          }
+          
+          for (typ <- types.reverse) {
+            resultText.append("  ")
+            resultText.append(formatType(typ))
+            resultText.append("\n")
+          }
+          
+          resultText.append("\n")
+        }
+      }
 
-      page(params, Seq.empty, resultText)
+      page(params, Seq.empty, resultText.toString)
     } catch {
       case e: Throwable =>
         e.printStackTrace()

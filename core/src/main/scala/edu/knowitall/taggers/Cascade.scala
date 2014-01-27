@@ -18,6 +18,7 @@ import java.io.File
 import java.io.FileReader
 import java.io.Reader
 import scala.collection.immutable.IntMap
+import scala.collection.immutable.ListMap
 
 /** Represents a sequence of taggers applied in order.
   * After each level of taggers, PatternTaggers can only use
@@ -71,6 +72,33 @@ case class Cascade[-S <: Sentence](taggers: IntMap[Seq[Tagger[S]]]) {
     }
 
     previousLevelTags
+  }
+
+  /** Apply the cascade to a sentence, keeping types found at all levels.
+    *
+    * @returns  the found types at each level
+    */
+  def levels(sentence: S): ListMap[Int, Seq[Type]] = {
+    val levels = taggers.toSeq.sortBy(_._1)
+
+    var result = ListMap.empty[Int, Seq[Type]]
+    var previousLevelTags = Seq.empty[Type]
+    for ((level, taggers) <- levels) {
+      var levelTags = Seq.empty[Type]
+      val consumedIndices = previousLevelTags.map(_.tokenInterval).flatten
+
+      for (tagger <- taggers) yield {
+        val allTags = previousLevelTags ++ levelTags
+        levelTags = levelTags ++ tagger(sentence, allTags, consumedIndices)
+      }
+      
+      println(level)
+
+      result += level -> levelTags
+      previousLevelTags = levelTags
+    }
+
+    result
   }
 }
 
