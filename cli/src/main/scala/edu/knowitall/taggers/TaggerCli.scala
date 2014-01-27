@@ -64,47 +64,6 @@ object TaggerCliMain {
   }
 
   def run(config: Config): Unit = {
-    // load a cascade definition file
-    def loadCascade(basePath: File, lines: Iterator[String]) = {
-      System.err.println("Loading cascade: " + basePath)
-
-      // paths inside are either absolute or relative to the cascade definition file
-      def makeFile(path: String) = {
-        val file = new File(path)
-        if (file.isAbsolute) file
-        else new File(basePath, path)
-      }
-
-      var cascade = new Cascade[Sentence with Chunks with Lemmas]()
-
-      // Iterate over the level definitions, load the tagger files,
-      // and add them to the cascade.
-      val levels = for (
-        line <- lines map (_.trim)
-        if !line.isEmpty) {
-
-        // A line is composed of a level number and a tagger file path
-        val (level, taggerFile) = line.split("\t") match {
-          case Array(levelString, taggerFilePath) =>
-            (levelString.toInt, makeFile(taggerFilePath))
-          case _ => throw new MatchError("Could not understand cascade line: " + line)
-        }
-
-        System.err.println("Loading taggers at level " + level + ": " + taggerFile)
-
-        val taggers = using(Source.fromFile(taggerFile)) { source =>
-          loadTaggers(source.getLines.mkString("\n"))
-        }
-
-        cascade = cascade.plus(level, taggers)
-      }
-
-      System.err.println("Done loading cascade.")
-      System.err.println()
-
-      cascade
-    }
-
     def loadTaggers(text: String) = {
       // parse taggers
       val rules = new RuleParser[Sentence with Chunks with Lemmas].parse(text).get
@@ -112,10 +71,7 @@ object TaggerCliMain {
       Taggers.fromRules(rules)
     }
 
-    val cascade =
-      using(config.cascadeSource()) { source =>
-        loadCascade(config.cascadeFile.getParentFile, source.getLines)
-      }
+    val cascade = Cascade.load(config.cascadeFile)
 
     val app = new TaggerApp(cascade)
 
