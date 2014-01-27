@@ -79,7 +79,6 @@ object TaggerCliMain {
       // iterate over sentences
       for (line <- source.getLines) {
         val sentence = app.process(line)
-        println(sentence)
         app(sentence) foreach println
         println()
       }
