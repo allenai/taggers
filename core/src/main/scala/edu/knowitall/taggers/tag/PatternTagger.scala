@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList
 import edu.knowitall.openregex
 import edu.knowitall.repr.sentence
 import edu.knowitall.repr.sentence.Chunks
+import edu.knowitall.repr.sentence.Lemmas
 import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.taggers.LinkedType
 import edu.knowitall.taggers.NamedGroupType
@@ -23,17 +24,8 @@ import edu.washington.cs.knowitall.regex.ExpressionFactory
 import edu.washington.cs.knowitall.regex.Match
 import edu.washington.cs.knowitall.regex.RegularExpression
 
-import java.lang.reflect.InvocationTargetException
-import java.util.ArrayList
-import java.util.Collections
-import java.util.HashSet
-import java.util.Iterator
-import java.util.List
-import java.util.Map
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import java.util.Set
-import java.util.TreeMap
 import scala.collection.JavaConverters._
 
 /** Run a token-based pattern over the text and tag matches.
@@ -41,7 +33,7 @@ import scala.collection.JavaConverters._
   * @author schmmd
   *
   */
-class PatternTagger(patternTaggerName: String, expression: String) extends Tagger[Sentence with Chunks with sentence.Lemmas] {
+class PatternTagger(patternTaggerName: String, expression: String) extends Tagger[Sentence with Chunks with Lemmas] {
   override def name = patternTaggerName
   override def source = null
 
@@ -69,9 +61,7 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
     val originalTagSet = originalTags.toSet
 
     // convert tokens to TypedTokens
-    val typedTokens = for ((token, i) <- sentence.lemmatizedTokens.zipWithIndex) yield {
-      new TypedToken(token, i, originalTagSet.filter(_.tokenInterval contains i), consumedIndices contains i)
-    }
+    val typedTokens = PatternTagger.buildTypedTokens(sentence, originalTagSet)
 
     val tags = for {
       tag <- this.findTags(typedTokens, sentence, pattern)
@@ -126,5 +116,13 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
     }
 
     tags
+  }
+}
+
+object PatternTagger {
+  def buildTypedTokens(sentence: Sentence with Chunks with Lemmas, types: Set[Type], consumedIndices: Seq[Int] = Seq.empty) = {
+    for ((token, i) <- sentence.lemmatizedTokens.zipWithIndex) yield {
+      new TypedToken(token, i, types filter (_.tokenInterval contains i), consumedIndices contains i)
+    }
   }
 }
