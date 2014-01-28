@@ -24,7 +24,7 @@ import org.apache.commons.lang3.StringEscapeUtils
 
 // This is a separate class so that optional dependencies are not loaded
 // unless a server instance is being create.
-class TaggerWeb(ruleText: String, port: Int) {
+class TaggerWeb(ruleText: String, sentenceText: String, port: Int) {
   // NLP tools
   val chunker = new OpenNlpChunker()
 
@@ -54,7 +54,7 @@ class TaggerWeb(ruleText: String, port: Int) {
   def run() {
     val plan = Planify {
       case req @ POST(Params(params)) => ResponseString(post(params))
-      case req @ GET(_) => ResponseString(page(Map("patterns" -> Seq(ruleText))))
+      case req @ GET(_) => ResponseString(page(Map("patterns" -> Seq(ruleText), "sentences" -> Seq(sentenceText))))
     }
 
     unfiltered.jetty.Http(port).filter(plan).run()
@@ -161,8 +161,8 @@ class TaggerWeb(ruleText: String, port: Int) {
 }
 
 object TaggerWebMain extends App {
-  case class Config(inputFile: Option[File] = None, port: Int = 8080) {
-    def ruleText() = inputFile match {
+  case class Config(ruleInputFile: Option[File] = None, sentenceInputFile: Option[File] = None, port: Int = 8080) {
+    def ruleText() = ruleInputFile match {
       case Some(file) => 
         val cascade = Cascade.partialLoad(file)
         val mapped = cascade map { case (level, entry) =>
@@ -171,18 +171,29 @@ object TaggerWebMain extends App {
         mapped.mkString("\n\n\n")
       case None => ""
     }
+
+    def sentenceText() = sentenceInputFile match {
+      case Some(file) => 
+        Resource.using(Source.fromFile(file)) { source =>
+          source.getLines.mkString("\n")
+        }
+      case None => ""
+    }
   }
   val parser = new scopt.OptionParser[Config]("taggerweb") {
     opt[File]('c', "cascade").action { (file, c) =>
-      c.copy(inputFile = Some(file))
+      c.copy(ruleInputFile = Some(file))
     }.text("cascade file to pre-populate")
+    opt[File]('s', "sentences").action { (file, c) =>
+      c.copy(sentenceInputFile = Some(file))
+    }.text("sentence file to pre-populate")
     opt[Int]('p', "port").action { (x, c) =>
       c.copy(port = x)
     }.text("port for web server")
   }
 
   parser.parse(args, Config()).foreach { config =>
-    val server = new TaggerWeb(config.ruleText(), config.port)
+    val server = new TaggerWeb(config.ruleText(), config.sentenceText(), config.port)
     server.run()
   }
 }
