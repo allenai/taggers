@@ -76,25 +76,12 @@ extends PatternTagger(patternTaggerName, expression) {
 
     val matches = pattern.findAll(typedTokenSentence);
     for (m <- matches) {
-      val groupSize = m.groups.size
-      for (i <- 0 until groupSize) {
-        val group = m.groups(i);
+      val group = m.groups.head
 
-        val tokens = sentence.lemmatizedTokens.slice(group.interval.start, group.interval.end).map(_.token)
-        val text = matchString(m)
-        val tag = group.expr match {
-          // create the main type for the group
-          case _ if i == 0 =>
-            Type(this.name, this.source, group.interval, text)
-          case namedGroup: NamedGroup[_] =>
-            val name = this.name + "." + namedGroup.name
-            new NamedGroupType(namedGroup.name, Type(name, this.source, group.interval, text), tags.headOption)
-          case _ =>
-            val name = this.name + "." + i
-            new LinkedType(Type(name, this.source, group.interval, text), tags.headOption)
-        }
-        tags = tags :+ tag
-      }
+      val tokens = sentence.lemmatizedTokens.slice(group.interval.start, group.interval.end).map(_.token)
+      val text = matchString(m)
+      val tag = Type(this.name, this.source, group.interval, text)
+      tags = tags :+ tag
     }
 
     tags
