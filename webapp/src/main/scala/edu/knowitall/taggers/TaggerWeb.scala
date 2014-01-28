@@ -12,16 +12,15 @@ import edu.knowitall.taggers.rule._
 import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.MorphaStemmer
 import edu.knowitall.tool.typer.Type
-
 import unfiltered.filter.Planify
 import unfiltered.request._
 import unfiltered.response._
-
 import java.io.File
 import scala.collection.immutable.IntMap
 import scala.collection.immutable.ListMap
 import scala.collection.JavaConverters._
 import scala.io.Source
+import org.apache.commons.lang3.StringEscapeUtils
 
 // This is a separate class so that optional dependencies are not loaded
 // unless a server instance is being create.
@@ -48,7 +47,7 @@ class TaggerWeb(ruleText: String, port: Int) {
       """<br />
          <input type='submit'>""" +
       s"<p style='color:red'>${errors.mkString("<br />")}</p>" +
-      s"<pre>$result</pre>" +
+      s"<pre>${StringEscapeUtils.escapeHtml4(result)}</pre>" +
       """</form></body></html>"""
   }
 
@@ -70,7 +69,6 @@ class TaggerWeb(ruleText: String, port: Int) {
       def takeWhile[T](it: BufferedIterator[T], cond: T=>Boolean): Seq[T] = {
         var result = Seq.empty[T]
         while (it.hasNext && cond(it.head)) {
-          println(it.head)
           result = result :+ it.head
           
           it.next()
@@ -90,19 +88,22 @@ class TaggerWeb(ruleText: String, port: Int) {
       var Seperator = "(?m)^>>>\\s*(.*)\\s*$".r
       var EmptyLine = "(?m)^\\s*$".r
       if (linesIt.hasNext) {
+        var firstLoop = true
         while (linesIt.hasNext) {
           // consume empty lines
           dropWhile(linesIt, (line: String) => EmptyLine.pattern.matcher(line).matches)
 
           // match the header
-          val header = linesIt.next()
-          header match {
-            case Seperator(header) =>
-            case _ => throw new MatchError("Header not found, rather: " + header)
+          linesIt.head match {
+            case Seperator(header) => linesIt.next()
+            case _ if firstLoop => // there may be no header
+            case _ => throw new MatchError("Header not found, rather: " + linesIt.head)
           }
 
           val body = takeWhile(linesIt, (line: String) => !Seperator.pattern.matcher(line).matches)
           sections = sections :+ body.mkString("\n")
+          
+          firstLoop = false
         }
       }
 

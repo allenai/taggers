@@ -12,6 +12,8 @@ import edu.knowitall.tool.typer.Type
   * @param consumed  true if this token was consumed by a past level
   */
 case class TypedToken(token: Lemmatized[ChunkedToken], index: Int, types: Set[Type], consumed: Boolean) {
+  override def toString = token.token.string
+
   /** a Type Set that stores all of the types with the same ending offset as the Token
     */
   lazy val typesBeginningAtToken = {
