@@ -13,12 +13,12 @@ import edu.washington.cs.knowitall.morpha.MorphaStemmer;
 
 /***
  * Search for normalized keywords against a normalized sentence and tag the
- * match.  Normalized is defined by {@see Stemmer.normalize()}.
+ * match.  Lemmatized is defined by {@see Stemmer.stem()}.
  * @author schmmd
  *
  */
-public class NormalizedKeywordTagger extends KeywordTagger {
-    public NormalizedKeywordTagger(String name, List<String> keywords) {
+public class LemmatizedKeywordTagger extends KeywordTagger {
+    public LemmatizedKeywordTagger(String name, List<String> keywords) {
         super(name, Lists
                 .transform(keywords, new Function<String, String>() {
                     public String apply(String string) {
@@ -32,7 +32,7 @@ public class NormalizedKeywordTagger extends KeywordTagger {
      * @param name name of the tagger
      * @param args arguments to the tagger
      */
-    public NormalizedKeywordTagger(String name, scala.collection.Seq<String> args) {
+    public LemmatizedKeywordTagger(String name, scala.collection.Seq<String> args) {
         this(name, scala.collection.JavaConversions.asJavaList(args));
     }
 

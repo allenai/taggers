@@ -14,7 +14,7 @@ if no package is specified `taggers` will look in `edu.knowitall.taggers.tag`.
 Between the braces `{}` are the arguments to the tagger.
 
 ```
-Animal := NormalizedKeywordTagger {
+Animal := LemmatizedKeywordTagger {
   cat
   kitten
   dog

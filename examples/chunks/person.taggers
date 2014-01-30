@@ -1220,7 +1220,7 @@ MaleFirstName := KeywordTagger {
   Zane
 }
 
-FemaleFirstName := NormalizedKeywordTagger {
+FemaleFirstName := LemmatizedKeywordTagger {
   Mary
   Patricia
   Linda
