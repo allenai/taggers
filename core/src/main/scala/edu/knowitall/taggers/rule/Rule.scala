@@ -42,7 +42,8 @@ class RuleParserCombinator[S <: Sentence] extends JavaTokenParsers {
       TaggerRule.parse[S](name, taggerIdent, args)
   }
 
-  val rule: Parser[Rule[S]] = valn | tagger
+  val blankLine = "(?m)^\\s*$".r
+  val rule: Parser[Rule[S]] = (blankLine*) ~> (valn | tagger) <~ (blankLine*)
   val collection = rep(rule)
 }
 
