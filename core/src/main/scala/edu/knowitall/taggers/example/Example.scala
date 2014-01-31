@@ -16,13 +16,13 @@ import edu.knowitall.tool.stem.MorphaStemmer
 object Example {
 
   val pattern = """
-    Animal := NormalizedKeywordTagger {
+    Animal := LemmatizedKeywordTagger {
       cat
       kitten
       dog
       puppy
     }
-    Color := NormalizedKeywordTagger{
+    Color := LemmatizedKeywordTagger{
       blue
       red
       yellow
