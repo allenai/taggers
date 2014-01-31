@@ -9,7 +9,7 @@ import edu.knowitall.tool.stem.Lemmatized;
 /***
  * Search for normalized keywords against a normalized sentence and tag the
  * chunk that contains the match if the match is the headword.  Lemmatized is
- * defined by {@see Stemmer.stem()}.
+ * defined by {@see Stemmer.lemmatize()}.
  * @author schmmd
  *
  */

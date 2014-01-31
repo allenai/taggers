@@ -9,11 +9,11 @@ import edu.knowitall.taggers.SentenceFunctions;
 import edu.knowitall.tool.typer.Type;
 import edu.knowitall.tool.chunk.ChunkedToken;
 import edu.knowitall.tool.stem.Lemmatized;
-import edu.washington.cs.knowitall.morpha.MorphaStemmer;
+import edu.knowitall.tool.stem.MorphaStemmer$;
 
 /***
  * Search for normalized keywords against a normalized sentence and tag the
- * match.  Lemmatized is defined by {@see Stemmer.stem()}.
+ * match.  Lemmatized is defined by {@see Stemmer.lemmatize()}.
  * @author schmmd
  *
  */
@@ -22,7 +22,7 @@ public class LemmatizedKeywordTagger extends KeywordTagger {
         super(name, Lists
                 .transform(keywords, new Function<String, String>() {
                     public String apply(String string) {
-                        return MorphaStemmer.stem(string);
+                        return MorphaStemmer$.MODULE$.lemmatize(string);
                     }
                 }));
     }
