@@ -61,7 +61,7 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
     val originalTagSet = originalTags.toSet
 
     // convert tokens to TypedTokens
-    val typedTokens = PatternTagger.buildTypedTokens(sentence, originalTagSet)
+    val typedTokens = PatternTagger.buildTypedTokens(sentence, originalTagSet, consumedIndices)
 
     val tags = for {
       tag <- this.findTags(typedTokens, sentence, pattern)
