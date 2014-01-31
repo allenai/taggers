@@ -1,4 +1,3 @@
-Name := RedefineTagger(Name)
 NG := RedefineTagger(NG)
 VG := RedefineTagger(VG)
 Rel := RedefineTagger(Rel)
