@@ -1,9 +1,10 @@
 Name := RedefineTagger(Name)
+AP := RedefineTagger(AP)
 Rel := RedefineTagger(Rel)
 RelTo := RedefineTagger(RelTo)
 
-NP := PatternTagger {
-   (?: <pos='DT'>? <pos=/JJ.*/>* <pos=/NN.*/>+ )
+NP := TypePatternTagger {
+   (?: <pos='DT'>? @AP? <pos=/NN.*/>+ )
 }
 
 NG := TypePatternTagger {

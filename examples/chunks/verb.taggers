@@ -1,3 +1,4 @@
+AP := RedefineTagger(AP)
 NG := RedefineTagger(NG)
 PP := RedefineTagger(PP)
 Rel := RedefineTagger(Rel)
