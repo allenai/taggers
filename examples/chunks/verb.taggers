@@ -10,6 +10,9 @@ Modal := PatternTagger {
 Aux := PatternTagger {
   <string=/be|am|is|are|have|has/> <pos="RB">? <string="been">?
 }
+V := PatternTagger {
+  (<Head>:<pos=/VB[DPZGN]?/> (?: <pos=/R[PB]/ | pos="IN">)? )
+}
 VG := TypePatternTagger {
-  (?:@Modal)? (?:@Aux)? (<Head>:<pos=/VB[DPZGN]?/> <pos=/R[PB]/ | pos="IN">?)
+  (?: @Modal? @Aux? @V (?: <string="and"> @V)? )
 }
