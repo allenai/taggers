@@ -1,5 +1,5 @@
 And := PatternTagger {
-  <string=/and|that|which/>
+  <string=",">? <string=/and|that|which/>
 }
 Help := PatternTagger {
   <string=/(help|aid|allow|assist|enable)(s)?/>
@@ -9,7 +9,9 @@ EffectRel := TypePatternTagger {
 // in order for
 (?:<string="in"> <string="order"> <string=/for|that/> ) 
 // which helps with
-| (?:<string=/and|that|which|to/>? @Help <string=/with|in/> ) 
+| (?: (?:<string=",">? <string=/and|that|which|to/>)? @Help <string=/with|in/> ) 
+// which helps
+| (?: <string=",">? <string=/and|that|which|to/> @Help <string=/with|in/>? )
 // which results in
 | (?:@And? <string="results"> <string="in"> )
 // so that
@@ -19,13 +21,13 @@ EffectRel := TypePatternTagger {
 // may be one way that 
 | (?:<pos="MD">? <string=/be|is|are/> <pos="DT" | pos="CD">? <string=/way(s)?/> <string="that"> )
 // which is why
-| (?:<string=/and|which/>? <pos="MD">? <string=/be|is|are/> <string="why"> )
+| (?: (?:<string=",">? <string=/and|which/>)? <pos="MD">? <string=/be|is|are/> <string="why"> )
 }
 EffectRelTo := TypePatternTagger {
 // in order to
 (?:<string="in"> <string="order"> <string="to"> )
 // which helps to
-| (?:<string=/and|that|which|to/>? @Help <string="to"> )
+| (?: (?:<string=",">? <string=/and|that|which|to/>)? @Help <string="to"> )
 // may be one way to
 | (?:<pos="MD">? <string=/be|is|are/> <pos="DT" | pos="CD">? <string=/way(s)?/> <string="to"> )
 }
