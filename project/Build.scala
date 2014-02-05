@@ -2,6 +2,8 @@ import sbt._
 import Keys._
 
 object TaggerBuild extends Build {
+  val sprayVersion = "1.2.0"
+  val akkaVersion = "2.2.3"
   val nlptoolsVersion = SettingKey[String]("nlptools-version", "The version of nlptools used for building.")
 
   lazy val root = Project(id = "taggers", base = file(".")).settings (

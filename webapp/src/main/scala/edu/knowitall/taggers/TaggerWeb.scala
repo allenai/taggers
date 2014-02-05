@@ -14,10 +14,10 @@ import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.MorphaStemmer
 import edu.knowitall.tool.typer.Type
 
+import akka.actor._
 import org.apache.commons.lang3.StringEscapeUtils
-import unfiltered.filter.Planify
-import unfiltered.request._
-import unfiltered.response._
+import spray.http._
+import spray.routing._
 
 import java.io.File
 import scala.collection.immutable.IntMap
@@ -27,7 +27,8 @@ import scala.io.Source
 
 // This is a separate class so that optional dependencies are not loaded
 // unless a server instance is being create.
-class TaggerWeb(ruleText: String, sentenceText: String, port: Int) {
+class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends App with SimpleRoutingApp {
+
   // NLP tools
   val chunker = new OpenNlpChunker()
 
@@ -53,9 +54,9 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) {
       }.mkString("") +
     "</table>"
 
-  def page(params: Map[String, Seq[String]] = Map.empty, errors: Seq[String] = Seq.empty, result: String = "", tables: String = "") = {
-    val sentenceText = params.get("sentences").flatMap(_.headOption).getOrElse("")
-    val patternText = params.get("patterns").flatMap(_.headOption).getOrElse("")
+  def page(params: Map[String, String] = Map.empty, errors: Seq[String] = Seq.empty, result: String = "", tables: String = "") = {
+    val sentenceText = params.get("sentences").getOrElse("")
+    val patternText = params.get("patterns").getOrElse("")
     """<html><head><title>Tagger Web</title><script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.1/jquery.min.js"></script>
     <style type='text/css'>
       /* <![CDATA[ */
@@ -116,19 +117,35 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) {
   }
 
   def run() {
-    val plan = Planify {
-      case req @ POST(Params(params)) => ResponseString(post(params))
-      case req @ GET(_) => ResponseString(page(Map("patterns" -> Seq(ruleText), "sentences" -> Seq(sentenceText))))
+    implicit val system = ActorSystem("ari-http-controller")
+    startServer(interface = "0.0.0.0", port = port) {
+      path("") {
+        import MediaTypes._
+        get {
+          respondWithMediaType(`text/html`) {
+            complete {
+              page(Map("patterns" -> ruleText, "sentences" -> sentenceText))
+            }
+          }
+        } ~
+        post {
+          entity(as[FormData]) { formData =>
+            respondWithMediaType(`text/html`) {
+              complete {
+                println(formData)
+                postPage(formData.fields.toMap)
+              }
+            }
+          }
+        }
+      }
     }
-
-    unfiltered.jetty.Http(port).filter(plan).run()
-    System.out.println("Server started on port: " + port);
   }
 
-  def post(params: Map[String, Seq[String]]) = {
+  def postPage(params: Map[String, String]) = {
     try {
-      val sentenceText = params("sentences").headOption.get
-      val patternText = params("patterns").headOption.get
+      val sentenceText = params("sentences")
+      val patternText = params("patterns")
 
       def takeWhile[T](it: BufferedIterator[T], cond: T=>Boolean): Seq[T] = {
         var result = Seq.empty[T]
