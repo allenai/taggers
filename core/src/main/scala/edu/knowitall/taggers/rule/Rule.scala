@@ -28,22 +28,36 @@ class RuleParserCombinator[S <: Sentence] extends JavaTokenParsers {
   val name = ident
   val taggerIdent = ident
 
+  /** A regular expression to match // followed by anything. */
   val comment = "(?:(?:\\s*//.*\\n)|(?:\\s*\\n))*".r
 
+  // An extractor for a redefinition.
   val valn = comment ~> name ~ Rule.definitionSyntax ~! ".+".r ^^ { case name ~ Rule.definitionSyntax ~ valn => DefinitionRule[S](name, valn) }
 
+  // An extractor for an argument to a tagger.
   val singlearg = ".+(?=\\s*\\))".r
+
+  // Single line arguments use parentheses
   val singleline = "(" ~> singlearg <~ ")"
+
+  // Multi-line arguments use braces
   val multiarg = "[^}].*".r
   val multiline = "{" ~> rep(multiarg) <~ "}" ^^ { seq => seq.map(_.trim) }
+
+  // An extractor for a tagger.
   val args = singleline ^^ { arg => Seq(arg.trim) } | multiline
   val tagger = comment ~> name ~ Rule.taggerSyntax ~! taggerIdent ~! args ^^ {
     case name ~ Rule.taggerSyntax ~ taggerIdent ~ args =>
       TaggerRule.parse[S](name, taggerIdent, args)
   }
 
+  // A regex that matches a line containing only spaces.
   val blankLine = "(?m)^\\s*$".r
+
+  // A rule is either a tagger or a definition.
   val rule: Parser[Rule[S]] = (blankLine*) ~> (valn | tagger) <~ (blankLine*)
+
+  // An extractor for a collection of rules.
   val collection = rep(rule)
 }
 
