@@ -8,13 +8,13 @@ import edu.knowitall.tool.stem.Lemmatized;
 
 /***
  * Search for normalized keywords against a normalized sentence and tag the
- * chunk that contains the match.  Normalized is defined by
- * {@see Stemmer.normalize()}.
+ * chunk that contains the match if the match is the headword.  Lemmatized is
+ * defined by {@see Stemmer.lemmatize()}.
  * @author schmmd
  *
  */
-public class NormalizedNpChunkTagger extends NormalizedKeywordTagger {
-    public NormalizedNpChunkTagger(String name, List<String> keywords) {
+public class LemmatizedNpHeadwordTagger extends LemmatizedKeywordTagger {
+    public LemmatizedNpHeadwordTagger(String name, List<String> keywords) {
         super(name, keywords);
     }
 
@@ -23,13 +23,13 @@ public class NormalizedNpChunkTagger extends NormalizedKeywordTagger {
      * @param name name of the tagger
      * @param args arguments to the tagger
      */
-    public NormalizedNpChunkTagger(String name, scala.collection.Seq<String> args) {
+    public LemmatizedNpHeadwordTagger(String name, scala.collection.Seq<String> args) {
         this(name, scala.collection.JavaConversions.asJavaList(args));
     }
 
     @Override
     public List<Type> findTagsJava(final List<Lemmatized<ChunkedToken>>  sentence) {
         List<Type> keywordTags = super.findTagsJava(sentence);
-        return AfterTaggers.tagChunks(keywordTags, sentence);
+        return AfterTaggers.tagHeadword(keywordTags, sentence);
     }
 }

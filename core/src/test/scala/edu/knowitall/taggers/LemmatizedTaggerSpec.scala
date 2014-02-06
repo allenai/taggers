@@ -10,15 +10,15 @@ import edu.knowitall.tool.stem.MorphaStemmer
 import org.scalatest.FlatSpec
 import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.collection.JavaConverters.seqAsJavaListConverter
-import edu.knowitall.taggers.tag.NormalizedKeywordTagger
+import edu.knowitall.taggers.tag.LemmatizedKeywordTagger
 
-class NoramlizedTaggerSpec extends FlatSpec {
+class LemmatizedTaggerSpec extends FlatSpec {
   val chunker = new OpenNlpChunker();
   val morpha = new MorphaStemmer();
 
-  val runTagger = new NormalizedKeywordTagger("JamesTagger", Seq("james"))
+  val runTagger = new LemmatizedKeywordTagger("JamesTagger", Seq("james"))
 
-  "NormalizedKeywordTagger" should "match 'james' in a sentence." in {
+  "LemmatizedKeywordTagger" should "match 'james' in a sentence." in {
     val sentenceText = "Jack enjoyed a beer with James."
     val opennlpChunker = new OpenNlpChunker
     val s = new Sentence(sentenceText) with sentence.Chunker with sentence.Lemmatizer {

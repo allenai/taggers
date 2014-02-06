@@ -1,7 +1,17 @@
 Name := RedefineTagger(Name)
+AP := RedefineTagger(AP)
 Rel := RedefineTagger(Rel)
 RelTo := RedefineTagger(RelTo)
 
-NG := PatternTagger {
-  <chunk='B-NP'> <chunk='I-NP'>* (?:<string="of"> <chunk='B-NP'> <chunk='I-NP'>*)?
+NP := TypePatternTagger {
+   (?: (?: <pos='DT'> | <pos='PRP$'>)? @AP? <pos=/NN.*/>+ )
+   | (?:@Name)
+}
+
+NG := TypePatternTagger {
+   (?:@NP )
+   | (?:@NP <string="of"> @NP )
+   | (?:@NP (?:<string=","> @NP)* <string=",">? <string="and"> @NP )
+   | (?:@NP <string="("> @NP <string=")"> )
+   | (?: <pos='PRP'> )
 }

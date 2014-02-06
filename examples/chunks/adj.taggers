@@ -1,0 +1,7 @@
+Name := RedefineTagger(Name)
+Rel := RedefineTagger(Rel)
+RelTo := RedefineTagger(RelTo)
+
+AP := PatternTagger {
+   (?: <pos='RB'>? <pos=/JJ.*/>+ )
+}

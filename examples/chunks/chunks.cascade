@@ -1,6 +1,5 @@
-0	person.taggers
-1	name.taggers
-2	rel.taggers
+1	rel.taggers
+2	adj.taggers
 3	noun.taggers
 4	verb.taggers
 5	prep.taggers

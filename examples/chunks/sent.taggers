@@ -1,4 +1,4 @@
-Name := RedefineTagger(Name)
+AP := RedefineTagger(AP)
 NG := RedefineTagger(NG)
 PP := RedefineTagger(PP)
 VG := RedefineTagger(VG)
@@ -6,11 +6,12 @@ Rel := RedefineTagger(Rel)
 RelTo := RedefineTagger(RelTo)
 
 NP := TypePatternTagger {
-  (?:@NG @PP?) | (?:@Name)
+  (?:@NG @PP?)
 }
 
 VP := TypePatternTagger {
-  (<Rel>:@VG) (<Arg2>:@NP)? (<Arg>:@PP)*
+  (?: (<Rel>:@VG) (<Arg2>:@NP)? (<Arg>:@PP)* )
+  | (?: (<Rel>:@VG) (<Arg2>:@AP) )
 }
 
 S := TypePatternTagger {
