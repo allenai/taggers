@@ -119,7 +119,7 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
   }
 
   def run() {
-    implicit val system = ActorSystem("ari-http-controller")
+    implicit val system = ActorSystem("tagger-web")
     startServer(interface = "0.0.0.0", port = port) {
       path("") {
         import MediaTypes._
