@@ -8,7 +8,7 @@ sentence.
 
 For example, you might have a tagger that identifies animals.  Following is the
 string serialized form of a tagger.  To the left of `:=` is the name of the
-tagger--that is when the tagger finds a type it will have this name.  To the
+tagger - when the tagger finds a type it will have this name.  To the
 right of `:=` is the tagger class.  This is a Java/Scala class; if no package
 is specified `taggers` will look in `edu.knowitall.taggers.tag`.  Between the
 braces `{}` are the arguments to the tagger.
@@ -47,7 +47,7 @@ sbt compile 'project webapp' run
 You can also run taggers as a cli.
 
 ```
-sbt compile 'project cli' 'run examples/reverb.tc'
+sbt compile 'project cli' 'run examples/reverb.taggers'
 ```
 
 If you want an example of how to use the taggers project as a dependency,
