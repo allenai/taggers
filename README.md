@@ -149,4 +149,4 @@ Matching many types in this manner quickly makes unreadable patterns, so the
 `TypePatternTagger` adds the syntax `@Type` which, if the type is Animal
 (`@Animal`) it would expand into the above expression.  With this syntax, it's
 easy to match on types.  For an implementation of `ReVerb`, see
-`examples/reverb.tc`.
+`examples/reverb.taggers`.
