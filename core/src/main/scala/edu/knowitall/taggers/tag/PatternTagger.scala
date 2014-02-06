@@ -104,17 +104,17 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
           case _ if i == 0 =>
             val typ = Type(this.name, this.source, group.interval, text)
             parent = Some(typ) // There may be children of this type.
-            typ
+            Some(typ)
           case namedGroup: NamedGroup[_] =>
             require(parent.isDefined)
             val name = this.name + "." + namedGroup.name
-            new NamedGroupType(namedGroup.name, Type(name, this.source, group.interval, text), parent)
-          case _ =>
-            require(parent.isDefined)
-            val name = this.name + "." + i
-            new LinkedType(Type(name, this.source, group.interval, text), parent)
+            Some(new NamedGroupType(namedGroup.name, Type(name, this.source, group.interval, text), parent))
+          case _ => None
         }
-        tags = tags :+ tag
+
+        tag.foreach { tag =>
+          tags = tags :+ tag
+        }
       }
     }
 
