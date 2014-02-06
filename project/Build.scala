@@ -1,6 +1,8 @@
 import sbt._
 import Keys._
 
+import spray.revolver.RevolverPlugin._
+
 object TaggerBuild extends Build {
   val sprayVersion = "1.2.0"
   val akkaVersion = "2.2.3"
@@ -12,7 +14,7 @@ object TaggerBuild extends Build {
     publishLocal := { }
   ).aggregate(core, cli, webapp)
 
-  val buildSettings = Defaults.defaultSettings ++ ReleaseSettings.defaults ++ Format.settings ++
+  val buildSettings = Defaults.defaultSettings ++ ReleaseSettings.defaults ++ Format.settings ++ Revolver.settings ++
     Seq(
       organization := "org.allenai.taggers",
       crossScalaVersions := Seq("2.10.3"),

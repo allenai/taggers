@@ -28,11 +28,10 @@ import scala.io.Source
 // This is a separate class so that optional dependencies are not loaded
 // unless a server instance is being create.
 class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends App with SimpleRoutingApp {
+  type MySentence = Sentence with Chunks with Lemmas
 
   // NLP tools
-  val chunker = new OpenNlpChunker()
-
-  type MySentence = Sentence with Chunks with Lemmas
+  lazy val chunker = new OpenNlpChunker()
 
   def process(text: String): MySentence = {
     new Sentence(text) with Chunker with Lemmatizer {
@@ -132,7 +131,6 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends App w
           entity(as[FormData]) { formData =>
             respondWithMediaType(`text/html`) {
               complete {
-                println(formData)
                 postPage(formData.fields.toMap)
               }
             }
