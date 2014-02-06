@@ -8,7 +8,7 @@ object TaggerBuild extends Build {
   val akkaVersion = "2.2.3"
   val nlptoolsVersion = SettingKey[String]("nlptools-version", "The version of nlptools used for building.")
 
-  lazy val root = Project(id = "taggers", base = file(".")).settings (
+  lazy val root = Project(id = "taggers-root", base = file(".")).settings (
     publish := { },
     publishTo := Some("bogus" at "http://nowhere.com"),
     publishLocal := { }
