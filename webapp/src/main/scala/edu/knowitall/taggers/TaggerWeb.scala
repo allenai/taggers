@@ -27,12 +27,15 @@ import scala.io.Source
 
 // This is a separate class so that optional dependencies are not loaded
 // unless a server instance is being create.
-class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends App with SimpleRoutingApp {
+class TaggerWeb(ruleText: String, sentenceText: String, port: Int) with SimpleRoutingApp {
+  // A type alias for convenience since TaggerWeb always
+  // deals with sentences that are chunked and lemmatized
   type MySentence = Sentence with Chunks with Lemmas
 
-  // NLP tools
+  // External NLP tools that are used to build the expected type from a sentence string.
   lazy val chunker = new OpenNlpChunker()
 
+  /** Build the NLP representation of a sentence string. */
   def process(text: String): MySentence = {
     new Sentence(text) with Chunker with Lemmatizer {
       val chunker = TaggerWeb.this.chunker
