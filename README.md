@@ -6,12 +6,12 @@ sentence.
 
 ## Example
 
-For example, you might have a tagger that identifies animals.  Following
-is the string serialized form of a tagger.  To the left of `:=` is the
-name of the tagger--that is when the tagger finds a type it will have 
-this name.  To the right of `:=` is the tagger class.  This is a Java/Scala class;
-if no package is specified `taggers` will look in `edu.knowitall.taggers.tag`.
-Between the braces `{}` are the arguments to the tagger.
+For example, you might have a tagger that identifies animals.  Following is the
+string serialized form of a tagger.  To the left of `:=` is the name of the
+tagger - when the tagger finds a type it will have this name.  To the
+right of `:=` is the tagger class.  This is a Java/Scala class; if no package
+is specified `taggers` will look in `edu.knowitall.taggers.tag`.  Between the
+braces `{}` are the arguments to the tagger.
 
 ```
 Animal := LemmatizedKeywordTagger {
@@ -47,7 +47,7 @@ sbt compile 'project webapp' run
 You can also run taggers as a cli.
 
 ```
-sbt compile 'project cli' 'run examples/reverb.tc'
+sbt compile 'project cli' 'run examples/reverb.taggers'
 ```
 
 If you want an example of how to use the taggers project as a dependency,
@@ -76,11 +76,15 @@ A field can be matched in one of three ways.
     regular expression.  Backslash is the escape character so `\\` becomes a single
     backslash and `\/` escapes the forward slash.
 
-A pattern tagger makes types with the tagger name, but also `LinkedType`s for each matching
-group. A `LinkedType` has an Optional `Type` field that points to its parent `Type` and a name 
-field with a special syntax. If the tagger is named `T` and a matching group is named `G1` for example, 
-the tagger will create a `LinkedType` with the name `T.G1`.  If there is an unnamed matching group a `LinkedType`
-will be created with the group number (i.e. `T.1`).
+If a quotation prefixed by "i" then the match will be case-insensitive (i.e.
+`string = i"cat"` will match "cAt").
+
+A pattern tagger makes types with the tagger name, but also `LinkedType`s for
+each matching group. A `LinkedType` has an Optional `Type` field that points to
+its parent `Type` and a name field with a special syntax. If the tagger is
+named `T` and a matching group is named `G1` for example, the tagger will
+create a `LinkedType` with the name `T.G1`.  If there is an unnamed matching
+group a `LinkedType` will be created with the group number (i.e. `T.1`).
 
 There is a lot of redundancy in their expressiveness. For example,
 PatternTagger supports pattern matching on the fields .This is not necessary
@@ -88,7 +92,7 @@ but is an optimization and a shorthand.  For example, the following two'
 patterns match the same text.
 
 ```
-<pos=/NNPS?/> 
+<pos=/NNPS?/>
 <pos="NNP"> | <pos="NNPS">
 ```
 
@@ -110,24 +114,39 @@ groups `(?: ... )`, and capturing groups `( ... )`. The operators allowed are
 grouping `( ... )`, not `!`, or `|`, and and `&`.  To learn more about
 the regular expression language, see https://github.com/knowitall/openregex.
 
+Named groups create output subtypes.  For example, if we had the following
+`PatternTagger` applied to the example below.
+
+```
+DescribedNoun := PatternTagger {
+    (<Description>:<pos='JJ'>+) (<Noun>:<pos='NN'>+)
+}
+```
+
+> The huge fat cat lingered in the hallway.
+
+We would get the following output types.
+
+```
+DescribedNoun(huge fat cat)
+DescribedNoun.Description(huge fat)
+DescribedNoun.Noun(cat)
+```
+
 ## TypePatternTagger
 
-The `TypePatternTagger` extends the `PatternTagger` with a defintiion that matches
-types.  Since a type can span multiple tokens but the pattern language
-operates on the token level, matching types can be tedious and error prone.
-For example, if you want to match the type `Animal`, you need the following pattern.
+The `TypePatternTagger` extends the `PatternTagger` with added syntax to match
+types.  Since a type can span multiple tokens but the pattern language operates
+on the token level, matching types can be tedious and error prone.  For
+example, if you want to match the type `Animal`, you need the following
+pattern.
 
 ```
-(?:(?:<typeStart='Animal' & typeEnd='Animal'>) | (?: <typeStart='Animal'> <typeCont='Animal'>* <typeEnd='Animal'>))
+(?:(?:<typeStart='Animal' & typeEnd='Animal'>) | (?: <typeStart='Animal' & !typeEnd='Animal'> <typeCont='Animal'>* <typeEnd='Animal'>))
 ```
 
-Matching many types quickly makes unreadable patterns, so the `TypePatternTagger` adds
-the syntax `@Type` which, if the type is Animal (`@Animal`) it would expand into the above.
-With this syntax, it's easy to match on types.  For an implementation of `ReVerb`, see
-`examples/reverb.tc`.
-
-## Extended Example
-
-See the code in `edu.knowitall.taggers.example.Example` for a demonstration
-of how to use the API for collecting and manipulating Type objects with a 
-specified TaggerCollection and test input.
+Matching many types in this manner quickly makes unreadable patterns, so the
+`TypePatternTagger` adds the syntax `@Type` which, if the type is Animal
+(`@Animal`) it would expand into the above expression.  With this syntax, it's
+easy to match on types.  For an implementation of `ReVerb`, see
+`examples/reverb.taggers`.
