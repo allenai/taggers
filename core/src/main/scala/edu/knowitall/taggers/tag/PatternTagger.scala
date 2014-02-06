@@ -95,7 +95,10 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
         val group = m.groups(i);
 
         val tokens = sentence.lemmatizedTokens.slice(group.interval.start, group.interval.end).map(_.token)
-        val text = Tokenizer.originalText(tokens, tokens.head.offsets.start)
+        val text = tokens match {
+          case head +: tail => Tokenizer.originalText(tokens, head.offsets.start)
+          case Seq() => ""
+        }
         val tag = group.expr match {
           // create the main type for the group
           case _ if i == 0 =>
