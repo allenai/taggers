@@ -27,7 +27,7 @@ import scala.io.Source
 
 // This is a separate class so that optional dependencies are not loaded
 // unless a server instance is being create.
-class TaggerWeb(ruleText: String, sentenceText: String, port: Int) with SimpleRoutingApp {
+class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends SimpleRoutingApp {
   // A type alias for convenience since TaggerWeb always
   // deals with sentences that are chunked and lemmatized
   type MySentence = Sentence with Chunks with Lemmas
