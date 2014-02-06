@@ -39,6 +39,8 @@ class PatternTaggerSpec extends FlatSpec {
 
     val types = cascade.apply(s)
 
+    // Description subtype will be empty when "hallway" is matched
+    // because it uses `*`.
     types.exists(typ => typ.text.isEmpty)
   }
 

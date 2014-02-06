@@ -96,7 +96,7 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
 
         val tokens = sentence.lemmatizedTokens.slice(group.interval.start, group.interval.end).map(_.token)
         val text = tokens match {
-          case head +: tail => Tokenizer.originalText(tokens, head.offsets.start)
+          case head +: _ => Tokenizer.originalText(tokens, head.offsets.start)
           case Seq() => ""
         }
         val tag = group.expr match {
@@ -112,8 +112,8 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
           case _ => None
         }
 
-        tag.foreach { tag =>
-          tags = tags :+ tag
+        tag.foreach { t =>
+          tags = tags :+ t
         }
       }
     }
