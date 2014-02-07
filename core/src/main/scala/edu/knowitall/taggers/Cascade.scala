@@ -5,7 +5,6 @@ import edu.knowitall.common.Resource.using
 import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.taggers.constraint.Constraint
 import edu.knowitall.taggers.tag.Tagger
-import edu.knowitall.taggers.tag.Tagger
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.Lemmatized
@@ -17,38 +16,26 @@ import io.Source
 import java.io.File
 import java.io.FileReader
 import java.io.Reader
-import scala.collection.immutable.IntMap
-import scala.collection.immutable.ListMap
+import scala.collection.immutable
 
 /** Represents a sequence of taggers applied in order.
   * After each level of taggers, PatternTaggers can only use
   * type information from previous levels.
   *
-  * @param  taggers  stores the taggers applied on each level
+  * @param  levels  stores the taggers applied on each level
   */
-case class Cascade[-S <: Sentence](taggers: IntMap[Seq[Tagger[S]]]) {
+case class Cascade[-S <: Sentence](levels: Seq[Level[S]]) {
   lazy val chunker = new OpenNlpChunker()
 
   /** Convenience constructor to make an empty Cascade. */
-  def this() = this(IntMap.empty[Seq[Tagger[S]]])
+  def this() = this(Seq.empty[Level[S]])
 
-  /** Convenience constructor for a single tagger level. */
-  def this(taggers: Seq[Tagger[S]]) = this(IntMap(0 -> taggers))
+  /** Convenience constructor to make a Cascade with a single Level. */
+  def this(level: Level[S]) = this(Seq(level))
 
-  /** Add a tagger to a particular level. */
-  def plus[SS <: S](level: Int, tagger: Tagger[SS]): Cascade[SS] = {
-    val entry = taggers.get(level).getOrElse(Seq.empty) :+ tagger
-    Cascade[SS](taggers + (level -> entry))
-  }
-
-  /** Add taggers to a particular level. */
-  def plus[SS <: S](level: Int, taggers: Seq[Tagger[SS]]): Cascade[SS] = {
-    var cascade: Cascade[SS] = this
-    for (tagger <- taggers) {
-      cascade = cascade.plus(level, tagger)
-    }
-
-    cascade
+  /** Add a tagger level. */
+  def +[SS <: S](level: Level[SS]): Cascade[SS] = {
+    Cascade[SS](levels :+ level)
   }
 
   /** Apply the cascade to a sentence.
@@ -56,14 +43,12 @@ case class Cascade[-S <: Sentence](taggers: IntMap[Seq[Tagger[S]]]) {
     * @returns  the found types
     */
   def apply(sentence: S): Seq[Type] = {
-    val levels = taggers.toSeq.sortBy(_._1)
-
     var previousLevelTags = Seq.empty[Type]
-    for ((level, taggers) <- levels) {
+    for (level <- levels) {
       var levelTags = Seq.empty[Type]
       val consumedIndices = previousLevelTags.map(_.tokenInterval).flatten
 
-      for (tagger <- taggers) yield {
+      for (tagger <- level.taggers) yield {
         val allTags = previousLevelTags ++ levelTags
         levelTags = levelTags ++ tagger(sentence, allTags, consumedIndices)
       }
@@ -78,21 +63,19 @@ case class Cascade[-S <: Sentence](taggers: IntMap[Seq[Tagger[S]]]) {
     *
     * @returns  the found types at each level
     */
-  def levels(sentence: S): ListMap[Int, Seq[Type]] = {
-    val levels = taggers.toSeq.sortBy(_._1)
-
-    var result = ListMap.empty[Int, Seq[Type]]
+  def levelTypes(sentence: S): immutable.ListMap[Int, Seq[Type]] = {
+    var result = immutable.ListMap.empty[Int, Seq[Type]]
     var previousLevelTags = Seq.empty[Type]
-    for ((level, taggers) <- levels) {
+    for ((level, index) <- levels.zipWithIndex) {
       var levelTags = Seq.empty[Type]
       val consumedIndices = previousLevelTags.map(_.tokenInterval).flatten
 
-      for (tagger <- taggers) yield {
+      for (tagger <- level.taggers) yield {
         val allTags = previousLevelTags ++ levelTags
         levelTags = levelTags ++ tagger(sentence, allTags, consumedIndices)
       }
-      
-      result += level -> levelTags
+
+      result += index -> levelTags
       previousLevelTags = levelTags
     }
 
@@ -111,7 +94,7 @@ object Cascade {
   }
 
   def load[S <: Sentence](basePath: File, cascadeSource: Source): Cascade[S] = {
-    def loadTaggers(text: String) = {
+    def loadTaggers(text: String): Seq[Tagger[S]] = {
       // parse taggers
       val rules = new RuleParser[S].parse(text).get
 
@@ -121,28 +104,28 @@ object Cascade {
     System.err.println("Loading cascade definition: " + basePath)
 
     var cascade = new Cascade[S]()
-    for ((level, TaggerEntry(filename, text)) <- partialLoad(basePath, cascadeSource.getLines)) {
-      System.err.println("Parsing taggers at level " + level + ": " + filename)
-      cascade = cascade.plus(level, loadTaggers(text))
+    for (TaggerEntry(filename, text) <- partialLoad(basePath, cascadeSource.getLines)) {
+      System.err.println("Parsing taggers from: " + filename)
+      cascade = cascade + Level(loadTaggers(text))
     }
 
     System.err.println("Done loading cascade.")
     System.err.println()
-    
+
     cascade
   }
 
-  def partialLoad(cascadeFile: File): IntMap[TaggerEntry] = {
+  def partialLoad(cascadeFile: File): Seq[TaggerEntry] = {
     using(Source.fromFile(cascadeFile)) { source =>
       partialLoad(cascadeFile.getParentFile, source)
     }
   }
 
-  def partialLoad(basePath: File, cascadeSource: Source): IntMap[TaggerEntry] = {
+  def partialLoad(basePath: File, cascadeSource: Source): Seq[TaggerEntry] = {
     partialLoad(basePath, cascadeSource.getLines)
   }
 
-  private def partialLoad(basePath: File, lines: Iterator[String]): IntMap[TaggerEntry] = {
+  private def partialLoad(basePath: File, lines: Iterator[String]): Seq[TaggerEntry] = {
     // paths inside are either absolute or relative to the cascade definition file
     def makeFile(path: String) = {
       val file = new File(path)
@@ -157,68 +140,18 @@ object Cascade {
     ) yield {
 
       // A line is composed of a level number and a tagger file path
-      val (level, taggerFile) = line.split("\t") match {
-        case Array(levelString, taggerFilePath) =>
-          (levelString.toInt, makeFile(taggerFilePath))
-        case _ => throw new MatchError("Could not understand cascade line: " + line)
-      }
+      val taggerFilePath = line
+      val taggerFile = makeFile(taggerFilePath)
 
-      System.err.println("Loading taggers at level " + level + ": " + taggerFile)
+      System.err.println("Loading taggers from: " + taggerFile)
 
       val taggerText = using(Source.fromFile(taggerFile)) { source =>
         source.getLines.mkString("\n")
       }
 
-      level -> TaggerEntry(taggerFile.getName, taggerText)
-    }
-    
-    IntMap.empty[TaggerEntry] ++ levels
-  }
-
-  private def load[S <: Sentence](basePath: File, lines: Iterator[String]): Cascade[S] = {
-    def loadTaggers(text: String) = {
-      // parse taggers
-      val rules = new RuleParser[S].parse(text).get
-
-      Taggers.fromRules(rules)
+      TaggerEntry(taggerFile.getName, taggerText)
     }
 
-    System.err.println("Loading cascade: " + basePath)
-
-    // paths inside are either absolute or relative to the cascade definition file
-    def makeFile(path: String) = {
-      val file = new File(path)
-      if (file.isAbsolute) file
-      else new File(basePath, path)
-    }
-
-    var cascade = new Cascade[S]()
-
-    // Iterate over the level definitions, load the tagger files,
-    // and add them to the cascade.
-    val levels = for (
-      line <- lines map (_.trim) if !line.isEmpty
-    ) {
-
-      // A line is composed of a level number and a tagger file path
-      val (level, taggerFile) = line.split("\t") match {
-        case Array(levelString, taggerFilePath) =>
-          (levelString.toInt, makeFile(taggerFilePath))
-        case _ => throw new MatchError("Could not understand cascade line: " + line)
-      }
-
-      System.err.println("Loading taggers at level " + level + ": " + taggerFile)
-
-      val taggers = using(Source.fromFile(taggerFile)) { source =>
-        loadTaggers(source.getLines.mkString("\n"))
-      }
-
-      cascade = cascade.plus(level, taggers)
-    }
-
-    System.err.println("Done loading cascade.")
-    System.err.println()
-
-    cascade
+    Seq.empty[TaggerEntry] ++ levels
   }
 }

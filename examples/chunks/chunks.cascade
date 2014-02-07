@@ -1,7 +1,7 @@
-1	rel.taggers
-2	adj.taggers
-3	noun.taggers
-4	verb.taggers
-5	prep.taggers
-6	sent.taggers
-7	reltuple.taggers
+rel.taggers
+adj.taggers
+noun.taggers
+verb.taggers
+prep.taggers
+sent.taggers
+reltuple.taggers

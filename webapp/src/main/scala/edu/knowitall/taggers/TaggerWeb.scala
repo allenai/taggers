@@ -191,13 +191,12 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
 
       val taggers: Seq[Seq[Tagger[MySentence]]] =
         sections map (text => Taggers.fromRules(new RuleParser[MySentence].parse(text).get))
-      val levels: Seq[(Int, Seq[Tagger[MySentence]])] =
-        taggers.zipWithIndex map (_.swap)
-      val cascade = new Cascade[MySentence](IntMap(levels :_*))
+      val levels: Seq[Level[MySentence]] = taggers map (Level(_))
+      val cascade = new Cascade[MySentence](levels)
 
       val results = for (line <- sentenceText.split("\n")) yield {
         val sentence = process(line)
-        val levels = cascade.levels(sentence)
+        val levels = cascade.levelTypes(sentence)
 
         (sentence, levels)
       }
@@ -267,8 +266,8 @@ object TaggerWebMain extends App {
     def ruleText() = ruleInputFile match {
       case Some(file) =>
         val cascade = Cascade.partialLoad(file)
-        val mapped = cascade map { case (level, entry) =>
-          s">>> $level: ${entry.filename}\n\n${entry.text}"
+        val mapped = cascade map { entry =>
+          s">>> ${entry.filename}\n\n${entry.text}"
         }
         mapped.mkString("\n\n\n")
       case None => ""
