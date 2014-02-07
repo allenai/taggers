@@ -27,6 +27,7 @@ import edu.washington.cs.knowitall.regex.RegularExpression
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import scala.collection.JavaConverters._
+import scala.util.control._
 
 /** Run a token-based pattern over the text and tag matches.
   *
@@ -37,7 +38,14 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
   override def name = patternTaggerName
   override def source = null
 
-  val pattern: openregex.Pattern[PatternBuilder.Token] = PatternBuilder.compile(expression)
+  val pattern: openregex.Pattern[PatternBuilder.Token] =
+    try {
+      PatternBuilder.compile(expression)
+    }
+    catch {
+      case NonFatal(e) =>
+        throw new PatternTagger.PatternTaggerException(s"Could not compile pattern for $patternTaggerName.", e)
+    }
 
   /** The constructor used by reflection.
     *
@@ -123,6 +131,9 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
 }
 
 object PatternTagger {
+  class PatternTaggerException(message: String, cause: Throwable)
+  extends Exception(message, cause)
+
   def buildTypedTokens(sentence: Sentence with Chunks with Lemmas, types: Set[Type], consumedIndices: Seq[Int] = Seq.empty) = {
     for ((token, i) <- sentence.lemmatizedTokens.zipWithIndex) yield {
       new TypedToken(token, i, types filter (_.tokenInterval contains i), consumedIndices contains i)
