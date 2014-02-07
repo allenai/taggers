@@ -4,9 +4,6 @@ VG := RedefineTagger(VG)
 Rel := RedefineTagger(Rel)
 RelTo := RedefineTagger(RelTo)
 
-Prep := PatternTagger {
-  <pos="RB">? <pos="IN" | pos="TO" | pos="RP"> <pos="RB">?
-}
 PP := TypePatternTagger {
-  (?:@Prep) (?:@NG)
+  (?: <pos="RB">? <pos="IN" | pos="TO" | pos="RP"> <pos="RB">? ) (?:@NG)
 }

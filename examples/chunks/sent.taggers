@@ -5,15 +5,21 @@ VG := RedefineTagger(VG)
 Rel := RedefineTagger(Rel)
 RelTo := RedefineTagger(RelTo)
 
+RelClause := TypePatternTagger {
+  (?: <string=",">? <string=/that|which/> @NG? @VG @NG? )
+}
+
 NP := TypePatternTagger {
-  (?:@NG @PP?)
+  (?:@NG @PP? @RelClause?)
 }
 
 VP := TypePatternTagger {
   (?: (<Rel>:@VG) (<Arg2>:@NP)? (<Arg>:@PP)* )
+  | (?: (<Rel>:@VG) (<Arg2>:@NP) (<Arg3>:@NP) (<Arg>:@PP)* )
   | (?: (<Rel>:@VG) (<Arg2>:@AP) )
+  | (?: (<Rel>:@VG) (<Arg2>:<pos=/RB.*/>) )
 }
 
 S := TypePatternTagger {
-  (<Arg1>:@NP) (<VP>:@VP)
+  (<Arg1>:@NP) <string="to">? (<VP>:@VP)
 }

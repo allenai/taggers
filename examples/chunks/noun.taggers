@@ -5,13 +5,17 @@ RelTo := RedefineTagger(RelTo)
 
 NP := TypePatternTagger {
    (?: (?: <pos='DT'> | <pos='PRP$'>)? @AP? <pos=/NN.*/>+ )
+   | (?: (?: <pos='DT'> | @AP ) @AP? <pos="VBG">? <pos=/NN.*/>+ )
+   | (?: <pos='DT'> @AP )
+   | (?: <pos=/RB.?/> <pos=/NN.*/> )
    | (?:@Name)
 }
 
 NG := TypePatternTagger {
    (?:@NP )
-   | (?:@NP <string="of"> @NP )
-   | (?:@NP (?:<string=","> @NP)* <string=",">? <string="and"> @NP )
+   | (?:@NP (?:<string="of"> | <pos="POS">) @NP )
+   | (?:@NP (?:<string=","> @NP)* <string=",">? <string=/and|or/> @NP )
    | (?:@NP <string="("> @NP <string=")"> )
    | (?: <pos='PRP'> )
+   | (?: <lemma=/this|that|these|those/> )
 }
