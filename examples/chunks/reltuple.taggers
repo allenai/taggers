@@ -16,4 +16,5 @@ Related := TypePatternTagger {
 
 Related2 := TypePatternTagger {
   (?: (<Tuple1>:@Related) (<Relation>:<string="to">) (<Tuple2>:@VP) )
+  | (?: (<Tuple1>:@Related) (<Relation>:@Rel) (<Tuple2>:@S) )
 }
