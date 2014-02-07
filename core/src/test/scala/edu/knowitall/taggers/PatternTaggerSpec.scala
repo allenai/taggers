@@ -23,6 +23,27 @@ class PatternTaggerSpec extends FlatSpec {
       override val lemmatizer = MorphaStemmer
     }
 
+  "a PatternTagger with an empty group" should "create an empty subtype" in {
+    val taggers = """
+      DescribedNoun := PatternTagger {
+        (<Description>:<pos='JJ'>*) (<Noun>:<pos='NN'>+)
+      }
+      """
+
+    val cascade =
+      new Cascade(Taggers.fromString[MySentence](taggers))
+
+    val testSentence = "The huge fat cat lingered in the hallway."
+
+    val s = makeSentence(testSentence)
+
+    val types = cascade.apply(s)
+
+    // Description subtype will be empty when "hallway" is matched
+    // because it uses `*`.
+    types.exists(typ => typ.text.isEmpty)
+  }
+
   "WorldCandy PatternTagger" should "match an occurrence from a sequence of Type Nationality and Type Candy" in {
     val taggers = """
         Candy := CaseInsensitiveKeywordTagger {

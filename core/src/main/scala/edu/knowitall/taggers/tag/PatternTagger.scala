@@ -95,23 +95,26 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
         val group = m.groups(i);
 
         val tokens = sentence.lemmatizedTokens.slice(group.interval.start, group.interval.end).map(_.token)
-        val text = Tokenizer.originalText(tokens, tokens.head.offsets.start)
+        val text = tokens match {
+          case head +: _ => Tokenizer.originalText(tokens, head.offsets.start)
+          case Seq() => ""
+        }
         val tag = group.expr match {
           // create the main type for the group
           case _ if i == 0 =>
             val typ = Type(this.name, this.source, group.interval, text)
             parent = Some(typ) // There may be children of this type.
-            typ
+            Some(typ)
           case namedGroup: NamedGroup[_] =>
             require(parent.isDefined)
             val name = this.name + "." + namedGroup.name
-            new NamedGroupType(namedGroup.name, Type(name, this.source, group.interval, text), parent)
-          case _ =>
-            require(parent.isDefined)
-            val name = this.name + "." + i
-            new LinkedType(Type(name, this.source, group.interval, text), parent)
+            Some(new NamedGroupType(namedGroup.name, Type(name, this.source, group.interval, text), parent))
+          case _ => None
         }
-        tags = tags :+ tag
+
+        tag.foreach { t =>
+          tags = tags :+ t
+        }
       }
     }
 
