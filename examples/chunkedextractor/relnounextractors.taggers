@@ -22,7 +22,7 @@ SingularProperNoun := PatternTagger {
 // (Barack Obama, is the president of, the United States)
 VerbBasedExtraction := TypePatternTagger {
   (<Arg1>: @NounChunk)
-  (<Rel>: <lemma='be'> <pos='DT'>? @NounChunk <pos='IN'>)
+  (<Rel>: <lemma="be"> <pos="DT">? @NounChunk <pos="IN">)
   (<Arg2>: @NounChunk)
 }
 
@@ -63,53 +63,53 @@ AdjectiveDescriptorExtractor := TypePatternTagger {
   (<Arg2>: @SingularProperNoun)
 }
 
-// "AUC's leader, Carlos Castano"
+// "AUC"s leader Carlos Castano"
 // (Carlos Castano, (is) leader (of), AUC)
 PossessiveAppositiveExtractor := TypePatternTagger {
   // proper noun (could be plural) (no preposition)
-  (<Arg2>: <pos=/NNS?/>* <pos=/NNPS?/>+ <pos=/NNS?|NNPS?/>*)
+  (<Arg2>: @ProperNounChunk)
 
   // {possessive}
-  <pos=/POS/> +
+  <pos="POS">
 
   // {adverb} {adjective} {relnoun}
-  (<Rel>: <pos=/RB/>* <pos=/JJ|VBD|VBN/>* @RelationalNoun)
+  (<Rel>: <pos="RB">* <pos=/JJ|VBD|VBN/>* @RelationalNoun)
 
   // {proper noun} (no preposition)
   // the proper noun is required to distinguish this noun from the previous
-  // consider: Baghdad's deputy governor (deputy is a relnoun)
+  // consider: Baghdad"s deputy governor (deputy is a relnoun)
   (<Arg1>: @SingularProperNoun)
 }
 
-// "AUC's leader, Carlos Castano"
+// "AUC"s leader, Carlos Castano"
 // (Carlos Castano, (is) leader (of), AUC)
-PossessiveAdjectiveExtractor := TypePatternTagger {
+PossessiveFullAppositiveExtractor := TypePatternTagger {
   // Proper noun (could be plural) (no preposition)
-  (<Arg2>: <pos=/NNS?|NNPS?/>+)
+  (<Arg2>: @ProperNounChunk)
 
   // Possessive
-  <pos=/POS/>
+  <pos="POS">
 
   // {adverb} {adjective} {relnoun}
-  (<Rel>: <pos=/RB/>* <pos=/JJ|VBD|VBN/>* @RelationalNoun)
+  (<Rel>: <pos="RB">* <pos=/JJ|VBD|VBN/>* @RelationalNoun)
 
   // comma
-  <string=/,/>
+  <string=",">
 
   (<Arg1>: @ProperNounChunk)
 }
 
-// "AUC's leader is Carlos Castano"
+// "AUC"s leader is Carlos Castano"
 // (Carlos Castano, (is) leader (of), AUC)
 PossessiveIsExtractor := TypePatternTagger {
   // {nouns} (no preposition)
-  (<Arg2>: <pos='DT'>? <pos='RB.*'>* <pos='JJ.*'>* <pos=/NNS?|NNPS?/>+)
+  (<Arg2>: <pos="DT">? <pos="RB.*">* <pos="JJ.*">* <pos=/NNS?|NNPS?/>+)
 
   // {possessive}
-  <pos='POS'>
+  <pos="POS">
 
   // {adverb} {adjective} {relnoun}
-  (<Rel>: <pos='RB'>* <pos=/JJ|VBD|VBN/>* @RelationalNoun)
+  (<Rel>: <pos="RB">* <pos=/JJ|VBD|VBN/>* @RelationalNoun)
 
   // be
   (<lemma=/be/>)
@@ -118,7 +118,7 @@ PossessiveIsExtractor := TypePatternTagger {
   (<Arg1>: @ProperNounChunk)
 }
 
-// "Jack is John's son"
+// "Jack is John"s son"
 // (Jack, (is) son (of), John)
 IsPossessiveExtractor := TypePatternTagger {
   // {nouns} (no preposition)
@@ -127,7 +127,7 @@ IsPossessiveExtractor := TypePatternTagger {
   (<lemma=/be/>)
 
   (<Arg2>: @ProperNounChunk)
-  <pos='POS'>
+  <pos="POS">
   (<Rel>: <pos=/RB/>* <pos=/JJ|VBD|VBN/>* @RelationalNoun)
 }
 
@@ -141,7 +141,7 @@ OfIsExtractor := TypePatternTagger {
   (<Arg1>: <chunk="B-NP"> <chunk="I-NP">*)
 }
 
-// Mohammed Jamal, bin Laden's brother
+// Mohammed Jamal, bin Laden"s brother
 // (Mohammed Jamal, (is) brother (of), bin Laden)
 PossessiveReverseExtractor := TypePatternTagger {
   // proper noun (no preposition)
@@ -159,8 +159,8 @@ PossessiveReverseExtractor := TypePatternTagger {
   // {adverb} {adjective} {relnoun}
   (<Rel>: <pos="RB">* <pos=/JJ|VBD|VBN/>* @RelationalNoun)
 
-  // make sure the relnoun isn't part of a larger np-chunk
-  // consider: "...spokesman Suleiman Abu Ghaith , Al-Qaeda 's military chief Saif al-Adel , and two of Osama bin Laden 's sons..."
+  // make sure the relnoun isn"t part of a larger np-chunk
+  // consider: "...spokesman Suleiman Abu Ghaith , Al-Qaeda "s military chief Saif al-Adel , and two of Osama bin Laden "s sons..."
   (?:<!chunk="I-NP">|$)
 }
 
