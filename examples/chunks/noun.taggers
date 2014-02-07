@@ -4,7 +4,7 @@ Rel := RedefineTagger(Rel)
 RelTo := RedefineTagger(RelTo)
 
 NP := TypePatternTagger {
-   (?: (?: <pos='DT'> | <pos='PRP$'>)? @AP? <pos=/NN.*/>+ )
+   (?: (?: <pos='DT'> | <pos='PRP$'>)? @AP? <pos=/NN.*/>+ (?:<pos='POS'> <pos=/NN.*/>+)*)
    | (?:@Name)
 }
 
