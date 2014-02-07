@@ -12,4 +12,5 @@ V := PatternTagger {
 }
 VG := TypePatternTagger {
   (?: <pos="MD">? <pos="RB">? @Aux? @V (?: <string=/and|or/> @V)? )
+  | (?: <pos="MD">? @Aux <pos="VBN"> <string="by"> )
 }
