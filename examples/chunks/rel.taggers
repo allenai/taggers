@@ -22,6 +22,8 @@ EffectRel := TypePatternTagger {
 | (?:<pos="MD">? <string=/be|is|are/> <pos="DT" | pos="CD">? <string=/way(s)?/> <string="that"> )
 // which is why
 | (?: (?:<string=",">? <string=/and|which/>)? <pos="MD">? <string=/be|is|are/> <string="why"> )
+// by which
+| (?: <string="by"> <string="which"> )
 }
 EffectRelTo := TypePatternTagger {
 // in order to
@@ -57,6 +59,8 @@ ExampleRel := TypePatternTagger {
 | (?:<string="such"> <string="as"> )
 // is an example of
 | (?:@And? <pos="MD">? <string=/be|is|are/> <pos="DT"> <string=/example(s)?/> <string="of"> )
+// is a
+| (?:@And? <string="is"> <string="a"> )
 }
 
 RequiredRel := TypePatternTagger {
