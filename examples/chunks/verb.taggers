@@ -5,7 +5,7 @@ Rel := RedefineTagger(Rel)
 RelTo := RedefineTagger(RelTo)
 
 Aux := PatternTagger {
-  <string=/be|am|is|are|have|has/> <pos="RB">? <string="been">?
+  <lemma=/be|have/> <pos="RB">? <string="been">?
 }
 V := PatternTagger {
   (<Head>:<pos=/VB[DPZGN]?/> (?: <pos="RP" | pos="IN">)? )

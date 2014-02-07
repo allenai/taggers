@@ -2,7 +2,7 @@ And := PatternTagger {
   <string=",">? <string=/and|that|which/>
 }
 Help := PatternTagger {
-  <string=/(help|aid|allow|assist|enable)(s)?/>
+  <lemma=/(help|aid|allow|assist|enable)/>
 }
 
 EffectRel := TypePatternTagger {
@@ -19,9 +19,9 @@ EffectRel := TypePatternTagger {
 // and by doing so
 | (?:<string="and"> <string="by"> <string="doing"> <string="so"> )
 // may be one way that 
-| (?:<pos="MD">? <string=/be|is|are/> <pos="DT" | pos="CD">? <string=/way(s)?/> <string="that"> )
+| (?:<pos="MD">? <lemma="be"> <pos="DT" | pos="CD">? <lemma="way"> <string="that"> )
 // which is why
-| (?: (?:<string=",">? <string=/and|which/>)? <pos="MD">? <string=/be|is|are/> <string="why"> )
+| (?: (?:<string=",">? <string=/and|which/>)? <pos="MD">? <lemma="be"> <string="why"> )
 // by which
 | (?: <string="by"> <string="which"> )
 }
@@ -31,45 +31,45 @@ EffectRelTo := TypePatternTagger {
 // which helps to
 | (?: (?:<string=",">? <string=/and|that|which|to/>)? @Help <string="to"> )
 // may be one way to
-| (?:<pos="MD">? <string=/be|is|are/> <pos="DT" | pos="CD">? <string=/way(s)?/> <string="to"> )
+| (?:<pos="MD">? <lemma="be"> <pos="DT" | pos="CD">? <string=/way(s)?/> <string="to"> )
 }
 
 CauseRel := TypePatternTagger {
 // may be because of
-(?:(?:<pos="MD">? <string=/be|is|are/>)? <string="because"> <string="of">? )
+(?:(?:<pos="MD">? <lemma="be">)? <string="because"> <string="of">? )
 // may be caused by
-| (?:<pos="MD">? <string=/be|is|are/> <string="caused"> <string="by"> )
+| (?:<pos="MD">? <lemma="be"> <string="caused"> <string="by"> )
 // which causes
-| (?:@And? <string=/cause(s)?/> )
+| (?:@And? <lemma="cause"> )
 }
 
 FunctionRel := TypePatternTagger {
 // which may be responsible for
-(?:@And? <pos="MD">? <string=/be|is|are/> <string=/used|responsible/> <string="for"> )
+(?:@And? <pos="MD">? <lemma="be"> <string=/used|responsible/> <string="for"> )
 }
 FunctionRelTo := TypePatternTagger {
 // which may be used to
-(?:@And? <pos="MD">? <string=/be|is|are/> <string="used"> <string="to"> )
+(?:@And? <pos="MD">? <lemma="be"> <string="used"> <string="to"> )
 }
 
 ExampleRel := TypePatternTagger {
 // which may include
-(?:@And? <pos="MD">? <string=/include(s)?/> )
+(?:@And? <pos="MD">? <lemma="include"> )
 // such as
 | (?:<string="such"> <string="as"> )
 // is an example of
-| (?:@And? <pos="MD">? <string=/be|is|are/> <pos="DT"> <string=/example(s)?/> <string="of"> )
+| (?:@And? <pos="MD">? <lemma="be"> <pos="DT">? <lemma="example"> <string="of"> )
 // is a
-| (?:@And? <string="is"> <string="a"> )
+| (?:@And? <string="is"> <pos="DT"> )
 }
 
 RequiredRel := TypePatternTagger {
 // which may be necessary for
-(?:@And? <pos="MD">? <string=/be|is|are/> <string=/necessary|needed|required/> <string="for"> )
+(?:@And? <pos="MD">? <lemma="be"> <string=/necessary|needed|required/> <string="for"> )
 }
 RequiredRelTo := TypePatternTagger {
 // which may be necessary to
-(?:@And? <pos="MD">? <string=/be|is|are/> <string=/necessary|needed|required/> <string="to"> )
+(?:@And? <pos="MD">? <lemma="be"> <string=/necessary|needed|required/> <string="to"> )
 }
 
 
