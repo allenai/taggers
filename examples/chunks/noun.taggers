@@ -17,5 +17,5 @@ NG := TypePatternTagger {
    | (?:@NP (?:<string=","> @NP)* <string=",">? <string=/and|or/> @NP )
    | (?:@NP <string="("> @NP <string=")"> )
    | (?: <pos='PRP'> )
-   | (?: <lemma=/this|that|these|those/> )
+   | (?: <lemma=/this|these|those/> )
 }

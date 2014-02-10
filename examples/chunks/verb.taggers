@@ -5,7 +5,7 @@ Rel := RedefineTagger(Rel)
 RelTo := RedefineTagger(RelTo)
 
 Aux := PatternTagger {
-  <string=/be|am|is|are|have|has/> <pos="RB">? <string="been">?
+  <lemma=/be|have/> <pos="RB">? <string="been">?
 }
 V := PatternTagger {
   (<Head>:<pos=/VB[DPZGN]?/> (?: <pos="RP" | pos="IN">)? )
@@ -13,4 +13,9 @@ V := PatternTagger {
 VG := TypePatternTagger {
   (?: <pos="MD">? <pos="RB">? @Aux? @V (?: <string=/and|or/> @V)? )
   | (?: <pos="MD">? @Aux <pos="VBN"> <string="by"> )
+  // groupings to exclude Relation matches
+  | (?: <pos="MD">? <pos="RB">? @Aux <string="to"> @V )
+  | (?: <pos="MD">? <pos="RB">? @Aux? <lemma=/want|like|need|wish|appear|seem|begin|start|continue|proceed|act|try/> <string="to"> @V )
+  | (?: <pos="MD">? <pos="RB">? <lemma="be"> <pos="RB">? @AP <string="to"> @V )
+  | (?: <pos="MD">? <lemma="be"> <pos="VBN"> <string="to"> @V )
 }
