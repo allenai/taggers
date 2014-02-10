@@ -15,7 +15,7 @@ VG := TypePatternTagger {
   | (?: <pos="MD">? <lemma="be"> <pos="VBN"> <string="by"> )
   // groupings to exclude Relation matches
   | (?: <pos="MD">? <pos="RB">? @Aux <string="to"> @V )
-  | (?: <pos="MD">? <pos="RB">? @Aux? <lemma=/want|need|wish|appear|seem|begin|start|continue|proceed|act|try/> <string="to"> @V )
+  | (?: <pos="MD">? <pos="RB">? @Aux? <lemma=/want|like|need|wish|appear|seem|begin|start|continue|proceed|act|try/> <string="to"> @V )
   | (?: <pos="MD">? <pos="RB">? <lemma="be"> <pos="RB">? @AP <string="to"> @V )
   | (?: <pos="MD">? <lemma="be"> <pos="VBN"> <string="to"> @V )
 }
