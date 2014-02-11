@@ -27,6 +27,19 @@ import scala.collection.immutable
 case class Cascade[-S <: Sentence](levels: Seq[Level[S]]) {
   lazy val chunker = new OpenNlpChunker()
 
+  {
+    var definedTypes = Set.empty[String]
+    for ((level, i) <- levels.zipWithIndex) {
+      try {
+        level.typecheck(definedTypes)
+      } catch {
+        case e: Exception =>
+          throw new IllegalArgumentException("Import error on level: " + i, e)
+      }
+      definedTypes ++= level.taggers.iterator.map(_.name)
+    }
+  }
+
   /** Convenience constructor to make an empty Cascade. */
   def this() = this(Seq.empty[Level[S]])
 
@@ -65,8 +78,12 @@ case class Cascade[-S <: Sentence](levels: Seq[Level[S]]) {
     */
   def levelTypes(sentence: S): immutable.ListMap[Int, Seq[Type]] = {
     var result = immutable.ListMap.empty[Int, Seq[Type]]
+    var definedTypes = Set.empty[String]
     var previousLevelTags = Seq.empty[Type]
     for ((level, index) <- levels.zipWithIndex) {
+      level.typecheck(definedTypes)
+      definedTypes ++= (level.taggers.iterator map (_.name)).toSet
+
       val levelTags = level.apply(sentence, previousLevelTags)
 
       result += index -> levelTags
