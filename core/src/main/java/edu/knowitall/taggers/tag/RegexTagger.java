@@ -27,6 +27,15 @@ public class RegexTagger extends JavaTagger {
         setPatterns(keywords);
     }
 
+    /**
+     * Constructor used by reflection.
+     * @param name name of the tagger
+     * @param args arguments to the tagger
+     */
+    public RegexTagger(String name, scala.collection.Seq<String> args) {
+        this(name, scala.collection.JavaConversions.asJavaList(args));
+    }
+
     private void setPatterns(List<String> expressions) {
         List<Pattern[]> split = new ArrayList<Pattern[]>();
         for (String expression : expressions) {

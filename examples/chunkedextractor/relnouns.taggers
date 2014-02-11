@@ -2,14 +2,12 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     abbot
     abomination
     accessory
-    accompanist
     accomplice
     accountant
     accuser
     ace
     acquaintance
     active
-    activist
     actor
     actress
     adherent
@@ -28,7 +26,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     aficionado
     agent
     aggressor
-    agonist
     aide
     alien
     ally
@@ -48,8 +45,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     announcer
     annoyance
     anomaly
-    antagonist
-    apologist
     apostle
     apotheosis
     applicant
@@ -60,13 +55,11 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     archbishop
     architect
     arrival
-    artist
     ass
     asshole
     assignee
     assistant
     associate
-    atheist
     athlete
     attendant
     attendee
@@ -88,7 +81,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     barber
     barrister
     bartender
-    bassist
     batsman
     bear
     bearer
@@ -161,7 +153,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     caretaker
     carpenter
     carrier
-    cartoonist
     case
     cashier
     casualty
@@ -185,7 +176,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     charge
     cheerleader
     chef
-    chemist
     chick
     chicken
     chief
@@ -194,7 +184,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     chiropractor
     choreographer
     chorister
-    christ
     cinematographer
     cipher
     citizen
@@ -218,7 +207,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     colleague
     collector
     colonel
-    columnist
     comedian
     comer
     commandant
@@ -284,7 +272,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     crossover
     crusader
     culprit
-    cultist
     curator
     custodian
     customer
@@ -308,7 +295,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     democrat
     demon
     denizen
-    dentist
     dependent
     deputy
     descendant
@@ -349,7 +335,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     dude
     duke
     earl
-    economist
     editor
     educator
     elder
@@ -371,7 +356,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     envoy
     equal
     escapee
-    evangelist
     examiner
     executive
     executor
@@ -381,7 +365,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     exponent
     exporter
     extra
-    extremist
     ex-wife
     eyewitness
     face
@@ -403,7 +386,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     figure
     figurehead
     filmmaker
-    finalist
     finder
     finisher
     firefighter
@@ -412,7 +394,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     fisherman
     fixture
     flop
-    florist
     flyer
     fodder
     follower
@@ -432,7 +413,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     front
     front-runner
     fugitive
-    fundamentalist
     fundraiser
     gainer
     gatekeeper
@@ -442,7 +422,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     generator
     genius
     gentleman
-    geologist
     ghost
     giant
     girl
@@ -472,7 +451,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     guardian
     guest
     guide
-    guitarist
     gunman
     gunner
     guru
@@ -515,7 +493,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     husband
     hypocrite
     ideal
-    ideologist
     idiot
     idol
     illustrator
@@ -529,7 +506,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     individual
     inducer
     inductee
-    industrialist
     infant
     informant
     inhabitant
@@ -553,19 +529,15 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     investigator
     investor
     issue
-    ...*ist
     jack
     janitor
     jerk
     jewel
-    jihadist
     joker
-    journalist
     judge
     junior
     justice
     keeper
-    keyboardist
     kicker
     kid
     killer
@@ -604,7 +576,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     light
     linebacker
     lion
-    lobbyist
     locator
     loner
     longer
@@ -612,10 +583,8 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     loser
     love
     lover
-    loyalist
     lump
     machine
-    machinist
     magician
     maid
     mainstay
@@ -643,7 +612,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     mayor
     md
     mechanic
-    medalist
     mediator
     medium
     member
@@ -687,7 +655,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     nanny
     narrator
     national
-    nationalist
     native
     natural
     neighbor
@@ -722,7 +689,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     oracle
     ordinary
     organiser
-    organist
     organizer
     originator
     outcast
@@ -734,7 +700,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     pain
     painter
     pallbearer
-    panelist
     paragon
     paralegal
     paranoid
@@ -761,7 +726,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     paymaster
     pediatrician
     peer
-    perfectionist
     performer
     perpetrator
     person
@@ -770,12 +734,9 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     pest
     pet
     petitioner
-    pharmacist
     philosopher
     photographer
     physician
-    physicist
-    pianist
     pig
     pill
     pillar
@@ -839,14 +800,10 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     prosecutor
     prospect
     prostitute
-    protagonist
     protector
     protege
     provider
     proxy
-    psychiatrist
-    psychologist
-    psychotherapist
     publisher
     punk
     pupil
@@ -858,7 +815,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     quarterback
     queen
     rabbi
-    racist
     radical
     raiser
     rapper
@@ -866,7 +822,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     reader
     rebel
     receiver
-    receptionist
     recipient
     recruiter
     rector
@@ -893,7 +848,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     republican
     researcher
     reserve
-    reservist
     resident
     respondent
     retailer
@@ -927,7 +881,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     scapegoat
     scholar
     schoolteacher
-    scientist
     scion
     scorer
     scourge
@@ -942,13 +895,11 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     self
     self-starter
     seller
-    semifinalist
     senator
     sender
     senior
     sensation
     sensitive
-    seperatist
     sergeant
     servant
     server
@@ -988,7 +939,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     sniper
     soldier
     solicitor
-    soloist
     someone
     son
     songwriter
@@ -1001,7 +951,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     sovereign
     speaker
     spearhead
-    specialist
     spectator
     speechwriter
     spoiler
@@ -1029,7 +978,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     stockholder
     straight
     stranger
-    strategist
     striker
     stripper
     stroke
@@ -1056,7 +1004,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     supplier
     supporter
     suppressor
-    supremacist
     surgeon
     surrogate
     survivor
@@ -1075,17 +1022,12 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     teammate
     teaser
     technician
-    technologist
     teen
     teenager
-    televangelist
     tenant
     tender
     terror
-    terrorist
     tester
-    theorist
-    therapist
     thief
     threat
     tiger
@@ -1095,7 +1037,6 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     toast
     tool
     tough
-    tourist
     trader
     trailblazer
     trailer
@@ -1131,11 +1072,9 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     victor
     viewer
     villain
-    violinist
     virgin
     virtuoso
     visitor
-    vocalist
     voice
     volunteer
     voter
@@ -1170,4 +1109,8 @@ RelationalNoun := CaseInsensitiveKeywordTagger {
     writer
     youngster
     youth
+}
+
+RelationalNoun := RegexTagger {
+    .*ist
 }
