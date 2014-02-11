@@ -1,8 +1,7 @@
-NP := RedefineTagger(NP)
-VP := RedefineTagger(VP)
-S := RedefineTagger(S)
-Rel := RedefineTagger(Rel)
-RelTo := RedefineTagger(RelTo)
+import NP
+import Rel
+import S
+import VP
 
 Related := TypePatternTagger {
   (?: (<Tuple1>:@S) (<Relation>:@Rel) (<Tuple2>:@S) )

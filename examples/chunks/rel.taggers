@@ -7,9 +7,9 @@ Help := PatternTagger {
 
 EffectRel := TypePatternTagger {
 // in order for
-(?:<string="in"> <string="order"> <string=/for|that/> ) 
+(?:<string="in"> <string="order"> <string=/for|that/> )
 // which helps with
-| (?: (?:<string=",">? <string=/and|that|which|to/>)? @Help <string=/with|in/> ) 
+| (?: (?:<string=",">? <string=/and|that|which|to/>)? @Help <string=/with|in/> )
 // which helps
 | (?: <string=",">? <string=/and|that|which|to/> @Help <string=/with|in/>? )
 // which results in
@@ -18,7 +18,7 @@ EffectRel := TypePatternTagger {
 | (?:<string="so"> <string="that">? )
 // and by doing so
 | (?:<string="and"> <string="by"> <string="doing"> <string="so"> )
-// may be one way that 
+// may be one way that
 | (?:<pos="MD">? <lemma="be"> <pos="DT" | pos="CD">? <lemma="way"> <string="that"> )
 // which is why
 | (?: (?:<string=",">? <string=/and|which/>)? <pos="MD">? <lemma="be"> <string="why"> )

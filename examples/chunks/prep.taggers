@@ -1,8 +1,4 @@
-AP := RedefineTagger(AP)
-NG := RedefineTagger(NG)
-VG := RedefineTagger(VG)
-Rel := RedefineTagger(Rel)
-RelTo := RedefineTagger(RelTo)
+import NG
 
 PP := TypePatternTagger {
   (?: <pos="RB">? <pos="IN" | pos="TO" | pos="RP"> <pos="RB">? ) (?:@NG)

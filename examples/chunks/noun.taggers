@@ -1,7 +1,4 @@
-Name := RedefineTagger(Name)
-AP := RedefineTagger(AP)
-Rel := RedefineTagger(Rel)
-RelTo := RedefineTagger(RelTo)
+import AP
 
 NP := TypePatternTagger {
    (?: (?: <pos='DT'> | <pos='PRP$'>)? @AP? <pos=/NN.*/>+ )

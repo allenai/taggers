@@ -1,9 +1,8 @@
-AP := RedefineTagger(AP)
-NG := RedefineTagger(NG)
-PP := RedefineTagger(PP)
-VG := RedefineTagger(VG)
-Rel := RedefineTagger(Rel)
-RelTo := RedefineTagger(RelTo)
+import AP
+import NG
+import NP
+import PP
+import VG
 
 RelClause := TypePatternTagger {
   (?: <string=",">? <string=/that|which/> @NG? @VG @NG? )
