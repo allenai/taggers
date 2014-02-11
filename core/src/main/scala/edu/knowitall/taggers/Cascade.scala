@@ -43,20 +43,20 @@ case class Cascade[-S <: Sentence](levels: Seq[Level[S]]) {
     * @returns  the found types
     */
   def apply(sentence: S): Seq[Type] = {
-    var previousLevelTags = Seq.empty[Type]
+    var previousTypes = Seq.empty[Type]
+    var definedTypes = Set.empty[String]
+    var previousLevelTypes = Seq.empty[Type]
     for (level <- levels) {
-      var levelTags = Seq.empty[Type]
-      val consumedIndices = previousLevelTags.map(_.tokenInterval).flatten
+      level.typecheck(definedTypes)
+      definedTypes ++= (level.taggers.iterator map (_.name)).toSet
 
-      for (tagger <- level.taggers) yield {
-        val allTags = previousLevelTags ++ levelTags
-        levelTags = levelTags ++ tagger(sentence, allTags, consumedIndices)
-      }
+      val levelTypes = level.apply(sentence, previousTypes)
 
-      previousLevelTags = levelTags
+      previousTypes ++= levelTypes
+      previousLevelTypes = levelTypes
     }
 
-    previousLevelTags
+    previousLevelTypes
   }
 
   /** Apply the cascade to a sentence, keeping types found at all levels.
@@ -67,13 +67,7 @@ case class Cascade[-S <: Sentence](levels: Seq[Level[S]]) {
     var result = immutable.ListMap.empty[Int, Seq[Type]]
     var previousLevelTags = Seq.empty[Type]
     for ((level, index) <- levels.zipWithIndex) {
-      var levelTags = Seq.empty[Type]
-      val consumedIndices = previousLevelTags.map(_.tokenInterval).flatten
-
-      for (tagger <- level.taggers) yield {
-        val allTags = previousLevelTags ++ levelTags
-        levelTags = levelTags ++ tagger(sentence, allTags, consumedIndices)
-      }
+      val levelTags = level.apply(sentence, previousLevelTags)
 
       result += index -> levelTags
       previousLevelTags = levelTags
@@ -94,19 +88,12 @@ object Cascade {
   }
 
   def load[S <: Sentence](basePath: File, cascadeSource: Source): Cascade[S] = {
-    def loadTaggers(text: String): Seq[Tagger[S]] = {
-      // parse taggers
-      val rules = new RuleParser[S].parse(text).get
-
-      Taggers.fromRules(rules)
-    }
-
     System.err.println("Loading cascade definition: " + basePath)
 
     var cascade = new Cascade[S]()
     for (TaggerEntry(filename, text) <- partialLoad(basePath, cascadeSource.getLines)) {
       System.err.println("Parsing taggers from: " + filename)
-      cascade = cascade + Level(loadTaggers(text))
+      cascade = cascade + Taggers.fromString(text)
     }
 
     System.err.println("Done loading cascade.")
