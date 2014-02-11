@@ -208,13 +208,13 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
       for ((sentence, levels) <- results) {
         resultText.append(sentence.text)
         resultText.append("\n\n")
-        var previousLevelTypes = Set.empty[Type]
+        var allTypes = Set.empty[Type]
         for ((level, types) <- levels.toSeq) {
           if (levels.size > 1) {
             resultText.append(s"  Level $level\n\n")
           }
 
-          val tokens = PatternTagger.buildTypedTokens(sentence, previousLevelTypes)
+          val tokens = PatternTagger.buildTypedTokens(sentence, cascade.levels(level).filterTypes(allTypes))
           val table = buildTable(Seq("index", "string", "postag", "chunk", "in types", "out types"), tokens map { typed =>
             val outTypes = types filter (_.tokenInterval contains typed.index)
             Seq(typed.index.toString,
@@ -238,7 +238,7 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
 
           resultText.append("\n")
 
-          previousLevelTypes = types.toSet
+          allTypes ++= types.toSet
         }
       }
 

@@ -24,11 +24,21 @@ case class Level[-S <: Sentence](imports: Seq[Import], taggers: Seq[Tagger[S]]) 
     }
   }
 
+  /** Filter to keep only the types that were explicitly imported. */
+  def filterTypes(types: Seq[Type]) = {
+    types filter (t => imports exists (_.name == t.name))
+  }
+
+  /** Filter to keep only the types that were explicitly imported. */
+  def filterTypes(types: Set[Type]) = {
+    types filter (t => imports exists (_.name == t.name))
+  }
+
   def apply(sentence: S, types: Seq[Type]): Seq[Type] = {
     val importNames = imports map (_.name)
 
     // filter all the types by those imported
-    val availableTypes = types filter (t => imports exists (_.name == t.name))
+    val availableTypes = filterTypes(types)
 
     var levelTypes = Seq.empty[Type]
     val consumedIndices = (availableTypes map(_.tokenInterval)).flatten
