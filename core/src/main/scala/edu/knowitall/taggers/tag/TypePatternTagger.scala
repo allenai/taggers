@@ -25,7 +25,8 @@ class TypePatternTagger(name: String, expression: String)
 }
 
 object TypePatternTagger {
-  val wholeTypeSyntaxPattern = new Regex("@(\\w+)(?![^<]*>)")
+  // Match an @-sign followed by a type name.
+  val wholeTypeSyntaxPattern = new Regex("@(\\w+(?:\\.\\w+)?)(?![^<]*>)")
 
   private def expandWholeTypeSyntax(str: String): String = {
     wholeTypeSyntaxPattern.replaceAllIn(str, m => {
