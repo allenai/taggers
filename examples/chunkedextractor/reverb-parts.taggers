@@ -1,5 +1,8 @@
-NounChunk := PatternTagger {
-  <chunk='B-NP'> <chunk='I-NP'>*
+SimpleNounChunk := PatternTagger {
+  <chunk="B-NP"> <chunk="I-NP">* (?:<pos="POS">? <chunk="I-NP">*)*
+}
+NounChunk := TypePatternTagger {
+  (?:@SimpleNounChunk <string="of">)* @SimpleNounChunk
 }
 Verb := PatternTagger {
         // Optional adverb
