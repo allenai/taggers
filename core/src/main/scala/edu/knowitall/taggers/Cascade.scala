@@ -110,7 +110,7 @@ object Cascade {
     var cascade = new Cascade[S]()
     for (TaggerEntry(filename, text) <- partialLoad(basePath, cascadeSource.getLines)) {
       System.err.println("Parsing taggers from: " + filename)
-      cascade = cascade + Taggers.fromString(text)
+      cascade = cascade + Level.fromString(text)
     }
 
     System.err.println("Done loading cascade.")

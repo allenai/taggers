@@ -190,7 +190,7 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
       }
 
       val levels: Seq[Level[MySentence]] =
-        sections map (text => Taggers.fromString(text))
+        sections map (text => Level.fromString(text))
       val cascade = new Cascade[MySentence](levels)
 
       val results = for (line <- sentenceText.split("\n")) yield {
