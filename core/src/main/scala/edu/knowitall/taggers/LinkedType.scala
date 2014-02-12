@@ -17,8 +17,8 @@ class LinkedType(val typ: Type, val link: Option[Type] = None) extends Type {
   }
   def canEqual(that: Any) = that.isInstanceOf[LinkedType]
   override def hashCode = HashCodeHelper(name, tokenInterval, text, link)
-
 }
+
 class NamedGroupType(val groupName: String, typ: Type, link: Option[Type] = None) extends LinkedType(typ, link) {
   override def toString() = "NamedGroupType(" + groupName + "," + name + "," + source + "," + tokenInterval + "," + text + ")"
   override def canEqual(that: Any) = that.isInstanceOf[NamedGroupType]
