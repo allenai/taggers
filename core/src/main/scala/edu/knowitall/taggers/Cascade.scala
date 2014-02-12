@@ -77,17 +77,17 @@ case class Cascade[-S <: Sentence](levels: Seq[Level[S]]) {
     * @returns  the found types at each level
     */
   def levelTypes(sentence: S): immutable.ListMap[Int, Seq[Type]] = {
+    var previousTypes = Seq.empty[Type]
     var result = immutable.ListMap.empty[Int, Seq[Type]]
     var definedTypes = Set.empty[String]
-    var previousLevelTags = Seq.empty[Type]
     for ((level, index) <- levels.zipWithIndex) {
       level.typecheck(definedTypes)
       definedTypes ++= (level.taggers.iterator map (_.name)).toSet
 
-      val levelTags = level.apply(sentence, previousLevelTags)
+      val levelTags = level.apply(sentence, previousTypes)
 
       result += index -> levelTags
-      previousLevelTags = levelTags
+      previousTypes ++= levelTags
     }
 
     result
