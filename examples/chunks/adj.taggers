@@ -1,3 +1,6 @@
+import Rel
+import RelTo
+
 AP := PatternTagger {
    (?: <pos='RB'>? <pos=/JJ.*/>+ )
 }

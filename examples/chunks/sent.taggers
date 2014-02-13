@@ -3,6 +3,8 @@ import NG
 import NP
 import PP
 import VG
+import Rel
+import RelTo
 
 RelClause := TypePatternTagger {
   (?: <string=",">? <string=/that|which/> @NG? @VG @NG? )
