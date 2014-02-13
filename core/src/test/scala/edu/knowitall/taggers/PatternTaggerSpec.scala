@@ -37,7 +37,7 @@ class PatternTaggerSpec extends FlatSpec {
 
     val s = makeSentence(testSentence)
 
-    val types = cascade.apply(s)
+    val (types, extractions) = cascade.apply(s)
 
     // Description subtype will be empty when "hallway" is matched
     // because it uses `*`.
@@ -79,7 +79,7 @@ class PatternTaggerSpec extends FlatSpec {
     val s = makeSentence(testSentence)
 
     //Tag the sentence with the loaded taggers
-    val types = cascade.apply(s)
+    val (types, extractions) = cascade.apply(s)
 
     //matching interval should be [3,5)
     val worldCandyInterval = Interval.open(3, 5)
@@ -110,7 +110,7 @@ class PatternTaggerSpec extends FlatSpec {
 
     val s = makeSentence(testSentence)
 
-    val types = cascade.apply(s)
+    val (types, extractions) = cascade.apply(s)
 
     assert(types.size === 1)
   }
@@ -144,7 +144,7 @@ class PatternTaggerSpec extends FlatSpec {
 
     val s = makeSentence(testSentence)
 
-    val types = cascade.apply(s)
+    val (types, extractions) = cascade.apply(s)
 
     assert(types.exists(_.name == "RelatedTuples"), "RelatedTuples type not found.")
   }
@@ -174,7 +174,7 @@ class PatternTaggerSpec extends FlatSpec {
 
     val s = makeSentence(testSentence)
 
-    val types = cascade.apply(s)
+    val (types, extractions) = cascade.apply(s)
 
     val typeTypes = types.filter(_.name == "TypeTaggerTest")
     assert(typeTypes.size === 3)
@@ -222,7 +222,7 @@ class PatternTaggerSpec extends FlatSpec {
 
     val s = makeSentence(testSentence)
 
-    val types = cascade.apply(s)
+    val (types, extractions) = cascade.apply(s)
 
     val typeTypes = types.filter(_.name == "TypePatternPhrase")
     assert(typeTypes.size === 1)
@@ -246,7 +246,7 @@ class PatternTaggerSpec extends FlatSpec {
 
     val s = makeSentence(testSentence)
 
-    val types = cascade.apply(s)
+    val (types, extractions) = cascade.apply(s)
     val filteredTypes = types.filter(_.name == "FirstName")
 
     assert(filteredTypes.size === 2)

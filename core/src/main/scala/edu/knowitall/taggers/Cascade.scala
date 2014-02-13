@@ -17,6 +17,7 @@ import java.io.File
 import java.io.FileReader
 import java.io.Reader
 import scala.collection.immutable
+import scala.util.{ Try, Success, Failure }
 
 /** Represents a sequence of taggers applied in order.
   * After each level of taggers, PatternTaggers can only use
@@ -24,9 +25,11 @@ import scala.collection.immutable
   *
   * @param  levels  stores the taggers applied on each level
   */
-case class Cascade[-S <: Sentence](levels: Seq[Level[S]]) {
+case class Cascade[-S <: Sentence](levels: Seq[Level[S]] = Seq.empty, extractors: Seq[Extractor] = Seq.empty) {
   lazy val chunker = new OpenNlpChunker()
 
+  // Make sure all the imports are valid.
+  // Make sure all extractors are for defined types.
   {
     var definedTypes = Set.empty[String]
     for ((level, i) <- levels.zipWithIndex) {
@@ -38,24 +41,21 @@ case class Cascade[-S <: Sentence](levels: Seq[Level[S]]) {
       }
       definedTypes ++= level.taggers.iterator.map(_.name)
     }
-  }
 
-  /** Convenience constructor to make an empty Cascade. */
-  def this() = this(Seq.empty[Level[S]])
+    for (extractor <- extractors) {
+      require(definedTypes contains extractor.targetType,
+        "Extractor depends on undefined type: " + extractor.targetType)
+    }
+  }
 
   /** Convenience constructor to make a Cascade with a single Level. */
-  def this(level: Level[S]) = this(Seq(level))
-
-  /** Add a tagger level. */
-  def +[SS <: S](level: Level[SS]): Cascade[SS] = {
-    Cascade[SS](levels :+ level)
-  }
+  def this(level: Level[S]) = this(Seq(level), Seq.empty)
 
   /** Apply the cascade to a sentence.
     *
-    * @returns  the found types
+    * @returns  the found types and extractions
     */
-  def apply(sentence: S): Seq[Type] = {
+  def apply(sentence: S): (Seq[Type], Seq[String]) = {
     var previousTypes = Seq.empty[Type]
     var definedTypes = Set.empty[String]
     var previousLevelTypes = Seq.empty[Type]
@@ -69,7 +69,17 @@ case class Cascade[-S <: Sentence](levels: Seq[Level[S]]) {
       previousLevelTypes = levelTypes
     }
 
-    previousLevelTypes
+    (previousLevelTypes, this.extract(previousTypes).values.flatten.toSeq)
+  }
+
+  /** Apply the extractors to the types yielded by this cascade.
+    *
+    * @returns  the found extractions
+    */
+  def extract(types: Iterable[Type]): Map[String, Seq[String]] = {
+    (for (extractor <- extractors) yield {
+      extractor.toString -> extractor(types)
+    })(scala.collection.breakOut)
   }
 
   /** Apply the cascade to a sentence, keeping types found at all levels.
@@ -95,7 +105,12 @@ case class Cascade[-S <: Sentence](levels: Seq[Level[S]]) {
 }
 
 object Cascade {
-  case class TaggerEntry(filename: String, text: String)
+  /** RawLevel models a file with a level definition.
+    *
+    * @param  filename  the name of the file
+    * @param  text  the contents of the file
+    */
+  case class RawLevel(filename: String, text: String)
 
   // load a cascade definition file
   def load[S <: Sentence](cascadeFile: File): Cascade[S] = {
@@ -107,29 +122,30 @@ object Cascade {
   def load[S <: Sentence](basePath: File, cascadeSource: Source): Cascade[S] = {
     System.err.println("Loading cascade definition: " + basePath)
 
-    var cascade = new Cascade[S]()
-    for (TaggerEntry(filename, text) <- partialLoad(basePath, cascadeSource.getLines)) {
+    var levels = Seq.empty[Level[S]]
+    val (taggerEntries, extractors) = partialLoad(basePath, cascadeSource.getLines)
+    for (RawLevel(filename, text) <- taggerEntries) {
       System.err.println("Parsing taggers from: " + filename)
-      cascade = cascade + Level.fromString(text)
+      levels = levels :+ Level.fromString(text)
     }
 
     System.err.println("Done loading cascade.")
     System.err.println()
 
-    cascade
+    Cascade(levels, extractors)
   }
 
-  def partialLoad(cascadeFile: File): Seq[TaggerEntry] = {
+  def partialLoad(cascadeFile: File): (Seq[RawLevel], Seq[Extractor]) = {
     using(Source.fromFile(cascadeFile)) { source =>
       partialLoad(cascadeFile.getParentFile, source)
     }
   }
 
-  def partialLoad(basePath: File, cascadeSource: Source): Seq[TaggerEntry] = {
+  def partialLoad(basePath: File, cascadeSource: Source): (Seq[RawLevel], Seq[Extractor]) = {
     partialLoad(basePath, cascadeSource.getLines)
   }
 
-  private def partialLoad(basePath: File, lines: Iterator[String]): Seq[TaggerEntry] = {
+  private def partialLoad(basePath: File, lines: Iterator[String]): (Seq[RawLevel], Seq[Extractor]) = {
     // paths inside are either absolute or relative to the cascade definition file
     def makeFile(path: String) = {
       val file = new File(path)
@@ -137,25 +153,35 @@ object Cascade {
       else new File(basePath, path)
     }
 
+    val extractorParser = new ExtractorParser()
+
     // Iterate over the level definitions, load the tagger files,
     // and add them to the cascade.
-    val levels = for (
+    var levels = Seq.empty[RawLevel]
+    var extractors = Seq.empty[Extractor]
+    for {
       line <- lines map (_.trim) if !line.isEmpty
-    ) yield {
+    } {
+      // Determine if this line contains a tagger file or an extractor.
+      extractorParser.parse(line) match {
+        case Success(extractor) =>
+          System.err.println("Adding extractor: " + extractor.toString)
+          extractors :+= extractor
+        case Failure(e) =>
+          // A line is composed of a tagger file path
+          val taggerFilePath = line
+          val taggerFile = makeFile(taggerFilePath)
 
-      // A line is composed of a level number and a tagger file path
-      val taggerFilePath = line
-      val taggerFile = makeFile(taggerFilePath)
+          System.err.println("Loading taggers from: " + taggerFile)
 
-      System.err.println("Loading taggers from: " + taggerFile)
+          val taggerText = using(Source.fromFile(taggerFile)) { source =>
+            source.getLines.mkString("\n")
+          }
 
-      val taggerText = using(Source.fromFile(taggerFile)) { source =>
-        source.getLines.mkString("\n")
+          levels :+= RawLevel(taggerFile.getName, taggerText)
       }
-
-      TaggerEntry(taggerFile.getName, taggerText)
     }
 
-    Seq.empty[TaggerEntry] ++ levels
+    (levels, extractors)
   }
 }

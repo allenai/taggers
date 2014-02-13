@@ -24,10 +24,11 @@ import scala.collection.immutable.IntMap
 import scala.collection.immutable.ListMap
 import scala.collection.JavaConverters._
 import scala.io.Source
+import scala.util.{ Try, Success, Failure }
 
 // This is a separate class so that optional dependencies are not loaded
 // unless a server instance is being create.
-class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends SimpleRoutingApp {
+class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, port: Int) extends SimpleRoutingApp {
   // A type alias for convenience since TaggerWeb always
   // deals with sentences that are chunked and lemmatized
   type MySentence = Sentence with Chunks with Lemmas
@@ -58,6 +59,7 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
 
   def page(params: Map[String, String] = Map.empty, errors: Seq[String] = Seq.empty, result: String = "", tables: String = "") = {
     val sentenceText = params.get("sentences").getOrElse("")
+    val extractorText = params.get("extractors").getOrElse("")
     val patternText = params.get("patterns").getOrElse("")
     """<html><head><title>Tagger Web</title><script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.1/jquery.min.js"></script>
     <style type='text/css'>
@@ -109,6 +111,7 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
     </head>
        <body><h1>Tagger Web</h1><form method='POST'><p><a href='#' onclick="javascript:$('#patterns').val('Animal := LemmatizedKeywordTagger { \n  cat\n  dot\n  frog\n}\n\nDescribedAnimal := PatternTagger ( <pos=\'JJ\'>+ <type=\'Animal\'>+ )'); $('#sentences').val('The large black cat rested on the desk.\nThe frogs start to ribbit in the spring.')">example</a></p>""" +
       s"<br /><b>Rules:</b><br /><textarea id='patterns' name='patterns' cols='120' rows='20'>$patternText</textarea>" +
+      s"<br /><b>Extractors:</b><br /><textarea id='extractors' name='extractors' cols='120' rows='10'>$extractorText</textarea>" +
       s"<br /><b>Sentences:</b><br /><textarea id='sentences' name='sentences' cols='120' rows='20'>$sentenceText</textarea>" +
       """<br />
          <input type='submit'>""" +
@@ -126,7 +129,7 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
         get {
           respondWithMediaType(`text/html`) {
             complete {
-              page(Map("patterns" -> ruleText, "sentences" -> sentenceText))
+              page(Map("patterns" -> ruleText, "sentences" -> sentenceText, "extractors" -> extractorText))
             }
           }
         } ~
@@ -146,6 +149,7 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
   def postPage(params: Map[String, String]) = {
     try {
       val sentenceText = params("sentences")
+      val extractorText = params("extractors")
       val patternText = params("patterns")
 
       def takeWhile[T](it: BufferedIterator[T], cond: T=>Boolean): Seq[T] = {
@@ -171,6 +175,8 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
       var EmptyLine = "(?m)^\\s*$".r
       if (linesIt.hasNext) {
         var firstLoop = true
+
+        // Read the levels.
         while (linesIt.hasNext) {
           // consume empty lines
           dropWhile(linesIt, (line: String) => EmptyLine.pattern.matcher(line).matches)
@@ -191,7 +197,13 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
 
       val levels: Seq[Level[MySentence]] =
         sections map (text => Level.fromString(text))
-      val cascade = new Cascade[MySentence](levels)
+
+      val extractorParser = new ExtractorParser()
+      val extractors = for (line <- extractorText.split("\n") filter (!_.trim.isEmpty)) yield {
+        extractorParser.parse(line).get
+      }
+
+      val cascade = new Cascade[MySentence](levels, extractors)
 
       val results = for (line <- sentenceText.split("\n")) yield {
         val sentence = process(line)
@@ -240,6 +252,13 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
 
           allTypes ++= types.toSet
         }
+
+        resultText.append("Extractions:\n")
+        for (extraction <- cascade.extract(allTypes).values.flatten) {
+          resultText.append(extraction)
+          resultText.append("\n")
+        }
+        resultText.append("\n")
       }
 
       page(params, Seq.empty, resultText.toString, tables.toString)
@@ -262,14 +281,14 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
 
 object TaggerWebMain extends App {
   case class Config(ruleInputFile: Option[File] = None, sentenceInputFile: Option[File] = None, port: Int = 8080) {
-    def ruleText() = ruleInputFile match {
+    def cascadeText(): (String, String) = ruleInputFile match {
       case Some(file) =>
-        val cascade = Cascade.partialLoad(file)
-        val mapped = cascade map { entry =>
+        val (levels, extractors) = Cascade.partialLoad(file)
+        val mapped = levels map { entry =>
           s">>> ${entry.filename}\n\n${entry.text}"
         }
-        mapped.mkString("\n\n\n")
-      case None => ""
+        (extractors.mkString("\n"), mapped.mkString("\n\n\n"))
+      case None => ("", "")
     }
 
     def sentenceText() = sentenceInputFile match {
@@ -280,6 +299,7 @@ object TaggerWebMain extends App {
       case None => ""
     }
   }
+
   val parser = new scopt.OptionParser[Config]("taggerweb") {
     opt[File]('c', "cascade").action { (file, c) =>
       c.copy(ruleInputFile = Some(file))
@@ -293,7 +313,8 @@ object TaggerWebMain extends App {
   }
 
   parser.parse(args, Config()).foreach { config =>
-    val server = new TaggerWeb(config.ruleText(), config.sentenceText(), config.port)
+    val (extractorText, ruleText) = config.cascadeText()
+    val server = new TaggerWeb(ruleText, extractorText, config.sentenceText(), config.port)
     server.run()
   }
 }
