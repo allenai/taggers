@@ -32,7 +32,8 @@ class TaggerApp(cascade: Cascade[Sentence with Chunks with Lemmas]) {
   }
 
   def apply(sentence: Sent) = {
-    (cascade apply sentence).reverse map format
+    val (types, extractions) = cascade apply sentence
+    types.reverse map format
   }
 }
 
