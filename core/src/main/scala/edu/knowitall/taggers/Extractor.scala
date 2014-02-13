@@ -7,16 +7,53 @@ import scala.util.{ Try, Success, Failure }
 import java.io.Reader
 import java.io.StringReader
 
+/** An extractor definition, which builds an extraction string from a set of types.
+  * It will be iteratively applied to all of the target types.
+  *
+  * @param  variable  the name of the variable to bind to
+  * @param  targetType  the type to apply this extractor to
+  * @param  parts  the logic to build up a string from a type
+  */
+case class Extractor(variable: String, targetType: String, parts: Seq[Extractor.BuilderPart]) {
+  override def toString = {
+    variable + ": " + targetType + " => " + (parts map (_.toString)).mkString("")
+  }
+  def apply(types: Iterable[Type]): Seq[String] = {
+    (for (
+      typ <- types
+      if typ.name == targetType
+    ) yield {
+      (parts map (_.stringFrom(variable, typ, types))).mkString("")
+    })(scala.collection.breakOut)
+  }
+}
+
 object Extractor {
-  def findAlignedTypes(typ: Type, candidates: Iterable[Type]): Iterable[Type] = {
+  /** Find types that have the same interval as typ.
+    *
+    * @param  candidates  the types to look through
+    * @param  typ  the type to align with
+    */
+  def findAlignedTypes(candidates: Iterable[Type])(typ: Type): Iterable[Type] = {
     candidates filter (_.tokenInterval == typ.tokenInterval)
   }
 
-  def findAlignedTypesWithName(typ: Type, name: String, candidates: Iterable[Type]) = {
-    findAlignedTypes(typ, candidates) filter (_.name == name)
+  /** Find types that have the same interval as typ.
+    *
+    * @param  candidates  the types to look through
+    * @param  typ  the type to align with
+    * @param  name  a name filter for the aligned types
+    */
+  def findAlignedTypesWithName(candidates: Iterable[Type])(typ: Type, name: String) = {
+    findAlignedTypes(candidates)(typ) filter (_.name == name)
   }
 
-  def findSubtypes(typ: Type, candidates: Iterable[Type]): Iterable[LinkedType] = {
+  /** Find subtypes of the specified type.
+    *
+    * @param  candidates  the types to look through
+    * @param  typ  the parent type
+    */
+  def findSubtypes(candidates: Iterable[Type])(typ: Type): Iterable[LinkedType] = {
     candidates collect {
       case candidate: LinkedType
         if candidate.link == Some(typ) =>
@@ -24,7 +61,13 @@ object Extractor {
     }
   }
 
-  def findSubtypesWithName(typ: Type, subtypeName: String, candidates: Iterable[Type]): Iterable[NamedGroupType] = {
+  /** Find subtypes of the specified type.
+    *
+    * @param  candidates  the types to look through
+    * @param  typ  the parent type
+    * @param  name  a name filter for the subtypes
+    */
+  def findSubtypesWithName(candidates: Iterable[Type])(typ: Type, subtypeName: String): Iterable[NamedGroupType] = {
     candidates collect {
       case candidate: NamedGroupType
         if candidate.link == Some(typ)
@@ -33,15 +76,25 @@ object Extractor {
     }
   }
 
+  /** A component in an expression that is evaluated against a set of types
+    * to create an extraction string. */
   sealed abstract class BuilderPart {
+    /** Create a string with the supplied context. */
     def stringFrom(variable: String, typ: Type, types: Iterable[Type]): String
   }
 
+  /** A trivial builder component that is always the specified string. */
   case class SimpleBuilderPart(string: String) extends BuilderPart {
     override def toString = string
     override def stringFrom(variable: String, typ: Type, types: Iterable[Type]) = string
   }
 
+  /** A builder component that is constructed through a type expression.
+    *
+    * @param  base  either the bound variable or a subtype
+    * @param  aligns  rules to move to other types from the base type
+    * @param  fallback  a string used if the expression fails
+    */
   case class SubstitutionBuilderPart(base: String, aligns: Seq[AlignExpr], fallback: Option[String]) extends BuilderPart {
     override def toString = "${" + base + (aligns map (_.toString)).mkString("") + fallback.map("|" + _).getOrElse("") + "}"
     val Subtype = "(\\w+).(\\w+)".r
@@ -52,7 +105,7 @@ object Extractor {
         val startingType = base match {
           case Subtype(variableUsage, subtype) =>
             require(variableUsage == variable, "Unbounded variable: " + variableUsage)
-            val subtypes = Extractor.findSubtypesWithName(typ, subtype, allTypes)
+            val subtypes = Extractor.findSubtypesWithName(allTypes)(typ, subtype)
             require(subtypes.size > 0, s"No subtype type '$subtype' found for: $typ")
             require(subtypes.size <= 1, s"Multiple subtype types '$subtype' found for: $typ")
             subtypes.head
@@ -65,11 +118,11 @@ object Extractor {
         // subtype specified.
         var currentType = startingType
         for (AlignExpr(align, subtype) <- aligns) {
-          val aligned = Extractor.findAlignedTypesWithName(currentType, align, allTypes)
+          val aligned = Extractor.findAlignedTypesWithName(allTypes)(currentType, align)
           require(aligned.size > 0, s"No aligned type '$align' found for: $currentType")
           require(aligned.size <= 1, s"Multiple aligned types '$align' found for: $currentType")
 
-          val subtyped = Extractor.findSubtypesWithName(aligned.head, subtype, allTypes)
+          val subtyped = Extractor.findSubtypesWithName(allTypes)(aligned.head, subtype)
           require(subtyped.size > 0, s"No subtype type '$subtype' found for: $aligned")
           require(subtyped.size <= 1, s"Multiple subtype types '$subtype' found for: $aligned")
 
@@ -83,11 +136,19 @@ object Extractor {
     }
   }
 
+  /** An expression that finds a type aligned with the specified type, and
+    * then takes the specified subtype of the aligned type.
+    *
+    * @param  align  the name of the type to align with
+    * @param  subtype  the subtype of the aligned type to use
+    */
   case class AlignExpr(align: String, subtype: String) {
     override def toString = s"->$align.$subtype"
   }
 }
 
+/** A parser combinator to parse Extractor definitions.
+  * For examples, see ExtractorSpec. */
 class ExtractorParser extends RegexParsers {
   import Extractor._
 
@@ -129,19 +190,5 @@ class ExtractorParser extends RegexParsers {
       "(line " + next.pos.line + ", column " + next.pos.column + "):\n" +
       err + "\n" +
       next.pos.longString))
-  }
-}
-
-case class Extractor(variable: String, targetType: String, parts: Seq[Extractor.BuilderPart]) {
-  override def toString = {
-    variable + ": " + targetType + " => " + (parts map (_.toString)).mkString("")
-  }
-  def apply(types: Iterable[Type]): Seq[String] = {
-    (for (
-      typ <- types
-      if typ.name == targetType
-    ) yield {
-      (parts map (_.stringFrom(variable, typ, types))).mkString("")
-    })(scala.collection.breakOut)
   }
 }

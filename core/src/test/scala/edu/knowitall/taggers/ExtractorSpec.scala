@@ -49,17 +49,17 @@ class ExtractorSpec extends FlatSpec {
     val types = cascade.apply(s)
 
     val relatedTuplesTuple1Type = (types find (_.name == "RelatedTuples.Tuple1")).get
-    val alignedTypes = Extractor.findAlignedTypes(relatedTuplesTuple1Type, types)
+    val alignedTypes = Extractor.findAlignedTypes(types)(relatedTuplesTuple1Type)
     assert(alignedTypes.exists(_.name == "Tuple"))
 
-    val namedAlignedTypes = Extractor.findAlignedTypesWithName(relatedTuplesTuple1Type, "Tuple", types)
+    val namedAlignedTypes = Extractor.findAlignedTypesWithName(types)(relatedTuplesTuple1Type, "Tuple")
     assert(namedAlignedTypes.size === 1)
 
     val relatedTuplesType = (types find (_.name == "RelatedTuples")).get
-    val subtypes = Extractor.findSubtypes(relatedTuplesType, types)
+    val subtypes = Extractor.findSubtypes(types)(relatedTuplesType)
     assert(subtypes.size === 3)
 
-    val tuple1Subtypes = Extractor.findSubtypesWithName(relatedTuplesType, "Tuple1", types)
+    val tuple1Subtypes = Extractor.findSubtypesWithName(types)(relatedTuplesType, "Tuple1")
     assert(tuple1Subtypes.size === 1)
 
     val parsed = new ExtractorParser().parse("x: RelatedTuples => (${x.Tuple1->Tuple.Arg1|None}, ${x.Tuple1->Tuple.Rel}, ${x.Tuple1->Tuple.Arg2|None}) --${x.TupleRel}-> (${x.Tuple2->Tuple.Arg1|None}, ${x.Tuple2->Tuple.Rel}, ${x.Tuple2->Tuple.Arg2|None})").get

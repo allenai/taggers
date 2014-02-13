@@ -105,7 +105,7 @@ case class Cascade[-S <: Sentence](levels: Seq[Level[S]] = Seq.empty, extractors
 }
 
 object Cascade {
-  case class TaggerEntry(filename: String, text: String)
+  case class RawLevel(filename: String, text: String)
 
   // load a cascade definition file
   def load[S <: Sentence](cascadeFile: File): Cascade[S] = {
@@ -119,7 +119,7 @@ object Cascade {
 
     var levels = Seq.empty[Level[S]]
     val (taggerEntries, extractors) = partialLoad(basePath, cascadeSource.getLines)
-    for (TaggerEntry(filename, text) <- taggerEntries) {
+    for (RawLevel(filename, text) <- taggerEntries) {
       System.err.println("Parsing taggers from: " + filename)
       levels = levels :+ Level.fromString(text)
     }
@@ -130,17 +130,17 @@ object Cascade {
     Cascade(levels, extractors)
   }
 
-  def partialLoad(cascadeFile: File): (Seq[TaggerEntry], Seq[Extractor]) = {
+  def partialLoad(cascadeFile: File): (Seq[RawLevel], Seq[Extractor]) = {
     using(Source.fromFile(cascadeFile)) { source =>
       partialLoad(cascadeFile.getParentFile, source)
     }
   }
 
-  def partialLoad(basePath: File, cascadeSource: Source): (Seq[TaggerEntry], Seq[Extractor]) = {
+  def partialLoad(basePath: File, cascadeSource: Source): (Seq[RawLevel], Seq[Extractor]) = {
     partialLoad(basePath, cascadeSource.getLines)
   }
 
-  private def partialLoad(basePath: File, lines: Iterator[String]): (Seq[TaggerEntry], Seq[Extractor]) = {
+  private def partialLoad(basePath: File, lines: Iterator[String]): (Seq[RawLevel], Seq[Extractor]) = {
     // paths inside are either absolute or relative to the cascade definition file
     def makeFile(path: String) = {
       val file = new File(path)
@@ -152,7 +152,7 @@ object Cascade {
 
     // Iterate over the level definitions, load the tagger files,
     // and add them to the cascade.
-    var levels = Seq.empty[TaggerEntry]
+    var levels = Seq.empty[RawLevel]
     var extractors = Seq.empty[Extractor]
     for {
       line <- lines map (_.trim) if !line.isEmpty
@@ -173,7 +173,7 @@ object Cascade {
             source.getLines.mkString("\n")
           }
 
-          levels :+= TaggerEntry(taggerFile.getName, taggerText)
+          levels :+= RawLevel(taggerFile.getName, taggerText)
       }
     }
 
