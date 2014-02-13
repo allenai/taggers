@@ -105,6 +105,11 @@ case class Cascade[-S <: Sentence](levels: Seq[Level[S]] = Seq.empty, extractors
 }
 
 object Cascade {
+  /** RawLevel models a file with a level definition.
+    *
+    * @param  filename  the name of the file
+    * @param  text  the contents of the file
+    */
   case class RawLevel(filename: String, text: String)
 
   // load a cascade definition file
