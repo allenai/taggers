@@ -199,7 +199,7 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
         sections map (text => Level.fromString(text))
 
       val extractorParser = new ExtractorParser()
-      val extractors = for (line <- extractorText.split("\n")) yield {
+      val extractors = for (line <- extractorText.split("\n") filter (!_.trim.isEmpty)) yield {
         extractorParser.parse(line).get
       }
 
