@@ -46,7 +46,7 @@ class ExtractorSpec extends FlatSpec {
 
     val testSentence = "animals eat in order to get nutrients"
     val s = makeSentence(testSentence)
-    val types = cascade.apply(s)
+    val (types, _) = cascade.apply(s)
 
     val relatedTuplesTuple1Type = (types find (_.name == "RelatedTuples.Tuple1")).get
     val alignedTypes = Extractor.findAlignedTypes(types)(relatedTuplesTuple1Type)

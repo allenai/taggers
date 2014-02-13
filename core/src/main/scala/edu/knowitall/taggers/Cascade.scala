@@ -53,9 +53,9 @@ case class Cascade[-S <: Sentence](levels: Seq[Level[S]] = Seq.empty, extractors
 
   /** Apply the cascade to a sentence.
     *
-    * @returns  the found types
+    * @returns  the found types and extractions
     */
-  def apply(sentence: S): Seq[Type] = {
+  def apply(sentence: S): (Seq[Type], Seq[String]) = {
     var previousTypes = Seq.empty[Type]
     var definedTypes = Set.empty[String]
     var previousLevelTypes = Seq.empty[Type]
@@ -69,7 +69,7 @@ case class Cascade[-S <: Sentence](levels: Seq[Level[S]] = Seq.empty, extractors
       previousLevelTypes = levelTypes
     }
 
-    previousLevelTypes
+    (previousLevelTypes, this.extract(previousTypes).values.flatten.toSeq)
   }
 
   /** Apply the extractors to the types yielded by this cascade.
