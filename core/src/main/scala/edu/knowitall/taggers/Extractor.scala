@@ -34,29 +34,30 @@ object Extractor {
   }
 
   sealed abstract class BuilderPart {
-    def stringFrom(typ: Type, types: Iterable[Type]): String
+    def stringFrom(variable: String, typ: Type, types: Iterable[Type]): String
   }
 
   case class SimpleBuilderPart(string: String) extends BuilderPart {
     override def toString = string
-    override def stringFrom(typ: Type, types: Iterable[Type]) = string
+    override def stringFrom(variable: String, typ: Type, types: Iterable[Type]) = string
   }
 
   case class SubstitutionBuilderPart(base: String, aligns: Seq[AlignExpr], fallback: Option[String]) extends BuilderPart {
     override def toString = "${" + base + (aligns map (_.toString)).mkString("") + fallback.map("|" + _).getOrElse("") + "}"
     val Subtype = "(\\w+).(\\w+)".r
-    override def stringFrom(typ: Type, allTypes: Iterable[Type]): String = {
+    override def stringFrom(variable: String, typ: Type, allTypes: Iterable[Type]): String = {
       try {
         // Find the starting type for this subtitution.
         // It will be either a subtype of typ or typ itself.
         val startingType = base match {
-          case Subtype(parentType, subtype) =>
-            require(parentType == typ.name, "Parent type in substitution does not match type in foreach: " + parentType)
+          case Subtype(variableUsage, subtype) =>
+            require(variableUsage == variable, "Unbounded variable: " + variableUsage)
             val subtypes = Extractor.findSubtypesWithName(typ, subtype, allTypes)
             require(subtypes.size > 0, s"No subtype type '$subtype' found for: $typ")
             require(subtypes.size <= 1, s"Multiple subtype types '$subtype' found for: $typ")
             subtypes.head
-          case parentType => typ
+          case `variable` => typ
+          case v => throw new IllegalArgumentException("Unbounded variable: " + v)
         }
 
         // For each iteration, we want to find a type named "align" that has the
@@ -88,7 +89,9 @@ object Extractor {
 class ExtractorParser extends RegexParsers {
   import Extractor._
 
-  val baseType = "\\w+".r
+  val token = "\\w+".r
+
+  val baseType = token
   val typeWithSubtype = "\\w+\\.\\w+".r
 
   val typ = typeWithSubtype | baseType
@@ -111,8 +114,8 @@ class ExtractorParser extends RegexParsers {
     List(SimpleBuilderPart(string)) ++ subOpt ++ subRep
   } | substitution ^^ { case sub => List(sub) }
 
-  val spec: Parser[Extractor] = "\\w+".r ~ "\\s*=>\\s*".r ~ rep(specPart) ^^ { case foreach ~ _ ~ parts =>
-    new Extractor(foreach, parts.flatten)
+  val spec: Parser[Extractor] = token ~ "\\s*:\\s*".r ~ token ~ "\\s*=>\\s*".r ~ rep(specPart) ^^ { case variable ~ _ ~ foreach ~ _ ~ parts =>
+    new Extractor(variable, foreach, parts.flatten)
   }
 
   def parse(string: String): Try[Extractor] = this.parse(new StringReader(string))
@@ -125,16 +128,16 @@ class ExtractorParser extends RegexParsers {
   }
 }
 
-case class Extractor(targetType: String, parts: Seq[Extractor.BuilderPart]) {
+case class Extractor(variable: String, targetType: String, parts: Seq[Extractor.BuilderPart]) {
   override def toString = {
-    targetType + " => " + (parts map (_.toString)).mkString("")
+    variable + ": " + targetType + " => " + (parts map (_.toString)).mkString("")
   }
   def apply(types: Iterable[Type]): Seq[String] = {
     (for (
       typ <- types
       if typ.name == targetType
     ) yield {
-      (parts map (_.stringFrom(typ, types))).mkString("")
+      (parts map (_.stringFrom(variable, typ, types))).mkString("")
     })(scala.collection.breakOut)
   }
 }

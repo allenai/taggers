@@ -62,18 +62,18 @@ class ExtractorSpec extends FlatSpec {
     val tuple1Subtypes = Extractor.findSubtypesWithName(relatedTuplesType, "Tuple1", types)
     assert(tuple1Subtypes.size === 1)
 
-    val parsed = new ExtractorParser().parse("RelatedTuples => (${RelatedTuples.Tuple1->Tuple.Arg1|None}, ${RelatedTuples.Tuple1->Tuple.Rel}, ${RelatedTuples.Tuple1->Tuple.Arg2|None}) --${RelatedTuples.TupleRel}-> (${RelatedTuples.Tuple2->Tuple.Arg1|None}, ${RelatedTuples.Tuple2->Tuple.Rel}, ${RelatedTuples.Tuple2->Tuple.Arg2|None})").get
+    val parsed = new ExtractorParser().parse("x: RelatedTuples => (${x.Tuple1->Tuple.Arg1|None}, ${x.Tuple1->Tuple.Rel}, ${x.Tuple1->Tuple.Arg2|None}) --${x.TupleRel}-> (${x.Tuple2->Tuple.Arg1|None}, ${x.Tuple2->Tuple.Rel}, ${x.Tuple2->Tuple.Arg2|None})").get
     assert(parsed(types).head === "(animals, eat, None) --in order to-> (None, get, nutrients)")
   }
 
   "Extractor" should "be parsed correctly" in {
-    val parsed = new ExtractorParser().parse("RelatedTuples => (${RelatedTuples.Tuple1->Tuple.Arg1})").get
+    val parsed = new ExtractorParser().parse("x: RelatedTuples => (${x.Tuple1->Tuple.Arg1})").get
     assert(parsed.targetType === "RelatedTuples")
     assert(parsed.parts.size === 3)
   }
 
   "Extractor with leading substitution" should "be parsed correctly" in {
-    val parsed = new ExtractorParser().parse("RelatedTuples => ${RelatedTuples.Tuple1->Tuple.Arg1}").get
+    val parsed = new ExtractorParser().parse("x: RelatedTuples => ${x.Tuple1->Tuple.Arg1}").get
     assert(parsed.targetType === "RelatedTuples")
     assert(parsed.parts.size === 1)
   }

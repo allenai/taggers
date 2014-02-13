@@ -28,6 +28,8 @@ import scala.util.{ Try, Success, Failure }
 case class Cascade[-S <: Sentence](levels: Seq[Level[S]] = Seq.empty, extractors: Seq[Extractor] = Seq.empty) {
   lazy val chunker = new OpenNlpChunker()
 
+  // Make sure all the imports are valid.
+  // Make sure all extractors are for defined types.
   {
     var definedTypes = Set.empty[String]
     for ((level, i) <- levels.zipWithIndex) {
@@ -38,6 +40,11 @@ case class Cascade[-S <: Sentence](levels: Seq[Level[S]] = Seq.empty, extractors
           throw new IllegalArgumentException("Import error on level: " + i, e)
       }
       definedTypes ++= level.taggers.iterator.map(_.name)
+    }
+
+    for (extractor <- extractors) {
+      require(definedTypes contains extractor.targetType,
+        "Extractor depends on undefined type: " + extractor.targetType)
     }
   }
 

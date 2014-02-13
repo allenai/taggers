@@ -258,6 +258,7 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
           resultText.append(extraction)
           resultText.append("\n")
         }
+        resultText.append("\n")
       }
 
       page(params, Seq.empty, resultText.toString, tables.toString)
