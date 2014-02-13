@@ -34,16 +34,18 @@ object Extractor {
   }
 
   sealed abstract class BuilderPart {
-    def stringFrom(typ: Type, types: Seq[Type]): String
+    def stringFrom(typ: Type, types: Iterable[Type]): String
   }
 
   case class SimpleBuilderPart(string: String) extends BuilderPart {
-    override def stringFrom(typ: Type, types: Seq[Type]) = string
+    override def toString = string
+    override def stringFrom(typ: Type, types: Iterable[Type]) = string
   }
 
   case class SubstitutionBuilderPart(base: String, aligns: Seq[AlignExpr], fallback: Option[String]) extends BuilderPart {
+    override def toString = "${" + base + (aligns map (_.toString)).mkString("") + fallback.map("|" + _).getOrElse("") + "}"
     val Subtype = "(\\w+).(\\w+)".r
-    override def stringFrom(typ: Type, allTypes: Seq[Type]): String = {
+    override def stringFrom(typ: Type, allTypes: Iterable[Type]): String = {
       try {
         // Find the starting type for this subtitution.
         // It will be either a subtype of typ or typ itself.
@@ -124,12 +126,15 @@ class ExtractorParser extends RegexParsers {
 }
 
 case class Extractor(targetType: String, parts: Seq[Extractor.BuilderPart]) {
-  def apply(types: Seq[Type]): Seq[String] = {
-    for (
+  override def toString = {
+    targetType + " => " + (parts map (_.toString)).mkString("")
+  }
+  def apply(types: Iterable[Type]): Seq[String] = {
+    (for (
       typ <- types
       if typ.name == targetType
     ) yield {
       (parts map (_.stringFrom(typ, types))).mkString("")
-    }
+    })(scala.collection.breakOut)
   }
 }

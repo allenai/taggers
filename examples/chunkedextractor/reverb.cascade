@@ -1,2 +1,4 @@
 reverb-parts.taggers
 reverb-extr.taggers
+
+ReVerbExtractor => (${ReVerbExtraction.Argument1}, ${ReVerbExtraction.Relation}, ${ReVerbExtraction.Argument2})
