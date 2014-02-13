@@ -1,3 +1,6 @@
+import NounChunk
+import Relation
+
 ReVerbExtraction := TypePatternTagger {
-  (<Arg1>:@NounChunk) (<Rel>:@Relation) (<Arg2>:@NounChunk)
+  (<Arg1>:@NounChunk) (<Rel>:@Relation) (<Arg2>:@NounChunk) (?: <!pos = /VB.*/> | $)
 }

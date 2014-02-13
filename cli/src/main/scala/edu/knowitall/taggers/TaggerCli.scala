@@ -64,13 +64,6 @@ object TaggerCliMain {
   }
 
   def run(config: Config): Unit = {
-    def loadTaggers(text: String) = {
-      // parse taggers
-      val rules = new RuleParser[Sentence with Chunks with Lemmas].parse(text).get
-
-      Taggers.fromRules(rules)
-    }
-
     val cascade = Cascade.load(config.cascadeFile)
 
     val app = new TaggerApp(cascade)

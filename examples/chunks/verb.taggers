@@ -1,8 +1,5 @@
-AP := RedefineTagger(AP)
-NG := RedefineTagger(NG)
-PP := RedefineTagger(PP)
-Rel := RedefineTagger(Rel)
-RelTo := RedefineTagger(RelTo)
+import Rel
+import RelTo
 
 Aux := PatternTagger {
   <lemma=/be|have/> <pos="RB">? <string="been">?

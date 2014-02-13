@@ -189,15 +189,13 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
         }
       }
 
-      val taggers: Seq[Seq[Tagger[MySentence]]] =
-        sections map (text => Taggers.fromRules(new RuleParser[MySentence].parse(text).get))
-      val levels: Seq[(Int, Seq[Tagger[MySentence]])] =
-        taggers.zipWithIndex map (_.swap)
-      val cascade = new Cascade[MySentence](IntMap(levels :_*))
+      val levels: Seq[Level[MySentence]] =
+        sections map (text => Level.fromString(text))
+      val cascade = new Cascade[MySentence](levels)
 
       val results = for (line <- sentenceText.split("\n")) yield {
         val sentence = process(line)
-        val levels = cascade.levels(sentence)
+        val levels = cascade.levelTypes(sentence)
 
         (sentence, levels)
       }
@@ -210,13 +208,13 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
       for ((sentence, levels) <- results) {
         resultText.append(sentence.text)
         resultText.append("\n\n")
-        var previousLevelTypes = Set.empty[Type]
+        var allTypes = Set.empty[Type]
         for ((level, types) <- levels.toSeq) {
           if (levels.size > 1) {
             resultText.append(s"  Level $level\n\n")
           }
 
-          val tokens = PatternTagger.buildTypedTokens(sentence, previousLevelTypes)
+          val tokens = PatternTagger.buildTypedTokens(sentence, cascade.levels(level).filterTypes(allTypes))
           val table = buildTable(Seq("index", "string", "postag", "chunk", "in types", "out types"), tokens map { typed =>
             val outTypes = types filter (_.tokenInterval contains typed.index)
             Seq(typed.index.toString,
@@ -240,7 +238,7 @@ class TaggerWeb(ruleText: String, sentenceText: String, port: Int) extends Simpl
 
           resultText.append("\n")
 
-          previousLevelTypes = types.toSet
+          allTypes ++= types.toSet
         }
       }
 
@@ -267,8 +265,8 @@ object TaggerWebMain extends App {
     def ruleText() = ruleInputFile match {
       case Some(file) =>
         val cascade = Cascade.partialLoad(file)
-        val mapped = cascade map { case (level, entry) =>
-          s">>> $level: ${entry.filename}\n\n${entry.text}"
+        val mapped = cascade map { entry =>
+          s">>> ${entry.filename}\n\n${entry.text}"
         }
         mapped.mkString("\n\n\n")
       case None => ""

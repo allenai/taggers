@@ -1,6 +1,7 @@
 package edu.knowitall.taggers.rule
 
 import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.taggers.Import
 import edu.knowitall.taggers.constraint.Constraint
 import edu.knowitall.taggers.tag.ConstrainedTagger
 import edu.knowitall.taggers.tag.PatternTagger
@@ -38,6 +39,9 @@ class RuleParserCombinator[S <: Sentence] extends JavaTokenParsers {
   // Lines that can be thrown out or safetly ignored.
   val ignore = comment | blankLine
 
+  // An import for a type from a previous level
+  val typeImport = (ignore*) ~ "(?m)^import\\s+".r ~> ".*".r <~ (ignore*) ^^ { case typ => Import(typ) }
+
   // An extractor for a redefinition.
   val valn = name ~ Rule.definitionSyntax ~! ".+".r ^^ { case name ~ Rule.definitionSyntax ~ valn => DefinitionRule[S](name, valn) }
 
@@ -62,13 +66,13 @@ class RuleParserCombinator[S <: Sentence] extends JavaTokenParsers {
   val rule: Parser[Rule[S]] = (ignore*) ~> (valn | tagger) <~ (ignore*)
 
   // An extractor for a collection of rules.
-  val collection = rep(rule)
+  val collection = rep(typeImport) ~ rep(rule) ^^ { case imports ~ rules => ParsedLevel(imports, rules) }
 }
 
 /** A helper class for parsing rules using RuleParserCombinator. */
 class RuleParser[S <: Sentence] extends RuleParserCombinator[S] {
-  def parse(string: String): Try[List[Rule[S]]] = this.parse(new StringReader(string))
-  def parse(reader: Reader): Try[List[Rule[S]]] = parseAll(collection, reader) match {
+  def parse(string: String): Try[ParsedLevel[S]] = this.parse(new StringReader(string))
+  def parse(reader: Reader): Try[ParsedLevel[S]] = parseAll(collection, reader) match {
     case this.Success(ast, _) => scala.util.Success(ast)
     case this.NoSuccess(err, next) => Try(throw new IllegalArgumentException("failed to parse rule " +
       "(line " + next.pos.line + ", column " + next.pos.column + "):\n" +
@@ -86,3 +90,5 @@ abstract class Rule[-S <: Sentence] {
   def name: String
   def definition: String
 }
+
+case class ParsedLevel[S <: Sentence](imports: List[Import], rules: Seq[Rule[S]])
