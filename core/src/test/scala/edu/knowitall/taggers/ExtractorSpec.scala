@@ -67,7 +67,9 @@ class ExtractorSpec extends FlatSpec {
   }
 
   "Extractor" should "be parsed correctly" in {
-    val parsed = new ExtractorParser().parse("x: RelatedTuples => (${x.Tuple1->Tuple.Arg1})").get
+    val extractorDefinition = "x: RelatedTuples => (${x.Tuple1->Tuple.Arg1} !)"
+    val parsed = new ExtractorParser().parse(extractorDefinition).get
+    assert(parsed.toString === extractorDefinition)
     assert(parsed.targetType === "RelatedTuples")
     assert(parsed.parts.size === 3)
   }

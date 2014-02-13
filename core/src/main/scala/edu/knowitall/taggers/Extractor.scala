@@ -83,11 +83,15 @@ object Extractor {
     }
   }
 
-  case class AlignExpr(align: String, subtype: String)
+  case class AlignExpr(align: String, subtype: String) {
+    override def toString = s"->$align.$subtype"
+  }
 }
 
 class ExtractorParser extends RegexParsers {
   import Extractor._
+
+  override def skipWhitespace = false
 
   val token = "\\w+".r
 
