@@ -1,2 +1,12 @@
 relnouns.taggers
 relnoun-extr.taggers
+
+x: VerbBasedExtraction => (${x.Arg1}, ${x.Rel}, ${x.Arg2})
+x: AppositiveExtraction => (${x.Arg1}, [be] ${x.Rel}, ${x.Arg2})
+x: AdjectiveDescriptorExtractor => (${x.Arg1}, [be] ${x.adj} ${x.Rel} [of], ${x.Arg2})
+x: PossessiveAppositiveExtractor => (${x.Arg1}, [be] ${x.Rel} [of], ${x.Arg2})
+x: PossessiveFullAppositiveExtractor => (${x.Arg1}, [be] ${x.Rel} [of], ${x.Arg2})
+x: IsPossessiveExtractor => (${x.Arg1}, ${x.be} ${x.Rel} [of], ${x.Arg2})
+x: OfIsExtractor => (${x.Arg1}, ${x.be} ${x.Rel} of, ${x.Arg2})
+x: PossessiveReverseExtractor => (${x.Arg1}, [be] ${x.Rel} [of], ${x.Arg2})
+x: ProperNounAdjectiveExtractor => (${x.Arg1}, [be] ${x.Rel} [of], ${x.Arg2})
