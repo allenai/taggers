@@ -5,26 +5,12 @@ import Rel
 import RelTo
 
 RelatedTuples := TypePatternTagger {
-  (?: (<Tuple1>:@S) (<Relation>:@Rel) (<Tuple2>:@S) )
-  | (?: (<Tuple1>:@S) (<Relation>:@RelTo) (<Tuple2>:@VP) )
-  | (?: (<Tuple1>:@S) (<Relation>:<string="to">) (<Tuple2>:@VP) )
+  (?: (<Tuple1>:@S|@NP) (<Relation>:@Rel) (<Tuple2>:@S|@NP) )
+  | (?: (<Tuple1>:@S|@NP) (<Relation>:@RelTo|<string="to">) (<Tuple2>:@VP) )
 }
 
 RelatedTuples2 := TypePatternTagger {
-  (?: (<Tuple1>:@Related) (<Relation>:<string="to">) (<Tuple2>:@VP) )
-  | (?: (<Tuple1>:@Related) (<Relation>:@Rel) (<Tuple2>:@S) )
-}
-
-RelatedNPTuple := TypePatternTagger {
-  (?: (<NP1>:@NP) (<Relation>:@Rel) (<Tuple2>:@S) )
-  | (?: (<NP1>:@NP) (<Relation>:@RelTo) (<Tuple2>:@VP) )
-}
-
-RelatedTupleNP := TypePatternTagger {
-  (?: (<Tuple1>:@S) (<Relation>:@Rel) (<NP2>:@NP) )
-}
-
-RelatedNPs := TypePatternTagger {
-  (?: (<NP1>:@NP) (<Relation>:@Rel) (<NP2>:@NP) )
+  (?: (<Tuple1>:@RelatedTuples) (<Relation>:@Rel) (<Tuple2>:@S|@NP) )
+  | (?: (<Tuple1>:@RelatedTuples) (<Relation>:@RelTo|<string="to">) (<Tuple2>:@VP) )
 }
 
