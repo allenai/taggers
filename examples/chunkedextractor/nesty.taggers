@@ -1,3 +1,9 @@
+import NounChunk
+import ReVerbExtraction.Arg1
+import ReVerbExtraction.Rel
+import ReVerbExtraction.Arg2
+import Wp
+
 NestedIndicatorVerb := LemmatizedKeywordTagger {
     be
     say
@@ -262,12 +268,14 @@ NestedRelation := TypePatternTagger {
 
 NestedExtraction := TypePatternTagger {
   // A noun phrase, with optional PP attachment (don't allow because)
-  (<arg1>:<chunk=/B-NP.*/ & !string=/who|which/> <chunk=/I-NP.*/>* (?: <pos=/IN|TO/ & !string=/so|because/> <chunk=/B-NP.*/> <chunk=/I-NP.*/>*)* <string=/who|which/>?)
+  (<Arg1>:@NounChunk)
+  // If there is a who/which, skip it
+  @WP?
   // Followed by a nested relation phrase
-  (<nestedRelation>:@NestedRelation)
-  (<baseArg1>: @Relation.Arg1) +
+  (<NestedRelation>:@NestedRelation)
+  (<BaseArg1>: @ReVerbExtraction.Arg1)
   // Followed by a base relation phrase
-  (<baseRelation>: @Relation.Rel) +
+  (<BaseRelation>: @ReVerbExtraction.Rel)
   // Followed by another noun phrase
-  (<baseArg2>: @Relation.Arg2)
+  (<BaseArg2>: @ReVerbExtraction.Arg2)
 }

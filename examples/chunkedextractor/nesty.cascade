@@ -1,2 +1,5 @@
-0	reverb.taggers
-1	nesty.taggers
+reverb-parts.taggers
+reverb-extr.taggers
+nesty.taggers
+
+x: NestedExtraction => (${x.Arg1}, ${x.NestedRelation}, (${x.BaseArg1}, ${x.BaseRelation}, ${x.BaseArg2}))

@@ -1,3 +1,6 @@
+Wp := PatternTagger {
+  <pos="WP">
+}
 SimpleNounChunk := PatternTagger {
   <chunk="B-NP"> <chunk="I-NP">* (?:<pos="POS">? <chunk="I-NP">*)*
 }
