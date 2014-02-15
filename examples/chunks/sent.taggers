@@ -1,6 +1,5 @@
 import AP
 import NG
-import NP
 import PP
 import VG
 import Rel
@@ -11,7 +10,7 @@ RelClause := TypePatternTagger {
 }
 
 NP := TypePatternTagger {
-  (?:@NG @PP? @RelClause?)
+  (?:@NG @PP* @RelClause?)
 }
 
 VP := TypePatternTagger {
