@@ -14,6 +14,8 @@ EffectRel := TypePatternTagger {
 | (?: <string=",">? <string=/and|that|which|to/> @Help <string=/with|in/>? )
 // which results in
 | (?:@And? <string="results"> <string="in"> )
+// is the result of
+| (?:@And? <lemma="be"> <pos="DT" | pos="CD">? <string="result"> <string="of"> )
 // so that
 | (?:<string="so"> <string="that">? )
 // and by doing so
@@ -41,6 +43,8 @@ CauseRel := TypePatternTagger {
 | (?:<pos="MD">? <lemma="be"> <string="caused"> <string="by"> )
 // which causes
 | (?:@And? <lemma="cause"> )
+// may be due to
+| (?:<pos="MD">? <lemma="be">? <string="due"> <string="to"> )
 }
 
 FunctionRel := TypePatternTagger {
@@ -60,7 +64,7 @@ ExampleRel := TypePatternTagger {
 // is an example of
 | (?:@And? <pos="MD">? <lemma="be"> <pos="DT">? <lemma="example"> <string="of"> )
 // is a
-| (?:@And? <string="is"> <pos="DT"> )
+| (?:@And? <string="is"> <string=/a(n)?/> )
 }
 
 RequiredRel := TypePatternTagger {
