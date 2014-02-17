@@ -10,7 +10,7 @@ import java.io.File
 import java.io.Reader
 import scala.io.Source
 
-case class Level[-S <: Sentence](imports: Seq[Import], taggers: Seq[Tagger[S]]) {
+case class Level[-S <: Tagger.Sentence](imports: Seq[Import], taggers: Seq[Tagger[S]]) {
   def this(taggers: Seq[Tagger[S]]) = this(Seq.empty, taggers)
 
   /** Check to make sure the imported types are defined earlier
@@ -35,6 +35,9 @@ case class Level[-S <: Sentence](imports: Seq[Import], taggers: Seq[Tagger[S]]) 
   }
 
   def apply(sentence: S, types: Seq[Type]): Seq[Type] = {
+    sentence.reset()
+    for (typ <- types) sentence.consume(typ)
+
     val importNames = imports map (_.name)
 
     // filter all the types by those imported
@@ -45,7 +48,7 @@ case class Level[-S <: Sentence](imports: Seq[Import], taggers: Seq[Tagger[S]]) 
 
     for (tagger <- taggers) yield {
       val allTypes = availableTypes ++ levelTypes
-      levelTypes = levelTypes ++ tagger(sentence, allTypes, consumedIndices)
+      levelTypes = levelTypes ++ tagger(sentence, allTypes)
     }
 
     levelTypes
@@ -53,21 +56,21 @@ case class Level[-S <: Sentence](imports: Seq[Import], taggers: Seq[Tagger[S]]) 
 }
 
 object Level {
-  def fromFile[S <: Sentence](file: File): Level[S] = {
+  def fromFile[S <: Tagger.Sentence](file: File): Level[S] = {
     Resource.using(Source.fromFile(file)) { input =>
       this.fromReader[S](input.bufferedReader)
     }
   }
 
-  def fromReader[S <: Sentence](reader: Reader): Level[S] = {
+  def fromReader[S <: Tagger.Sentence](reader: Reader): Level[S] = {
     this.fromParsed(new RuleParser[S].parse(reader).get)
   }
 
-  def fromString[S <: Sentence](string: String): Level[S] = {
+  def fromString[S <: Tagger.Sentence](string: String): Level[S] = {
     this.fromParsed(new RuleParser[S].parse(string).get)
   }
 
-  def fromParsed[S <: Sentence](parsed: ParsedLevel[S]): Level[S] = {
+  def fromParsed[S <: Tagger.Sentence](parsed: ParsedLevel[S]): Level[S] = {
     var definitions: Seq[DefinitionRule[S]] = Seq.empty
     var taggers: Seq[Tagger[S]] = Seq.empty
 

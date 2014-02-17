@@ -34,7 +34,7 @@ import scala.util.control._
   * @author schmmd
   *
   */
-class PatternTagger(patternTaggerName: String, expression: String) extends Tagger[Sentence with Chunks with Lemmas] {
+class PatternTagger(patternTaggerName: String, expression: String) extends Tagger[Tagger.Sentence with Chunks with Lemmas] {
   override def name = patternTaggerName
   override def source = null
 
@@ -56,7 +56,7 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
   }
 
   override def findTags(sentence: TheSentence) = {
-    this.findTagsWithTypes(sentence, Seq.empty[Type], Seq.empty[Int])
+    this.findTagsWithTypes(sentence, Seq.empty[Type])
   }
 
   /** This method overrides Tagger's default implementation. This
@@ -64,12 +64,12 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
     * the sentence so far.
     */
   override def findTagsWithTypes(sentence: TheSentence,
-    originalTags: Seq[Type], consumedIndices: Seq[Int]): Seq[Type] = {
+    originalTags: Seq[Type]): Seq[Type] = {
 
     val originalTagSet = originalTags.toSet
 
     // convert tokens to TypedTokens
-    val typedTokens = PatternTagger.buildTypedTokens(sentence, originalTagSet, consumedIndices)
+    val typedTokens = PatternTagger.buildTypedTokens(sentence, originalTagSet)
 
     val tags = for {
       tag <- this.findTags(typedTokens, sentence, pattern)
@@ -134,9 +134,9 @@ object PatternTagger {
   class PatternTaggerException(message: String, cause: Throwable)
   extends Exception(message, cause)
 
-  def buildTypedTokens(sentence: Sentence with Chunks with Lemmas, types: Set[Type], consumedIndices: Seq[Int] = Seq.empty) = {
+  def buildTypedTokens(sentence: Tagger.Sentence with Chunks with Lemmas, types: Set[Type]) = {
     for ((token, i) <- sentence.lemmatizedTokens.zipWithIndex) yield {
-      new TypedToken(token, i, types filter (_.tokenInterval contains i), consumedIndices contains i)
+      new TypedToken(token, i, types filter (_.tokenInterval contains i), sentence.consumingTypes(i).isDefined)
     }
   }
 }

@@ -25,7 +25,7 @@ import scala.util.{ Try, Success }
   *
   * For examples, see test cases.
   */
-class RuleParserCombinator[S <: Sentence] extends JavaTokenParsers {
+class RuleParserCombinator[S <: Tagger.Sentence] extends JavaTokenParsers {
   val name = ident
   val taggerIdent = ident
 
@@ -70,7 +70,7 @@ class RuleParserCombinator[S <: Sentence] extends JavaTokenParsers {
 }
 
 /** A helper class for parsing rules using RuleParserCombinator. */
-class RuleParser[S <: Sentence] extends RuleParserCombinator[S] {
+class RuleParser[S <: Tagger.Sentence] extends RuleParserCombinator[S] {
   def parse(string: String): Try[ParsedLevel[S]] = this.parse(new StringReader(string))
   def parse(reader: Reader): Try[ParsedLevel[S]] = parseAll(collection, reader) match {
     case this.Success(ast, _) => scala.util.Success(ast)
@@ -86,9 +86,9 @@ object Rule {
   val taggerSyntax = ":="
 }
 
-abstract class Rule[-S <: Sentence] {
+abstract class Rule[-S <: Tagger.Sentence] {
   def name: String
   def definition: String
 }
 
-case class ParsedLevel[S <: Sentence](imports: List[Import], rules: Seq[Rule[S]])
+case class ParsedLevel[S <: Tagger.Sentence](imports: List[Import], rules: Seq[Rule[S]])

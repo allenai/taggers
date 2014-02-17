@@ -1,12 +1,13 @@
 package edu.knowitall.taggers
 
 import edu.knowitall.repr.sentence
-import edu.knowitall.repr.sentence.Chunks
 import edu.knowitall.repr.sentence.Chunker
+import edu.knowitall.repr.sentence.Chunks
 import edu.knowitall.repr.sentence.Lemmas
 import edu.knowitall.repr.sentence.Lemmatizer
 import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.taggers.rule._
+import edu.knowitall.taggers.tag.Tagger
 import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.MorphaStemmer
 import edu.knowitall.tool.typer.Type
@@ -16,8 +17,8 @@ import edu.knowitall.common.Resource.using
 import java.io.File
 import scala.io.Source
 
-class TaggerApp(cascade: Cascade[Sentence with Chunks with Lemmas]) {
-  type Sent = Sentence with Chunks with Lemmas
+class TaggerApp(cascade: Cascade[Tagger.Sentence with Chunks with Lemmas]) {
+  type Sent = Tagger.Sentence with Chunks with Lemmas
   val chunker = new OpenNlpChunker()
 
   def format(typ: Type) = {
@@ -25,7 +26,7 @@ class TaggerApp(cascade: Cascade[Sentence with Chunks with Lemmas]) {
   }
 
   def process(text: String): Sent = {
-    new Sentence(text) with Chunker with Lemmatizer {
+    new Sentence(text) with Consume with Chunker with Lemmatizer {
       val chunker = TaggerApp.this.chunker
       val lemmatizer = MorphaStemmer
     }

@@ -2,6 +2,7 @@ package edu.knowitall.taggers
 
 import edu.knowitall.repr.sentence
 import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.taggers.tag.Tagger
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.Lemmatized
@@ -10,11 +11,11 @@ import edu.knowitall.tool.stem.MorphaStemmer
 import org.scalatest.FlatSpec
 
 class ExtractorSpec extends FlatSpec {
-  type MySentence = Sentence with sentence.Chunks with sentence.Lemmas
+  type MySentence = Tagger.Sentence with sentence.Chunks with sentence.Lemmas
 
   val chunker = new OpenNlpChunker();
   def makeSentence(text: String): MySentence =
-    new Sentence(text) with sentence.Chunker with sentence.Lemmatizer {
+    new Sentence(text) with sentence.Chunker with sentence.Lemmatizer with Consume {
       override val chunker = new OpenNlpChunker
       override val lemmatizer = MorphaStemmer
     }

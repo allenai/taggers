@@ -13,9 +13,20 @@ import java.util.List
 import scala.collection.JavaConverters._
 
 abstract class JavaTagger(val name: String, val source: String)
-    extends Tagger[Sentence with Chunks with sentence.Lemmas] {
+    extends Tagger[Tagger.Sentence with Chunks with sentence.Lemmas] {
   override def findTags(sentence: TheSentence): Seq[Type] = {
     val lemmatizedTokens = sentence.lemmatizedTokens
+
+    // change consumed token attributes into empty string
+    val consumedTokens = lemmatizedTokens.zipWithIndex.map { case (token, i) =>
+      if (sentence.consumingTypes(i).isDefined) {
+        new Lemmatized[ChunkedToken](ChunkedToken("", "", "", token.offset), "")
+      }
+      else {
+        token
+      }
+    }
+
     this.findTagsJava(lemmatizedTokens.asJava).asScala
   }
 

@@ -31,14 +31,14 @@ import scala.util.{ Try, Success, Failure }
 class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, port: Int) extends SimpleRoutingApp {
   // A type alias for convenience since TaggerWeb always
   // deals with sentences that are chunked and lemmatized
-  type MySentence = Sentence with Chunks with Lemmas
+  type Sent = Tagger.Sentence with Chunks with Lemmas
 
   // External NLP tools that are used to build the expected type from a sentence string.
   lazy val chunker = new OpenNlpChunker()
 
   /** Build the NLP representation of a sentence string. */
-  def process(text: String): MySentence = {
-    new Sentence(text) with Chunker with Lemmatizer {
+  def process(text: String): Sent = {
+    new Sentence(text) with Consume with Chunker with Lemmatizer {
       val chunker = TaggerWeb.this.chunker
       val lemmatizer = MorphaStemmer
     }
@@ -195,7 +195,7 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
         }
       }
 
-      val levels: Seq[Level[MySentence]] =
+      val levels: Seq[Level[Sent]] =
         sections map (text => Level.fromString(text))
 
       val extractorParser = new ExtractorParser()
@@ -203,7 +203,7 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
         extractorParser.parse(line).get
       }
 
-      val cascade = new Cascade[MySentence](levels, extractors)
+      val cascade = new Cascade[Sent](levels, extractors)
 
       val results = for (line <- sentenceText.split("\n")) yield {
         val sentence = process(line)

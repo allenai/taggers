@@ -14,7 +14,7 @@ import edu.washington.cs.knowitall.regex.Expression.NamedGroup
 
 import scala.util.matching.Regex
 
-class ConstrainedTagger[S <: Sentence](val tagger: Tagger[S], val constraints: Seq[Constraint[S]])
+class ConstrainedTagger[S <: Tagger.Sentence](val tagger: Tagger[S], val constraints: Seq[Constraint[S]])
     extends Tagger[S] {
   override def name = tagger.name
   override def source = tagger.source

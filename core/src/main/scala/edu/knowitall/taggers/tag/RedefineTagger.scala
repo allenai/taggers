@@ -17,7 +17,7 @@ import java.util.List
   * @author schmmd
   *
   */
-case class RedefineTagger(name: String, target: String) extends Tagger[Sentence] {
+case class RedefineTagger(name: String, target: String) extends Tagger[Tagger.Sentence] {
   override val source = null
 
   // needed for reflection
@@ -27,8 +27,17 @@ case class RedefineTagger(name: String, target: String) extends Tagger[Sentence]
     Seq.empty
   }
 
-  override def findTagsWithTypes(sentence: TheSentence, tags: Seq[Type], consumedIndices: Seq[Int]): Seq[Type] = {
-    // links will be lost
-    tags.filter(_.name == this.target).map(typ => Type(typ.name, typ.source, typ.tokenInterval, typ.text))
+  override def findTagsWithTypes(sentence: TheSentence, tags: Seq[Type]): Seq[Type] = {
+    // Links will be lost on redefined types.
+    // If any part of a type is consumed, it will not be redefined.
+    for {
+      tag <- tags
+
+      // Only use the specified name.
+      if tag.name == this.target
+
+      // Don't look at any types that are partially or wholly consumed.
+      if tag.tokenInterval forall (i => !sentence.consumingTypes(i).isDefined)
+    } yield (Type(name, tag.source, tag.tokenInterval, tag.text))
   }
 }

@@ -8,7 +8,7 @@ import edu.knowitall.taggers.tag.Tagger
 object TaggerRule {
   val constraintPrefix = "constraint:"
   val commentPrefix = "//"
-  def parse[S <: Sentence](name: String, tagger: String, allArguments: Seq[String]) = {
+  def parse[S <: Tagger.Sentence](name: String, tagger: String, allArguments: Seq[String]) = {
     val (constraintStrings, arguments) = allArguments.map(_.trim).filter(!_.startsWith(commentPrefix)).partition(_.startsWith(constraintPrefix))
     val constraints = constraintStrings.map(_.drop("constraint:".length)) map (constraint => Constraint.create[S](constraint.trim))
     TaggerRule[S](name, tagger, constraints, arguments)
@@ -16,7 +16,7 @@ object TaggerRule {
 }
 
 /** A representation of a parsed tagger rule in the DSL. */
-case class TaggerRule[S <: Sentence](name: String, taggerIdentifier: String, constraints: Seq[Constraint[S]], arguments: Seq[String]) extends Rule[S] {
+case class TaggerRule[S <: Tagger.Sentence](name: String, taggerIdentifier: String, constraints: Seq[Constraint[S]], arguments: Seq[String]) extends Rule[S] {
   def definition = {
     if (constraints.isEmpty && arguments.size == 1) {
       s"${Rule.taggerSyntax} $taggerIdentifier( ${arguments.head} )"
