@@ -150,6 +150,59 @@ class PatternTaggerSpec extends FlatSpec {
     assert(types.exists(_.name == "RelatedTuples"), "RelatedTuples type not found.")
   }
 
+  "the most recent consuming type" should "be the only applicable type" in {
+    val l0 =
+      """consume A := PatternTagger {
+        (?:<string="a">)
+      }
+
+      consume B := TypePatternTagger {
+        (?:@A <string="b">)
+      }
+
+      consume C := TypePatternTagger {
+        (?:@B <string="c">)
+      }
+
+      D := TypePatternTagger {
+        @A
+      }
+
+      E := TypePatternTagger {
+        @B
+      }
+
+      F := TypePatternTagger {
+        @C
+      }
+      """
+
+    val cascade = new Cascade(Seq(
+      Level.fromString[MySentence](l0)))
+
+    val testSentence = "a b c"
+
+    val s = makeSentence(testSentence)
+
+    val (types, extractions) = cascade.apply(s)
+
+    def exists(name: String) = {
+      assert(types exists (_.name == name), s"type $name not found")
+    }
+
+    def notExists(name: String) = {
+      assert(!(types exists (_.name == name)), s"type $name found")
+    }
+
+    exists("A")
+    exists("B")
+    exists("C")
+
+    notExists("D")
+    notExists("E")
+    exists("F")
+  }
+
   "type fields in PatternTagger" should "match correctly" in {
     val taggers =
       """AnimalTagger := KeywordTagger{
@@ -230,7 +283,6 @@ class PatternTaggerSpec extends FlatSpec {
   }
 
   "TypePatternTagger expressions" should "match adjacent types seperately" in {
-
     val taggers  =
       """FemaleFirstName := KeywordTagger {
            mary
