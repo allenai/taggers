@@ -58,14 +58,10 @@ abstract class Tagger[-S <: Tagger.Sentence] {
     tags
   }
 
-  // TODO(schmmd): one shouldn't need to override a method to provide a correct implementation
-  /** This method should be overridden by any Tagger that wants to use the
-    * Types accumulated from previous Taggers. If it's not overridden the sentence
-    * will be tagged without type information.
+  /** This method identifies the actual tags in the sentence.
     *
     * @param sentence
     * @param types  types already existing in the sentence
-    * @param consumedIndices  indices used up on a previous level in a cascade
     *
     * @return
     */
