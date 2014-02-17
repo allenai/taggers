@@ -49,7 +49,7 @@ abstract class Tagger[-S <: Tagger.Sentence] {
     * @return a list of the tags found
     */
   def apply(sentence: S, types: Seq[Type]): Seq[Type] = {
-    var tags = findTagsWithTypes(sentence, types)
+    var tags = tag(sentence, types)
 
     // remove types that are covered by other types.
     tags = filterCovered(tags)
@@ -57,8 +57,6 @@ abstract class Tagger[-S <: Tagger.Sentence] {
 
     tags
   }
-
-  private[tag] def findTags(sentence: S): Seq[Type]
 
   // TODO(schmmd): one shouldn't need to override a method to provide a correct implementation
   /** This method should be overridden by any Tagger that wants to use the
@@ -71,9 +69,7 @@ abstract class Tagger[-S <: Tagger.Sentence] {
     *
     * @return
     */
-  private[tag] def findTagsWithTypes(sentence: S, types: Seq[Type]): Seq[Type] = {
-    findTags(sentence)
-  }
+  private[tag] def tag(sentence: S, types: Seq[Type]): Seq[Type]
 
   /** Remove types that cover over types.
     * @param tags

@@ -22,11 +22,7 @@ class ConstrainedTagger[S <: Tagger.Sentence](val tagger: Tagger[S], val constra
   def constrain[SS <: S](constraint: Constraint[SS]) =
     new ConstrainedTagger[SS](tagger, constraints :+ constraint)
 
-  def findTags(sentence: TheSentence): Seq[Type] = {
-    findTagsWithTypes(sentence, Seq.empty)
-  }
-
-  override def findTagsWithTypes(sentence: S, types: Seq[Type]): Seq[Type] = {
-    tagger.findTagsWithTypes(sentence, types).filter(tag => constraints.forall(_.apply(sentence, tag)))
+  override def tag(sentence: S, types: Seq[Type]): Seq[Type] = {
+    tagger.tag(sentence, types).filter(tag => constraints.forall(_.apply(sentence, tag)))
   }
 }

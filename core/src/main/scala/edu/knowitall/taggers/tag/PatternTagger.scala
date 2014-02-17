@@ -55,15 +55,11 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
     this(name, expressionLines.mkString(" "))
   }
 
-  override def findTags(sentence: TheSentence) = {
-    this.findTagsWithTypes(sentence, Seq.empty[Type])
-  }
-
   /** This method overrides Tagger's default implementation. This
     * implementation uses information from the Types that have been assigned to
     * the sentence so far.
     */
-  override def findTagsWithTypes(sentence: TheSentence,
+  override def tag(sentence: TheSentence,
     originalTags: Seq[Type]): Seq[Type] = {
 
     val originalTagSet = originalTags.toSet

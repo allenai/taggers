@@ -14,7 +14,7 @@ import scala.collection.JavaConverters._
 
 abstract class JavaTagger(val name: String, val source: String)
     extends Tagger[Tagger.Sentence with Chunks with sentence.Lemmas] {
-  override def findTags(sentence: TheSentence): Seq[Type] = {
+  override def tag(sentence: TheSentence, types: Seq[Type]): Seq[Type] = {
     val lemmatizedTokens = sentence.lemmatizedTokens
 
     // change consumed token attributes into empty string

@@ -23,15 +23,11 @@ case class RedefineTagger(name: String, target: String) extends Tagger[Tagger.Se
   // needed for reflection
   def this(name: String, args: Seq[String]) = this(name, args.head)
 
-  def findTags(sentence: TheSentence): Seq[Type] = {
-    Seq.empty
-  }
-
-  override def findTagsWithTypes(sentence: TheSentence, tags: Seq[Type]): Seq[Type] = {
+  override def tag(sentence: TheSentence, types: Seq[Type]): Seq[Type] = {
     // Links will be lost on redefined types.
     // If any part of a type is consumed, it will not be redefined.
     for {
-      tag <- tags
+      tag <- types
 
       // Only use the specified name.
       if tag.name == this.target
