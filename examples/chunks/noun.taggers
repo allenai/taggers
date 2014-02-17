@@ -1,11 +1,18 @@
 import AP
 import Rel
 import RelTo
+import RelFor
+
+Det := PatternTagger {
+   (?: <pos='PDT'>? <pos='DT' | pos='CD' | pos='PRP$'> )
+   | (?: <pos='PDT'>? <pos='DT'> <pos='CD'> )
+}
 
 NP1 := TypePatternTagger {
-   (?: (?: <pos='DT'> | <pos='PRP$'>)? @AP? <pos=/NN.*/>+ )
-   | (?: (?: <pos='DT'> | @AP ) @AP? <pos="VBG">? <pos=/NN.*/>+ )
-   | (?: <pos='DT'> @AP )
+   (?: @Det? @AP? <pos=/NN.*/>+ )
+   | (?: (?: @Det | @AP ) @AP? <pos=/VB[GN]/>? <pos=/NN.*/>+ )
+   | (?: @Det @AP )
+   | (?: @Det <pos=/VB[GN]/> )
    | (?: <pos=/RB.?/> <pos=/NN.*/> )
    | (?:@Name)
 }
