@@ -42,8 +42,8 @@ class ExtractorSpec extends FlatSpec {
       }"""
 
     val cascade = new Cascade(Seq(
-      Level.fromString[MySentence](l0),
-      Level.fromString[MySentence](l1)))
+      Level.fromString[MySentence]("l0", l0),
+      Level.fromString[MySentence]("l1", l1)))
 
     val testSentence = "animals eat in order to get nutrients"
     val s = makeSentence(testSentence)

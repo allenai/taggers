@@ -23,6 +23,8 @@ case class RedefineTagger(name: String, target: String) extends Tagger[Tagger.Se
   // needed for reflection
   def this(name: String, args: Seq[String]) = this(name, args.head)
 
+  override def typecheck(definedTypes: Set[String]) = definedTypes contains target
+
   override def tag(sentence: TheSentence, types: Seq[Type]): Seq[Type] = {
     // Links will be lost on redefined types.
     // If any part of a type is consumed, it will not be redefined.

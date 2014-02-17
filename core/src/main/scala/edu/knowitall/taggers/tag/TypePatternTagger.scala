@@ -15,12 +15,24 @@ import scala.util.matching.Regex
 
 class TypePatternTagger(name: String, expression: String)
     extends PatternTagger(name, TypePatternTagger.expandWholeTypeSyntax(expression)) {
+  val targetTypes: Set[String] = {
+    val names = for (data <- TypePatternTagger.wholeTypeSyntaxPattern.findAllIn(expression).matchData) yield {
+      data.group(1)
+    }
+
+    names.toSet
+  }
+
   /** The constructor used by reflection.
     *
     * Multiple lines are collapsed to create a single expression.
     */
   def this(name: String, expressions: Seq[String]) = {
     this(name, expressions.mkString(" "))
+  }
+
+  override def typecheck(definedTypes: Set[String]) = {
+    targetTypes forall (definedTypes contains _)
   }
 }
 

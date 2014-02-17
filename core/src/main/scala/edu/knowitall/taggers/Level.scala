@@ -10,7 +10,7 @@ import java.io.File
 import java.io.Reader
 import scala.io.Source
 
-case class Level[-S <: Tagger.Sentence](taggers: Seq[Tagger[S]]) {
+case class Level[-S <: Tagger.Sentence](name: String, taggers: Seq[Tagger[S]]) {
   def apply(sentence: S, types: Seq[Type]): Seq[Type] = {
     var levelTypes = Seq.empty[Type]
 
@@ -27,24 +27,35 @@ case class Level[-S <: Tagger.Sentence](taggers: Seq[Tagger[S]]) {
 
     levelTypes
   }
+
+  def typecheck(definedTypes: Set[String]): Unit = {
+    var allDefinedTypes = definedTypes
+    for (tagger <- taggers) {
+      if (!tagger.typecheck(allDefinedTypes)) {
+        throw new IllegalArgumentException(s"${tagger.name} contains undefined type.")
+      }
+
+      allDefinedTypes += tagger.name
+    }
+  }
 }
 
 object Level {
-  def fromFile[S <: Tagger.Sentence](file: File): Level[S] = {
+  def fromFile[S <: Tagger.Sentence](name: String, file: File): Level[S] = {
     Resource.using(Source.fromFile(file)) { input =>
-      this.fromReader[S](input.bufferedReader)
+      this.fromReader[S](name, input.bufferedReader)
     }
   }
 
-  def fromReader[S <: Tagger.Sentence](reader: Reader): Level[S] = {
-    this.fromParsed(new RuleParser[S].parse(reader).get)
+  def fromReader[S <: Tagger.Sentence](name: String, reader: Reader): Level[S] = {
+    this.fromParsed(name, new RuleParser[S].parse(reader).get)
   }
 
-  def fromString[S <: Tagger.Sentence](string: String): Level[S] = {
-    this.fromParsed(new RuleParser[S].parse(string).get)
+  def fromString[S <: Tagger.Sentence](name: String, string: String): Level[S] = {
+    this.fromParsed(name, new RuleParser[S].parse(string).get)
   }
 
-  def fromParsed[S <: Tagger.Sentence](parsed: ParsedLevel[S]): Level[S] = {
+  def fromParsed[S <: Tagger.Sentence](name: String, parsed: ParsedLevel[S]): Level[S] = {
     var definitions: Seq[DefinitionRule[S]] = Seq.empty
     var taggers: Seq[Tagger[S]] = Seq.empty
 
@@ -55,6 +66,6 @@ object Level {
       }
     }
 
-    Level(taggers)
+    Level(name, taggers)
   }
 }

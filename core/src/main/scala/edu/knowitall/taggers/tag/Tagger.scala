@@ -67,6 +67,9 @@ abstract class Tagger[-S <: Tagger.Sentence] {
     */
   private[tag] def tag(sentence: S, types: Seq[Type]): Seq[Type]
 
+  /** Typecheck the tagger against the defined types. */
+  def typecheck(definedTypes: Set[String]): Boolean = true
+
   /** Remove types that cover over types.
     * @param tags
     */

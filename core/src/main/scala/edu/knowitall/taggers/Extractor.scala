@@ -18,6 +18,12 @@ case class Extractor(variable: String, targetType: String, parts: Seq[Extractor.
   override def toString = {
     variable + ": " + targetType + " => " + (parts map (_.toString)).mkString("")
   }
+
+  def typecheck(definedTypes: Set[String]) = {
+    require(definedTypes contains this.targetType,
+      "Extractor depends on undefined type: " + this.targetType)
+  }
+
   def apply(types: Iterable[Type]): Seq[String] = {
     (for (
       typ <- types

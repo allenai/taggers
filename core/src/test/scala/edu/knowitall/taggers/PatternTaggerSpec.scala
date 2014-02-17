@@ -32,7 +32,7 @@ class PatternTaggerSpec extends FlatSpec {
       """
 
     val cascade =
-      new Cascade(Level.fromString[MySentence](taggers))
+      new Cascade(Level.fromString[MySentence]("unnamed", taggers))
 
     val testSentence = "The huge fat cat lingered in the hallway."
 
@@ -71,7 +71,7 @@ class PatternTaggerSpec extends FlatSpec {
       """
 
     val cascade =
-      new Cascade(Level.fromString[MySentence](taggers))
+      new Cascade(Level.fromString[MySentence]("unnamed", taggers))
 
     //test sentence that should be tagged as
     // WorldCandy{(3,5)}
@@ -105,7 +105,7 @@ class PatternTaggerSpec extends FlatSpec {
            <string = 'b'>
          }"""
 
-    val cascade = new Cascade(Level.fromString[MySentence](taggers))
+    val cascade = new Cascade(Level.fromString[MySentence]("unnamed", taggers))
 
     val testSentence = "c a b c"
 
@@ -114,6 +114,17 @@ class PatternTaggerSpec extends FlatSpec {
     val (types, extractions) = cascade.apply(s)
 
     assert(types.size === 1)
+  }
+
+  "a TypePatternTagger with undefined types" should "fail typechecking" in {
+    val taggers =
+      """NotTypesafe := TypePatternTagger {
+           @Asdf
+         }"""
+
+    intercept[IllegalArgumentException] {
+      new Cascade(Level.fromString[MySentence]("unnamed", taggers))
+    }
   }
 
   "cascades with PatternTagger" should "work correctly" in {
@@ -138,8 +149,8 @@ class PatternTaggerSpec extends FlatSpec {
       }"""
 
     val cascade = new Cascade(Seq(
-      Level.fromString[MySentence](l0),
-      Level.fromString[MySentence](l1)))
+      Level.fromString[MySentence]("unnamed", l0),
+      Level.fromString[MySentence]("unnamed", l1)))
 
     val testSentence = "animals eat in order to get nutrients"
 
@@ -178,7 +189,7 @@ class PatternTaggerSpec extends FlatSpec {
       """
 
     val cascade = new Cascade(Seq(
-      Level.fromString[MySentence](l0)))
+      Level.fromString[MySentence]("unnamed", l0)))
 
     val testSentence = "a b c"
 
@@ -222,7 +233,7 @@ class PatternTaggerSpec extends FlatSpec {
          }
       """
 
-    val cascade = new Cascade(Level.fromString[MySentence](taggers))
+    val cascade = new Cascade(Level.fromString[MySentence]("unnamed", taggers))
 
     val testSentence = "I once saw the large cat on a couch ."
 
@@ -270,7 +281,7 @@ class PatternTaggerSpec extends FlatSpec {
     	}
       """
 
-    val cascade = new Cascade(Level.fromString[MySentence](taggers))
+    val cascade = new Cascade(Level.fromString[MySentence]("unnamed", taggers))
 
     val testSentence = "James gives delicious candy frequently."
 
@@ -293,7 +304,7 @@ class PatternTaggerSpec extends FlatSpec {
            (?:@FemaleFirstName)
          }"""
 
-    val cascade = new Cascade(Level.fromString[MySentence](taggers))
+    val cascade = new Cascade(Level.fromString[MySentence]("unnamed", taggers))
 
     val testSentence = "mary jones."
 
