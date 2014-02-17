@@ -3,20 +3,21 @@ package edu.knowitall.taggers.rule
 import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.taggers.constraint.Constraint
 import edu.knowitall.taggers.tag.ConstrainedTagger
+import edu.knowitall.taggers.tag.ConsumingTagger
 import edu.knowitall.taggers.tag.Tagger
 
 object TaggerRule {
   val constraintPrefix = "constraint:"
   val commentPrefix = "//"
-  def parse[S <: Tagger.Sentence](name: String, tagger: String, allArguments: Seq[String]) = {
+  def parse[S <: Tagger.Sentence](name: String, tagger: String, consuming: Boolean, allArguments: Seq[String]) = {
     val (constraintStrings, arguments) = allArguments.map(_.trim).filter(!_.startsWith(commentPrefix)).partition(_.startsWith(constraintPrefix))
     val constraints = constraintStrings.map(_.drop("constraint:".length)) map (constraint => Constraint.create[S](constraint.trim))
-    TaggerRule[S](name, tagger, constraints, arguments)
+    TaggerRule[S](name, tagger, consuming, constraints, arguments)
   }
 }
 
 /** A representation of a parsed tagger rule in the DSL. */
-case class TaggerRule[S <: Tagger.Sentence](name: String, taggerIdentifier: String, constraints: Seq[Constraint[S]], arguments: Seq[String]) extends Rule[S] {
+case class TaggerRule[S <: Tagger.Sentence](name: String, taggerIdentifier: String, consuming: Boolean, constraints: Seq[Constraint[S]], arguments: Seq[String]) extends Rule[S] {
   def definition = {
     if (constraints.isEmpty && arguments.size == 1) {
       s"${Rule.taggerSyntax} $taggerIdentifier( ${arguments.head} )"
@@ -28,13 +29,19 @@ case class TaggerRule[S <: Tagger.Sentence](name: String, taggerIdentifier: Stri
 
   def instantiate(definitions: Iterable[DefinitionRule[S]]): Tagger[S] = {
     val substituted = arguments.map(arg => definitions.foldLeft(arg) { case (arg, defn) => defn.replace(arg) })
-    val tagger = Tagger.create[S](this.taggerIdentifier, "edu.knowitall.taggers.tag", name, substituted)
+    var tagger = Tagger.create[S](this.taggerIdentifier, "edu.knowitall.taggers.tag", name, substituted)
 
-    // apply constraints
-    constraints match {
-      case Seq() => tagger
-      case constraints => new ConstrainedTagger(tagger, constraints)
+    // Apply constraints.
+    if (!constraints.isEmpty) {
+      tagger = new ConstrainedTagger(tagger, constraints)
     }
+
+    // Make a consuming tagger.
+    if (consuming) {
+      tagger = new ConsumingTagger(tagger)
+    }
+
+    tagger
   }
 
   override def toString = {

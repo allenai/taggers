@@ -10,45 +10,19 @@ import java.io.File
 import java.io.Reader
 import scala.io.Source
 
-case class Level[-S <: Tagger.Sentence](imports: Seq[Import], taggers: Seq[Tagger[S]]) {
-  def this(taggers: Seq[Tagger[S]]) = this(Seq.empty, taggers)
-
-  /** Check to make sure the imported types are defined earlier
-    * in the Cascade.  This is not strictly necessary, but it will
-    * help catch errors earlier. */
-  def typecheck(definedTypeNames: Set[String]) = {
-    for (im <- imports) {
-      // Strip out any text after a period
-      val startImportName = im.name.takeWhile(_ != '.')
-      require(definedTypeNames contains startImportName, "Imported type undefined: " + startImportName)
-    }
-  }
-
-  /** Filter to keep only the types that were explicitly imported. */
-  def filterTypes(types: Seq[Type]) = {
-    types filter (t => imports exists (_.name == t.name))
-  }
-
-  /** Filter to keep only the types that were explicitly imported. */
-  def filterTypes(types: Set[Type]) = {
-    types filter (t => imports exists (_.name == t.name))
-  }
-
+case class Level[-S <: Tagger.Sentence](taggers: Seq[Tagger[S]]) {
   def apply(sentence: S, types: Seq[Type]): Seq[Type] = {
-    sentence.reset()
-    for (typ <- types) sentence.consume(typ)
-
-    val importNames = imports map (_.name)
-
-    // filter all the types by those imported
-    val availableTypes = filterTypes(types)
-
     var levelTypes = Seq.empty[Type]
-    val consumedIndices = (availableTypes map(_.tokenInterval)).flatten
 
     for (tagger <- taggers) yield {
-      val allTypes = availableTypes ++ levelTypes
-      levelTypes = levelTypes ++ tagger(sentence, allTypes)
+      val allTypes = types ++ levelTypes
+      val taggerTypes = tagger(sentence, allTypes)
+
+      levelTypes = levelTypes ++ taggerTypes
+
+      if (tagger.isInstanceOf[ConsumingTagger[_]]) {
+        taggerTypes foreach (sentence.consume(_))
+      }
     }
 
     levelTypes
@@ -81,6 +55,6 @@ object Level {
       }
     }
 
-    Level(parsed.imports, taggers)
+    Level(taggers)
   }
 }

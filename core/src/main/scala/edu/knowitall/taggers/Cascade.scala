@@ -33,12 +33,6 @@ case class Cascade[-S <: Tagger.Sentence](levels: Seq[Level[S]] = Seq.empty, ext
   {
     var definedTypes = Set.empty[String]
     for ((level, i) <- levels.zipWithIndex) {
-      try {
-        level.typecheck(definedTypes)
-      } catch {
-        case e: Exception =>
-          throw new IllegalArgumentException("Import error on level: " + i, e)
-      }
       definedTypes ++= level.taggers.iterator.map(_.name)
     }
 
@@ -60,7 +54,6 @@ case class Cascade[-S <: Tagger.Sentence](levels: Seq[Level[S]] = Seq.empty, ext
     var definedTypes = Set.empty[String]
     var previousLevelTypes = Seq.empty[Type]
     for (level <- levels) {
-      level.typecheck(definedTypes)
       definedTypes ++= (level.taggers.iterator map (_.name)).toSet
 
       val levelTypes = level.apply(sentence, previousTypes)
@@ -91,7 +84,6 @@ case class Cascade[-S <: Tagger.Sentence](levels: Seq[Level[S]] = Seq.empty, ext
     var result = immutable.ListMap.empty[Int, Seq[Type]]
     var definedTypes = Set.empty[String]
     for ((level, index) <- levels.zipWithIndex) {
-      level.typecheck(definedTypes)
       definedTypes ++= (level.taggers.iterator map (_.name)).toSet
 
       val levelTags = level.apply(sentence, previousTypes)

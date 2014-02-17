@@ -22,12 +22,12 @@ class ExtractorSpec extends FlatSpec {
 
   "Extractor helper methods" should "work correctly" in {
     val l0 =
-      """TupleRelation := TypePatternTagger {
+      """consume TupleRelation := TypePatternTagger {
         (?:<string="in"> <string="order"> <string="to">)
       }"""
 
     val l1 =
-      """import TupleRelation
+      """
       NP := PatternTagger {
         <chunk='B-NP'> <chunk='I-NP'>*
       }

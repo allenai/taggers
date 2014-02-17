@@ -39,9 +39,6 @@ class RuleParserCombinator[S <: Tagger.Sentence] extends JavaTokenParsers {
   // Lines that can be thrown out or safetly ignored.
   val ignore = comment | blankLine
 
-  // An import for a type from a previous level
-  val typeImport = (ignore*) ~ "(?m)^import\\s+".r ~> ".*".r <~ (ignore*) ^^ { case typ => Import(typ) }
-
   // An extractor for a redefinition.
   val valn = name ~ Rule.definitionSyntax ~! ".+".r ^^ { case name ~ Rule.definitionSyntax ~ valn => DefinitionRule[S](name, valn) }
 
@@ -57,16 +54,23 @@ class RuleParserCombinator[S <: Tagger.Sentence] extends JavaTokenParsers {
 
   // An extractor for a tagger.
   val args = singleline ^^ { arg => Seq(arg.trim) } | multiline
-  val tagger = name ~ Rule.taggerSyntax ~! taggerIdent ~! args ^^ {
+  val consumingTagger = "consume" ~> name ~ Rule.taggerSyntax ~! taggerIdent ~! args ^^ {
     case name ~ Rule.taggerSyntax ~ taggerIdent ~ args =>
-      TaggerRule.parse[S](name, taggerIdent, args)
+      TaggerRule.parse[S](name, taggerIdent, true, args)
   }
+
+  val nonConsumingTagger = name ~ Rule.taggerSyntax ~! taggerIdent ~! args ^^ {
+    case name ~ Rule.taggerSyntax ~ taggerIdent ~ args =>
+      TaggerRule.parse[S](name, taggerIdent, false, args)
+  }
+
+  val tagger = consumingTagger | nonConsumingTagger
 
   // A rule is either a tagger or a definition.
   val rule: Parser[Rule[S]] = (ignore*) ~> (valn | tagger) <~ (ignore*)
 
   // An extractor for a collection of rules.
-  val collection = rep(typeImport) ~ rep(rule) ^^ { case imports ~ rules => ParsedLevel(imports, rules) }
+  val collection = rep(rule) ^^ { case rules => ParsedLevel(rules) }
 }
 
 /** A helper class for parsing rules using RuleParserCombinator. */
@@ -91,4 +95,4 @@ abstract class Rule[-S <: Tagger.Sentence] {
   def definition: String
 }
 
-case class ParsedLevel[S <: Tagger.Sentence](imports: List[Import], rules: Seq[Rule[S]])
+case class ParsedLevel[S <: Tagger.Sentence](rules: Seq[Rule[S]])

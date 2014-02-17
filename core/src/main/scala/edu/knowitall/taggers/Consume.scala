@@ -19,7 +19,7 @@ trait Consume {
       backing
     }
 
-    def reset() {
+    private def reset() {
       backing = Array.fill(this.tokens.size)(None)
     }
 
