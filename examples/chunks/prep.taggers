@@ -1,7 +1,8 @@
 import NG
 import Rel
 import RelTo
+import RelFor
 
 PP := TypePatternTagger {
-  (?: <pos="RB">? <pos="IN" | pos="TO" | pos="RP"> <pos="RB">? ) (?:@NG)
+  <pos="RB">? <pos="IN" | pos="TO" | pos="RP"> <pos="RB">? @NG
 }
