@@ -1,0 +1,75 @@
+<html lang="en" ng-app>
+  <head>
+    <title>Tagger Web</title>
+    <link rel="stylesheet" href="/css/style.css" type="text/css" />
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+    <script src="/js/main.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.1/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
+
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <META HTTP-EQUIV="Expires" CONTENT="-1">
+  </head>
+  <body>
+    <div ng-controller="TaggersCtrl" class="container">
+      <h1>Tagger Web <small>An engine for quickly writing extractors</small></h1>
+      <div class="row">
+        <div class="col-md-6">
+          <form>
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <ul class="nav nav-tabs">
+                  <li class="active"><a href="#taggers" data-toggle="tab">Taggers</a></li>
+                  <li><a href="#extractors" data-toggle="tab">Extractors</a></li>
+                  <li><a href="#sentences" data-toggle="tab">Sentences</a></li>
+                </ul>
+                <div class="tab-content">
+                  <div class="tab-pane active" id="taggers">
+                    <div>Enter taggers to run over the text:</div>
+                    <textarea ng-model="taggersModel.taggers" rows='20'></textarea>
+                  </div>
+                  <div class="tab-pane" id="extractors">
+                    <div>Enter extractors to run over the output types:</div>
+                    <textarea ng-model="taggersModel.extractors" rows='20'></textarea>
+                  </div>
+                  <div class="tab-pane" id="sentences">
+                    <div>Enter the sentences to run over:</div>
+                    <textarea ng-model="taggersModel.sentences" rows='20'></textarea>
+                  </div>
+                </div>
+
+                <input ng-click="submit()" value="Execute" class="btn btn-default">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="col-md-6">
+          <div ng-repeat="sentence in response.sentences">
+            <h4>{{ sentence.text }}</h4>
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <ul class="pagination">
+                  <li ng-repeat="level in sentence.levels" ng-class="{active: $last}">
+                    <a href="#S{{ $parent.$index }}L{{ $index }}" data-toggle="tab">{{ level.name }}</a>
+                  </li>
+                </ul>
+                <div class="tab-content">
+                  <div class="tab-pane" ng-repeat="level in sentence.levels" id="S{{ $parent.$index }}L{{ $index }}" ng-class="{active: $first}">
+                    <pre>{{ level.types.join("\n") }}</pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <details>
+              <summary>Json Response</summary>
+              <p><pre>{{ responseString }}</pre></p>
+            </details>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

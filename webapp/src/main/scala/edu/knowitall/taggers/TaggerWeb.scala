@@ -17,6 +17,8 @@ import edu.knowitall.tool.typer.Type
 import akka.actor._
 import org.apache.commons.lang3.StringEscapeUtils
 import spray.http._
+import spray.httpx.SprayJsonSupport
+import spray.json._
 import spray.routing._
 
 import java.io.File
@@ -28,7 +30,7 @@ import scala.util.{ Try, Success, Failure }
 
 // This is a separate class so that optional dependencies are not loaded
 // unless a server instance is being create.
-class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, port: Int) extends SimpleRoutingApp {
+class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String, port: Int) extends SimpleRoutingApp with SprayJsonSupport {
   // A type alias for convenience since TaggerWeb always
   // deals with sentences that are chunked and lemmatized
   type Sent = Tagger.Sentence with Chunks with Lemmas
@@ -44,6 +46,7 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
     }
   }
 
+/*
   def buildTable(header: Seq[String], rows: Iterable[Seq[String]]) =
     buildColoredTable(header, rows map (items => (None, items)))
 
@@ -56,102 +59,59 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
         ).mkString("") + "</tr>"
       }.mkString("") +
     "</table>"
-
-  def page(params: Map[String, String] = Map.empty, errors: Seq[String] = Seq.empty, result: String = "", tables: String = "") = {
-    val sentenceText = params.get("sentences").getOrElse("")
-    val extractorText = params.get("extractors").getOrElse("")
-    val patternText = params.get("patterns").getOrElse("")
-    """<html><head><title>Tagger Web</title><script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.1/jquery.min.js"></script>
-    <style type='text/css'>
-      /* <![CDATA[ */
-        .head {
-          font-weight: bold;
-          width: 150px;
-          border-width: 1px;
-          border-style: solid;
-          border-color: lightgrey;
-          padding: 4px;
-          margin-bottom: 0px;
-        }
-        .item {
-          width: 144px;
-          border-width: 1px;
-          border-style: solid;
-          border-color: lightgrey;
-          padding: 4px;
-          padding-left: 10px;
-          margin-bottom: 0px;
-        }
-        table {
-          border-width: 1px;
-          border-spacing: 0px;
-          border-style: outset;
-          border-color: gray;
-          border-collapse: collapse;
-          background-color: white;
-        }
-        th {
-          border-width: 1px;
-          padding: 6px;
-          border-style: inset;
-          border-color: gray;
-          background-color: PowderBlue;
-          -moz-border-radius: 0px 0px 0px 0px;
-        }
-        td {
-          border-width: 1px;
-          padding: 6px;
-          border-style: inset;
-          border-color: gray;
-          background-color: white;
-          -moz-border-radius: 0px 0px 0px 0px;
-        }
-      /* ]]> */
-    </style>
-    </head>
-       <body><h1>Tagger Web</h1><form method='POST'><p><a href='#' onclick="javascript:$('#patterns').val('Animal := LemmatizedKeywordTagger { \n  cat\n  dot\n  frog\n}\n\nDescribedAnimal := PatternTagger ( <pos=\'JJ\'>+ <type=\'Animal\'>+ )'); $('#sentences').val('The large black cat rested on the desk.\nThe frogs start to ribbit in the spring.')">example</a></p>""" +
-      s"<br /><b>Rules:</b><br /><textarea id='patterns' name='patterns' cols='120' rows='20'>$patternText</textarea>" +
-      s"<br /><b>Extractors:</b><br /><textarea id='extractors' name='extractors' cols='120' rows='10'>$extractorText</textarea>" +
-      s"<br /><b>Sentences:</b><br /><textarea id='sentences' name='sentences' cols='120' rows='20'>$sentenceText</textarea>" +
-      """<br />
-         <input type='submit'>""" +
-      s"<p style='color:red'>${errors.mkString("<br />")}</p>" +
-      s"<pre>${StringEscapeUtils.escapeHtml4(result)}</pre>" +
-      s"$tables" +
-      """</form></body></html>"""
-  }
+    */
 
   def run() {
+    val staticContentRoot = "public"
+
+    val cacheControlMaxAge = HttpHeaders.`Cache-Control`(CacheDirectives.`max-age`(60))
+
     implicit val system = ActorSystem("tagger-web")
+
+    import DefaultJsonProtocol._
+    implicit val requestFormat = jsonFormat3(Request.apply)
+
+    implicit val extractorResponseFormat = jsonFormat2(ExtractorResponse.apply)
+    implicit val levelResponseFormat = jsonFormat2(LevelResponse.apply)
+    implicit val sentenceResponseFormat = jsonFormat3(SentenceResponse.apply)
+    implicit val responseFormat = jsonFormat1(Response.apply)
+
     startServer(interface = "0.0.0.0", port = port) {
-      path("") {
-        import MediaTypes._
-        get {
-          respondWithMediaType(`text/html`) {
-            complete {
-              page(Map("patterns" -> ruleText, "sentences" -> sentenceText, "extractors" -> extractorText))
-            }
-          }
-        } ~
-        post {
-          entity(as[FormData]) { formData =>
-            respondWithMediaType(`text/html`) {
+      import MediaTypes._
+      respondWithHeader(cacheControlMaxAge) {
+        path ("") {
+          get { 
+            getFromFile(staticContentRoot + "/html/index.html") 
+          } ~
+          post {
+            entity(as[Request]) { request =>
               complete {
-                postPage(formData.fields.toMap)
+                doPost(request)
               }
             }
           }
-        }
+        } ~
+        path ("fields") {
+          get {
+            complete {
+              Request(taggersText, extractorText, sentenceText)
+            }
+          }
+        } ~
+        unmatchedPath { p => getFromFile(staticContentRoot + p) }
       }
     }
   }
 
-  def postPage(params: Map[String, String]) = {
-    try {
-      val sentenceText = params("sentences")
-      val extractorText = params("extractors")
-      val patternText = params("patterns")
+  case class Request(taggers: String, extractors: String, sentences: String)
 
+  case class Response(sentences: Seq[SentenceResponse])
+  case class SentenceResponse(text: String, levels: Seq[LevelResponse], extractors: Seq[ExtractorResponse])
+  case class LevelResponse(name: String, types: Seq[String])
+  case class ExtractorResponse(extractor: String, extractions: Seq[String])
+
+  def doPost(request: Request): Response = {
+    try {
       def takeWhile[T](it: BufferedIterator[T], cond: T=>Boolean): Seq[T] = {
         var result = Seq.empty[T]
         while (it.hasNext && cond(it.head)) {
@@ -169,7 +129,7 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
         }
       }
 
-      val linesIt = patternText.split("\n").iterator.buffered
+      val linesIt = request.taggers.split("\n").iterator.buffered
       var sections = Seq.empty[(String, String)]
       var Seperator = "(?m)^>>>\\s*(.*)\\s*$".r
       var EmptyLine = "(?m)^\\s*$".r
@@ -199,13 +159,13 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
         sections map { case (title, text) => Level.fromString(title, text) }
 
       val extractorParser = new ExtractorParser()
-      val extractors = for (line <- extractorText.split("\n") filter (!_.trim.isEmpty)) yield {
+      val extractors = for (line <- request.extractors.split("\n") filter (!_.trim.isEmpty)) yield {
         extractorParser.parse(line).get
       }
 
       val cascade = new Cascade[Sent](levels, extractors)
 
-      val results = for (line <- sentenceText.split("\n")) yield {
+      val results = for (line <- request.sentences.split("\n")) yield {
         val sentence = process(line)
         val levels = cascade.levelTypes(sentence)
 
@@ -215,18 +175,15 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
       def formatType(typ: Type) = {
         typ.name + "(" + typ.text + ")"
       }
-      val resultText = new StringBuilder()
-      val tables = new StringBuilder("<h3>Sentence Debugging</h3>")
-      for ((sentence, levels) <- results) {
-        resultText.append(sentence.text)
-        resultText.append("\n\n")
-        var allTypes = Set.empty[Type]
-        for ((level, types) <- levels.toSeq) {
-          if (levels.size > 1) {
-            resultText.append(s"  Level $level\n\n")
-          }
 
-          val tokens = PatternTagger.buildTypedTokens(sentence, allTypes)
+      val sentenceResponses = for {
+        (sentence, levels) <- results
+      } yield {
+        val levelResponses = for {
+          (level, types) <- levels.toSeq
+        } yield {
+          /*
+          val tokens = PatternTagger.buildTypedTokens(sentence, cascade.levels(level).filterTypes(allTypes))
           val table = buildTable(Seq("index", "string", "postag", "chunk", "in types", "out types"), tokens map { typed =>
             val outTypes = types filter (_.tokenInterval contains typed.index)
             Seq(typed.index.toString,
@@ -241,30 +198,26 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
           tables.append(table)
           tables.append("</p>")
           tables.append("\n\n")
+          */
 
-          for (typ <- types.reverse) {
-            resultText.append("  ")
-            resultText.append(formatType(typ))
-            resultText.append("\n")
+          LevelResponse(level.toString, types.reverse map formatType)
+        }
+
+        val allTypes = levels.map(_._2).flatten
+        val extractorResponses =
+          cascade.extract(allTypes).toSeq map { case (extractor, extractions) =>
+            ExtractorResponse(extractor, extractions)
           }
 
-          resultText.append("\n")
-
-          allTypes ++= types.toSet
-        }
-
-        resultText.append("Extractions:\n")
-        for (extraction <- cascade.extract(allTypes).values.flatten) {
-          resultText.append(extraction)
-          resultText.append("\n")
-        }
-        resultText.append("\n")
+        SentenceResponse(sentence.text, levelResponses, extractorResponses)
       }
 
-      page(params, Seq.empty, resultText.toString, tables.toString)
+      Response(sentenceResponses)
     } catch {
       case e: Throwable =>
         e.printStackTrace()
+        throw e
+        /*
         def getMessageChain(throwable: Throwable): List[String] = {
           Option(throwable) match {
             case Some(throwable) => Option(throwable.getMessage) match {
@@ -274,7 +227,7 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
             case None => Nil
           }
         }
-        page(params, getMessageChain(e), "")
+        */
     }
   }
 }
@@ -313,8 +266,8 @@ object TaggerWebMain extends App {
   }
 
   parser.parse(args, Config()).foreach { config =>
-    val (extractorText, ruleText) = config.cascadeText()
-    val server = new TaggerWeb(ruleText, extractorText, config.sentenceText(), config.port)
+    val (extractorText, taggersText) = config.cascadeText()
+    val server = new TaggerWeb(taggersText, extractorText, config.sentenceText(), config.port)
     server.run()
   }
 }
