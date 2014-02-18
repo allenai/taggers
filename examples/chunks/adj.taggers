@@ -1,5 +1,6 @@
 import Rel
 import RelTo
+import RelFor
 
 AP := PatternTagger {
    (?: <pos='RB'>? <pos=/JJ.*/>+ )

@@ -1,20 +1,29 @@
 import AP
 import Rel
 import RelTo
+import RelFor
 
-NP := TypePatternTagger {
-   (?: (?: <pos='DT'> | <pos='PRP$'>)? @AP? <pos=/NN.*/>+ )
-   | (?: (?: <pos='DT'> | @AP ) @AP? <pos="VBG">? <pos=/NN.*/>+ )
-   | (?: <pos='DT'> @AP )
+Det := PatternTagger {
+   (?: <pos='PDT'>? <pos='DT' | pos='CD' | pos='PRP$'> )
+   | (?: <pos='PDT'>? <pos='DT'> <pos='CD'> )
+}
+
+NP1 := TypePatternTagger {
+   (?: @Det? @AP? <pos=/NN.*/>+ )
+   | (?: (?: @Det | @AP ) @AP? <pos=/VB[GN]/>? <pos=/NN.*/>+ )
+   | (?: @Det @AP )
+   | (?: @Det <pos=/VB[GN]/> )
    | (?: <pos=/RB.?/> <pos=/NN.*/> )
    | (?:@Name)
 }
 
+NP2 := TypePatternTagger {
+   (?:@NP1 (?: (?:<string=","> @NP1)* <string=",">? <string=/and|or|and\/or/> @NP1 )? )
+}
+
 NG := TypePatternTagger {
-   (?:@NP )
-   | (?:@NP (?:<string="of"> | <pos="POS">) @NP )
-   | (?:@NP (?:<string=","> @NP)* <string=",">? <string=/and|or/> @NP )
-   | (?:@NP <string="("> @NP <string=")"> )
+   (?:@NP2 (?: (?:<string="of"> | <pos="POS">) @NP2 )? )
+   | (?:@NP2 <string="("> @NP2 <string=")"> )
    | (?: <pos='PRP'> )
    | (?: <lemma=/this|these|those/> )
 }

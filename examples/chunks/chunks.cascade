@@ -5,3 +5,6 @@ verb.taggers
 prep.taggers
 sent.taggers
 reltuple.taggers
+
+x: RelatedTuples => (${x.Tuple1})	${x.Relation}	(${x.Tuple2})
+x: RelatedTuples2 => (${x.Tuple1})	${x.Relation}	(${x.Tuple2})
