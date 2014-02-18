@@ -95,17 +95,25 @@ object Extractor {
     override def stringFrom(variable: String, typ: Type, types: Iterable[Type]) = string
   }
 
-  /** A builder component that is constructed through a type expression.
+  /** A piece of a substitution expression (i.e. ${ ... })
     *
     * @param  base  either the bound variable or a subtype
     * @param  aligns  rules to move to other types from the base type
     * @param  fallback  a string used if the expression fails
     */
-  case class SubstitutionBuilderPart(base: String, aligns: Seq[AlignExpr], fallback: Option[String]) extends BuilderPart {
-    override def toString = "${" + base + (aligns map (_.toString)).mkString("") + fallback.map("|" + _).getOrElse("") + "}"
-    val Subtype = "(\\w+).(\\w+)".r
-    override def stringFrom(variable: String, typ: Type, allTypes: Iterable[Type]): String = {
-      try {
+  abstract class SubstitutionPart {
+    def stringFrom(variable: String, typ: Type, allTypes: Iterable[Type]): Try[String]
+  }
+  case class SubstitutionString(string: String) extends SubstitutionPart {
+    override def toString = "'" + string + "'"
+    override def stringFrom(variable: String, typ: Type, allTypes: Iterable[Type]): Try[String] =
+      Success(string)
+  }
+  case class SubstitutionExpr(base: String, aligns: Seq[AlignExpr]) extends SubstitutionPart {
+    private val Subtype = "(\\w+).(\\w+)".r
+    override def toString = base + (aligns map (_.toString)).mkString("")
+    override def stringFrom(variable: String, typ: Type, allTypes: Iterable[Type]): Try[String] = {
+      Try {
         // Find the starting type for this subtitution.
         // It will be either a subtype of typ or typ itself.
         val startingType = base match {
@@ -136,9 +144,27 @@ object Extractor {
         }
 
         currentType.text
-      } catch {
-        case e if fallback.isDefined=> fallback.get
       }
+    }
+  }
+
+  /** A builder component that is constructed through a type expression.
+    *
+    * @param  attempts  expression to try, one after another
+    */
+  case class SubstitutionBuilderPart(attempts: Seq[SubstitutionPart]) extends BuilderPart {
+    override def toString = "${" + attempts.mkString("|") + "}"
+
+    def stringFrom(variable: String, typ: Type, types: Iterable[Type]): String = {
+      var lastError: Throwable = null
+      for (attempt <- attempts) {
+        attempt.stringFrom(variable, typ, types) match {
+          case Success(string) => return string
+          case Failure(e) => lastError = e
+        }
+      }
+
+      throw lastError
     }
   }
 
@@ -171,15 +197,19 @@ class ExtractorParser extends RegexParsers {
     AlignExpr(alignedType, subType)
   }
 
-  val substitutionWithFallback: Parser[BuilderPart] = "${" ~> typ ~ (alignExpr*) ~ "|" ~ "[^}]+".r <~ "}" ^^ { case base ~ exprs ~ "|" ~ fallback =>
-    SubstitutionBuilderPart(base, exprs, Some(fallback))
+  val substitutionString = "\'" ~> "[^']*".r <~ "'" ^^ { case string =>
+    SubstitutionString(string)
   }
 
-  val substitutionWithoutFallback: Parser[BuilderPart] = "${" ~> typ ~ (alignExpr*) <~ "}" ^^ { case base ~ exprs =>
-    SubstitutionBuilderPart(base, exprs, None)
+  val substitutionExpr = typ ~ (alignExpr*) ^^ { case base ~ exprs =>
+    SubstitutionExpr(base, exprs)
   }
 
-  val substitution = substitutionWithFallback | substitutionWithoutFallback
+  val substitutionPart: Parser[SubstitutionPart] = substitutionString | substitutionExpr
+
+  val substitution: Parser[BuilderPart] = "${" ~> substitutionPart ~ rep("|" ~> substitutionPart) <~ "}" ^^ { case head ~ tail =>
+    SubstitutionBuilderPart(head +: tail)
+  }
 
   val specPart: Parser[List[BuilderPart]] = (opt(substitution) ~ "[^$]+".r ~ rep(substitution)) ^^ { case subOpt ~ string ~ subRep =>
     List(SimpleBuilderPart(string)) ++ subOpt ++ subRep

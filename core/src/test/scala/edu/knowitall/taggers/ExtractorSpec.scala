@@ -63,8 +63,18 @@ class ExtractorSpec extends FlatSpec {
     val tuple1Subtypes = Extractor.findSubtypesWithName(types)(relatedTuplesType, "Tuple1")
     assert(tuple1Subtypes.size === 1)
 
-    val parsed = new ExtractorParser().parse("x: RelatedTuples => (${x.Tuple1->Tuple.Arg1|None}, ${x.Tuple1->Tuple.Rel}, ${x.Tuple1->Tuple.Arg2|None}) --${x.TupleRel}-> (${x.Tuple2->Tuple.Arg1|None}, ${x.Tuple2->Tuple.Rel}, ${x.Tuple2->Tuple.Arg2|None})").get
+    val parsed = new ExtractorParser().parse("x: RelatedTuples => (${x.Tuple1->Tuple.Arg1|'None'}, ${x.Tuple1->Tuple.Rel}, ${x.Tuple1->Tuple.Arg2|'None'}) --${x.TupleRel}-> (${x.Tuple2->Tuple.Arg1|'None'}, ${x.Tuple2->Tuple.Rel}, ${x.Tuple2->Tuple.Arg2|'None'})").get
     assert(parsed(types).head === "(animals, eat, None) --in order to-> (None, get, nutrients)")
+
+    // This is a rather bogus extractor to test that when the Arg2 is missing
+    // the Arg1 is used instead.
+    val parsed2 = new ExtractorParser().parse("x: RelatedTuples => (${x.Tuple1->Tuple.Arg1|x.Tuple1->Tuple.Arg2}, ${x.Tuple1->Tuple.Rel}, ${x.Tuple1->Tuple.Arg2|x.Tuple1->Tuple.Arg1}) --${x.TupleRel}-> (${x.Tuple2->Tuple.Arg1|'None'}, ${x.Tuple2->Tuple.Rel}, ${x.Tuple2->Tuple.Arg2|'None'})").get
+    assert(parsed2(types).head === "(animals, eat, animals) --in order to-> (None, get, nutrients)")
+
+    // This is another rather bogus extractor to test that when the Arg2 is missing,
+    // it tries again and then gives up and uses a string.
+    val parsed3 = new ExtractorParser().parse("x: RelatedTuples => (${x.Tuple1->Tuple.Arg1|x.Tuple1->Tuple.Arg2}, ${x.Tuple1->Tuple.Rel}, ${x.Tuple1->Tuple.Arg2|x.Tuple1->Tuple.Arg2|'asdf'}) --${x.TupleRel}-> (${x.Tuple2->Tuple.Arg1|'None'}, ${x.Tuple2->Tuple.Rel}, ${x.Tuple2->Tuple.Arg2|'None'})").get
+    assert(parsed3(types).head === "(animals, eat, asdf) --in order to-> (None, get, nutrients)")
   }
 
   "Extractor" should "be parsed correctly" in {
