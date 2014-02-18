@@ -170,7 +170,7 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
       }
 
       val linesIt = patternText.split("\n").iterator.buffered
-      var sections = Seq.empty[String]
+      var sections = Seq.empty[(String, String)]
       var Seperator = "(?m)^>>>\\s*(.*)\\s*$".r
       var EmptyLine = "(?m)^\\s*$".r
       if (linesIt.hasNext) {
@@ -182,21 +182,21 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
           dropWhile(linesIt, (line: String) => EmptyLine.pattern.matcher(line).matches)
 
           // match the header
-          linesIt.head match {
-            case Seperator(header) => linesIt.next()
-            case _ if firstLoop => // there may be no header
+          val header = linesIt.head match {
+            case Seperator(h) => linesIt.next(); h
+            case _ if firstLoop => "anonymous" // there may be no header
             case _ => throw new MatchError("Header not found, rather: " + linesIt.head)
           }
 
           val body = takeWhile(linesIt, (line: String) => !Seperator.pattern.matcher(line).matches)
-          sections = sections :+ body.mkString("\n")
+          sections = sections :+ (header, body.mkString("\n"))
 
           firstLoop = false
         }
       }
 
       val levels: Seq[Level[Sent]] =
-        sections map (text => Level.fromString(text))
+        sections map { case (title, text) => Level.fromString(title, text) }
 
       val extractorParser = new ExtractorParser()
       val extractors = for (line <- extractorText.split("\n") filter (!_.trim.isEmpty)) yield {
@@ -226,7 +226,7 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
             resultText.append(s"  Level $level\n\n")
           }
 
-          val tokens = PatternTagger.buildTypedTokens(sentence, cascade.levels(level).filterTypes(allTypes))
+          val tokens = PatternTagger.buildTypedTokens(sentence, allTypes)
           val table = buildTable(Seq("index", "string", "postag", "chunk", "in types", "out types"), tokens map { typed =>
             val outTypes = types filter (_.tokenInterval contains typed.index)
             Seq(typed.index.toString,

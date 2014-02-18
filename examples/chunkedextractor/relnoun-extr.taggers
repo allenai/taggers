@@ -1,5 +1,3 @@
-import RelationalNoun
-
 SimpleNounChunk := PatternTagger {
   <chunk="B-NP"> <chunk="I-NP">*
 }
