@@ -3,6 +3,7 @@ package edu.knowitall.taggers
 import edu.knowitall.collection.immutable.Interval
 import edu.knowitall.repr.sentence
 import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.taggers.tag.Tagger
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.Lemmatized
@@ -10,15 +11,15 @@ import edu.knowitall.tool.stem.MorphaStemmer
 
 import org.scalatest.FlatSpec
 
-import scala.collection.JavaConverters._
 import scala.collection.immutable.IntMap
+import scala.collection.JavaConverters._
 
 class PatternTaggerSpec extends FlatSpec {
-  type MySentence = Sentence with sentence.Chunks with sentence.Lemmas
+  type MySentence = Tagger.Sentence with sentence.Chunks with sentence.Lemmas
 
   val chunker = new OpenNlpChunker();
   def makeSentence(text: String): MySentence =
-    new Sentence(text) with sentence.Chunker with sentence.Lemmatizer {
+    new Sentence(text) with Consume with sentence.Chunker with sentence.Lemmatizer {
       override val chunker = new OpenNlpChunker
       override val lemmatizer = MorphaStemmer
     }
@@ -31,7 +32,7 @@ class PatternTaggerSpec extends FlatSpec {
       """
 
     val cascade =
-      new Cascade(Level.fromString[MySentence](taggers))
+      new Cascade(Level.fromString[MySentence]("unnamed", taggers))
 
     val testSentence = "The huge fat cat lingered in the hallway."
 
@@ -70,7 +71,7 @@ class PatternTaggerSpec extends FlatSpec {
       """
 
     val cascade =
-      new Cascade(Level.fromString[MySentence](taggers))
+      new Cascade(Level.fromString[MySentence]("unnamed", taggers))
 
     //test sentence that should be tagged as
     // WorldCandy{(3,5)}
@@ -104,7 +105,7 @@ class PatternTaggerSpec extends FlatSpec {
            <string = 'b'>
          }"""
 
-    val cascade = new Cascade(Level.fromString[MySentence](taggers))
+    val cascade = new Cascade(Level.fromString[MySentence]("unnamed", taggers))
 
     val testSentence = "c a b c"
 
@@ -115,14 +116,25 @@ class PatternTaggerSpec extends FlatSpec {
     assert(types.size === 1)
   }
 
+  "a TypePatternTagger with undefined types" should "fail typechecking" in {
+    val taggers =
+      """NotTypesafe := TypePatternTagger {
+           @Asdf
+         }"""
+
+    intercept[IllegalArgumentException] {
+      new Cascade(Level.fromString[MySentence]("unnamed", taggers))
+    }
+  }
+
   "cascades with PatternTagger" should "work correctly" in {
     val l0 =
-      """TupleRelation := TypePatternTagger {
+      """consume TupleRelation := TypePatternTagger {
         (?:<string="in"> <string="order"> <string="to">)
       }"""
 
     val l1 =
-      """import TupleRelation
+      """
       NP := PatternTagger {
         <chunk='B-NP'> <chunk='I-NP'>*
       }
@@ -137,8 +149,8 @@ class PatternTaggerSpec extends FlatSpec {
       }"""
 
     val cascade = new Cascade(Seq(
-      Level.fromString[MySentence](l0),
-      Level.fromString[MySentence](l1)))
+      Level.fromString[MySentence]("unnamed", l0),
+      Level.fromString[MySentence]("unnamed", l1)))
 
     val testSentence = "animals eat in order to get nutrients"
 
@@ -147,6 +159,59 @@ class PatternTaggerSpec extends FlatSpec {
     val (types, extractions) = cascade.apply(s)
 
     assert(types.exists(_.name == "RelatedTuples"), "RelatedTuples type not found.")
+  }
+
+  "the most recent consuming type" should "be the only applicable type" in {
+    val l0 =
+      """consume A := PatternTagger {
+        (?:<string="a">)
+      }
+
+      consume B := TypePatternTagger {
+        (?:@A <string="b">)
+      }
+
+      consume C := TypePatternTagger {
+        (?:@B <string="c">)
+      }
+
+      D := TypePatternTagger {
+        @A
+      }
+
+      E := TypePatternTagger {
+        @B
+      }
+
+      F := TypePatternTagger {
+        @C
+      }
+      """
+
+    val cascade = new Cascade(Seq(
+      Level.fromString[MySentence]("unnamed", l0)))
+
+    val testSentence = "a b c"
+
+    val s = makeSentence(testSentence)
+
+    val (types, extractions) = cascade.apply(s)
+
+    def exists(name: String) = {
+      assert(types exists (_.name == name), s"type $name not found")
+    }
+
+    def notExists(name: String) = {
+      assert(!(types exists (_.name == name)), s"type $name found")
+    }
+
+    exists("A")
+    exists("B")
+    exists("C")
+
+    notExists("D")
+    notExists("E")
+    exists("F")
   }
 
   "type fields in PatternTagger" should "match correctly" in {
@@ -168,7 +233,7 @@ class PatternTaggerSpec extends FlatSpec {
          }
       """
 
-    val cascade = new Cascade(Level.fromString[MySentence](taggers))
+    val cascade = new Cascade(Level.fromString[MySentence]("unnamed", taggers))
 
     val testSentence = "I once saw the large cat on a couch ."
 
@@ -216,7 +281,7 @@ class PatternTaggerSpec extends FlatSpec {
     	}
       """
 
-    val cascade = new Cascade(Level.fromString[MySentence](taggers))
+    val cascade = new Cascade(Level.fromString[MySentence]("unnamed", taggers))
 
     val testSentence = "James gives delicious candy frequently."
 
@@ -229,7 +294,6 @@ class PatternTaggerSpec extends FlatSpec {
   }
 
   "TypePatternTagger expressions" should "match adjacent types seperately" in {
-
     val taggers  =
       """FemaleFirstName := KeywordTagger {
            mary
@@ -240,7 +304,7 @@ class PatternTaggerSpec extends FlatSpec {
            (?:@FemaleFirstName)
          }"""
 
-    val cascade = new Cascade(Level.fromString[MySentence](taggers))
+    val cascade = new Cascade(Level.fromString[MySentence]("unnamed", taggers))
 
     val testSentence = "mary jones."
 

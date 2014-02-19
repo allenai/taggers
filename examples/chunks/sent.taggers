@@ -1,11 +1,3 @@
-import AP
-import NG
-import PP
-import VG
-import Rel
-import RelTo
-import RelFor
-
 RelClause := TypePatternTagger {
   (?: <string=",">? <string=/that|which/> @NG? @VG @NG? )
 }
@@ -15,10 +7,10 @@ NP := TypePatternTagger {
 }
 
 VP := TypePatternTagger {
-  (?: (<Rel>:@VG) (<Arg2>:@NP)? (<Arg>:@PP)* )
-  // | (?: (<Rel>:@VG) (<Arg2>:@NP) (<Arg3>:@NP) (<Arg>:@PP)* )
-  | (?: (<Rel>:@VG) (<Arg2>:@AP) (<Arg>:@PP)* )
-  | (?: (<Rel>:@VG) (<Arg2>:<pos=/RB.*/>) (<Arg>:@PP)* )
+  (?: (<Rel>:@VG) (<Arg2>:@NP)? (<Arg>:@PP*) )
+  // | (?: (<Rel>:@VG) (<Arg2>:@NP) (<Arg3>:@NP) (<Arg>:@PP*) )
+  | (?: (<Rel>:@VG) (<Arg2>:@AP) (<Arg>:@PP*) )
+  | (?: (<Rel>:@VG) (<Arg2>:<pos=/RB.*/>) (<Arg>:@PP*) )
 }
 
 S := TypePatternTagger {

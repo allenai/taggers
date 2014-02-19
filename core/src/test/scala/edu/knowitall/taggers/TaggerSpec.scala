@@ -22,7 +22,7 @@ class TaggerSpec extends FlatSpec {
   "runTagger" should "match verb run" in {
     val sentenceText = "The man had run down the road."
     val opennlpChunker = new OpenNlpChunker
-    val s = new Sentence(sentenceText) with sentence.Chunker with sentence.Lemmatizer {
+    val s = new Sentence(sentenceText) with sentence.Chunker with sentence.Lemmatizer with Consume {
       override val chunker = new OpenNlpChunker
       override val lemmatizer = MorphaStemmer
     }
@@ -36,7 +36,7 @@ class TaggerSpec extends FlatSpec {
   "runTagger" should "not match noun run" in {
     val sentenceText = "The man went for a run."
     val opennlpChunker = new OpenNlpChunker
-    val s = new Sentence(sentenceText) with sentence.Chunker with sentence.Lemmatizer {
+    val s = new Sentence(sentenceText) with sentence.Chunker with sentence.Lemmatizer with Consume {
       override val chunker = new OpenNlpChunker
       override val lemmatizer = MorphaStemmer
     }

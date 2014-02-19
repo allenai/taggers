@@ -1,8 +1,3 @@
-import AP
-import Rel
-import RelTo
-import RelFor
-
 Aux := PatternTagger {
   <lemma=/be|have/> <pos="RB">? <string="been">?
 }

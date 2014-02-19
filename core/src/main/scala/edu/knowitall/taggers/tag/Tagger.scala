@@ -3,6 +3,7 @@ package edu.knowitall.taggers.tag
 import edu.knowitall.common.HashCodeHelper
 import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.taggers.constraint.Constraint
+import edu.knowitall.taggers.Consume
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.stem.Lemmatized
 import edu.knowitall.tool.typer.Type
@@ -11,7 +12,7 @@ import edu.knowitall.tool.typer.Typer
 import scala.collection.JavaConverters._
 
 /** A tagger operations on a sentence to create types. */
-abstract class Tagger[-S <: Sentence] {
+abstract class Tagger[-S <: Tagger.Sentence] {
   type TheSentence = S
 
   def name: String
@@ -36,7 +37,7 @@ abstract class Tagger[-S <: Sentence] {
     * @return a list of the tags found
     */
   def apply(sentence: S): Seq[Type] = {
-    this.apply(sentence, Seq.empty, Seq.empty)
+    this.apply(sentence, Seq.empty)
   }
 
   /** Public method for finding tags in a sentence with types.
@@ -47,8 +48,8 @@ abstract class Tagger[-S <: Sentence] {
     * @param consumedIndices  indices used up on a previous level in a cascade
     * @return a list of the tags found
     */
-  def apply(sentence: S, types: Seq[Type], consumedIndices: Seq[Int]): Seq[Type] = {
-    var tags = findTagsWithTypes(sentence, types, consumedIndices)
+  def apply(sentence: S, types: Seq[Type]): Seq[Type] = {
+    var tags = tag(sentence, types)
 
     // remove types that are covered by other types.
     tags = filterCovered(tags)
@@ -57,22 +58,17 @@ abstract class Tagger[-S <: Sentence] {
     tags
   }
 
-  private[tag] def findTags(sentence: S): Seq[Type]
-
-  // TODO(schmmd): one shouldn't need to override a method to provide a correct implementation
-  /** This method should be overridden by any Tagger that wants to use the
-    * Types accumulated from previous Taggers. If it's not overridden the sentence
-    * will be tagged without type information.
+  /** This method identifies the actual tags in the sentence.
     *
     * @param sentence
     * @param types  types already existing in the sentence
-    * @param consumedIndices  indices used up on a previous level in a cascade
     *
     * @return
     */
-  private[tag] def findTagsWithTypes(sentence: S, types: Seq[Type], consumedIndices: Seq[Int]): Seq[Type] = {
-    findTags(sentence)
-  }
+  private[tag] def tag(sentence: S, types: Seq[Type]): Seq[Type]
+
+  /** Typecheck the tagger against the defined types. */
+  def typecheck(definedTypes: Set[String]): Boolean = true
 
   /** Remove types that cover over types.
     * @param tags
@@ -102,6 +98,8 @@ abstract class Tagger[-S <: Sentence] {
 }
 
 object Tagger {
+  type Sentence = edu.knowitall.repr.sentence.Sentence with Consume
+
   def getTaggerClass(classname: String, pack: String): Class[_] = {
     try {
       Class.forName(pack + "." + classname.replace('.', '$'))
@@ -111,15 +109,15 @@ object Tagger {
     }
   }
 
-  def create[S <: Sentence](classname: String, pack: String, name: String, args: Seq[String]): Tagger[S] = {
+  def create[S <: Tagger.Sentence](classname: String, pack: String, name: String, args: Seq[String]): Tagger[S] = {
     create[S](getTaggerClass(classname, pack), Array[Class[_]](classOf[String], classOf[Seq[String]]), Array[Object](name, args))
   }
 
-  def create[S <: Sentence](classname: String, pack: String, argTypes: Array[Class[_]], argValues: Array[Object]): Tagger[S] = {
+  def create[S <: Tagger.Sentence](classname: String, pack: String, argTypes: Array[Class[_]], argValues: Array[Object]): Tagger[S] = {
     create[S](getTaggerClass(classname, pack), argTypes, argValues)
   }
 
-  def create[S <: Sentence](tagger: Class[_], argTypes: Array[Class[_]], argValues: Array[Object]): Tagger[S] = {
+  def create[S <: Tagger.Sentence](tagger: Class[_], argTypes: Array[Class[_]], argValues: Array[Object]): Tagger[S] = {
     val constructor = tagger.getConstructor(argTypes: _*)
     constructor.newInstance(argValues: _*).asInstanceOf[Tagger[S]]
   }

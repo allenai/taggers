@@ -31,14 +31,14 @@ import scala.util.{ Try, Success, Failure }
 class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, port: Int) extends SimpleRoutingApp {
   // A type alias for convenience since TaggerWeb always
   // deals with sentences that are chunked and lemmatized
-  type MySentence = Sentence with Chunks with Lemmas
+  type Sent = Tagger.Sentence with Chunks with Lemmas
 
   // External NLP tools that are used to build the expected type from a sentence string.
   lazy val chunker = new OpenNlpChunker()
 
   /** Build the NLP representation of a sentence string. */
-  def process(text: String): MySentence = {
-    new Sentence(text) with Chunker with Lemmatizer {
+  def process(text: String): Sent = {
+    new Sentence(text) with Consume with Chunker with Lemmatizer {
       val chunker = TaggerWeb.this.chunker
       val lemmatizer = MorphaStemmer
     }
@@ -170,7 +170,7 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
       }
 
       val linesIt = patternText.split("\n").iterator.buffered
-      var sections = Seq.empty[String]
+      var sections = Seq.empty[(String, String)]
       var Seperator = "(?m)^>>>\\s*(.*)\\s*$".r
       var EmptyLine = "(?m)^\\s*$".r
       if (linesIt.hasNext) {
@@ -182,28 +182,28 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
           dropWhile(linesIt, (line: String) => EmptyLine.pattern.matcher(line).matches)
 
           // match the header
-          linesIt.head match {
-            case Seperator(header) => linesIt.next()
-            case _ if firstLoop => // there may be no header
+          val header = linesIt.head match {
+            case Seperator(h) => linesIt.next(); h
+            case _ if firstLoop => "anonymous" // there may be no header
             case _ => throw new MatchError("Header not found, rather: " + linesIt.head)
           }
 
           val body = takeWhile(linesIt, (line: String) => !Seperator.pattern.matcher(line).matches)
-          sections = sections :+ body.mkString("\n")
+          sections = sections :+ (header, body.mkString("\n"))
 
           firstLoop = false
         }
       }
 
-      val levels: Seq[Level[MySentence]] =
-        sections map (text => Level.fromString(text))
+      val levels: Seq[Level[Sent]] =
+        sections map { case (title, text) => Level.fromString(title, text) }
 
       val extractorParser = new ExtractorParser()
       val extractors = for (line <- extractorText.split("\n") filter (!_.trim.isEmpty)) yield {
         extractorParser.parse(line).get
       }
 
-      val cascade = new Cascade[MySentence](levels, extractors)
+      val cascade = new Cascade[Sent](levels, extractors)
 
       val results = for (line <- sentenceText.split("\n")) yield {
         val sentence = process(line)
@@ -226,7 +226,7 @@ class TaggerWeb(ruleText: String, extractorText: String, sentenceText: String, p
             resultText.append(s"  Level $level\n\n")
           }
 
-          val tokens = PatternTagger.buildTypedTokens(sentence, cascade.levels(level).filterTypes(allTypes))
+          val tokens = PatternTagger.buildTypedTokens(sentence, allTypes)
           val table = buildTable(Seq("index", "string", "postag", "chunk", "in types", "out types"), tokens map { typed =>
             val outTypes = types filter (_.tokenInterval contains typed.index)
             Seq(typed.index.toString,

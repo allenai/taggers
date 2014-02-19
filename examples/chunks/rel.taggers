@@ -83,15 +83,15 @@ RequiredRelTo := TypePatternTagger {
 }
 
 
-Rel := TypePatternTagger {
+consume Rel := TypePatternTagger {
   (?:@EffectRel | @CauseRel | @ExampleRel)
 }
 
-RelTo := TypePatternTagger {
+consume RelTo := TypePatternTagger {
   (?:@EffectRelTo | @FunctionRelTo | @RequiredRelTo)
 }
 
-RelFor := TypePatternTagger {
+consume RelFor := TypePatternTagger {
   (?:@FunctionRel | @RequiredRel)
 }
 

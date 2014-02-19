@@ -21,7 +21,7 @@ class LemmatizedTaggerSpec extends FlatSpec {
   "LemmatizedKeywordTagger" should "match 'james' in a sentence." in {
     val sentenceText = "Jack enjoyed a beer with James."
     val opennlpChunker = new OpenNlpChunker
-    val s = new Sentence(sentenceText) with sentence.Chunker with sentence.Lemmatizer {
+    val s = new Sentence(sentenceText) with sentence.Chunker with sentence.Lemmatizer with Consume {
       override val chunker = new OpenNlpChunker
       override val lemmatizer = MorphaStemmer
     }
