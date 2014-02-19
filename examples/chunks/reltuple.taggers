@@ -1,10 +1,3 @@
-import NP
-import S
-import VP
-import Rel
-import RelTo
-import RelFor
-
 RelatedTuples := TypePatternTagger {
   (?: (<Tuple1>:@S|@NP) (<Relation>:@Rel) (<Tuple2>:@S|@NP) )
   | (?: (<Tuple1>:@S|@NP) (<Relation>:@RelTo|<string="to">) (<Tuple2>:@VP) )
