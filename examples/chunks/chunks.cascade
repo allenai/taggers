@@ -6,5 +6,8 @@ prep.taggers
 sent.taggers
 reltuple.taggers
 
-x: RelatedTuples => (${x.Tuple1})	${x.Relation}	(${x.Tuple2})
-x: RelatedTuples2 => (${x.Tuple1})	${x.Relation}	(${x.Tuple2})
+x: S => Tuple:	(${x.Arg1|''} , ${x.VP->VP.Rel} , ${x.VP->VP.Arg2|''} , ${x.VP->VP.Arg|''})
+
+x: RelatedTuples => Relation:	(${x.Tuple1->S.Arg1|''} , ${x.Tuple1->S.VP->VP.Rel|x.Tuple1} , ${x.Tuple1->S.VP->VP.Arg2|''} , ${x.Tuple1->S.VP->VP.Arg|''})	${x.Relation}	(${x.Tuple2->S.Arg1|''} , ${x.Tuple2->S.VP->VP.Rel|x.Tuple2->VP.Rel|x.Tuple2} , ${x.Tuple2->S.VP->VP.Arg2|x.Tuple2->VP.Arg2|''} , ${x.Tuple2->S.VP->VP.Arg|x.Tuple2->VP.Arg|''})
+
+x: RelatedTuples2 => Relation2:	(${x.Tuple1})	${x.Relation}	(${x.Tuple2})
