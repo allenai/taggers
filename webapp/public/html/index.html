@@ -56,7 +56,7 @@
                   </li>
                 </ul>
                 <div class="tab-content">
-                  <div class="tab-pane" ng-repeat="level in sentence.levels" id="S{{ $parent.$index }}L{{ $index }}" ng-class="{active: $first}">
+                  <div class="tab-pane" ng-repeat="level in sentence.levels" id="S{{ $parent.$index }}L{{ $index }}" ng-class="{active: $last}">
                     <pre>{{ level.types.join("\n") }}</pre>
                   </div>
                 </div>
