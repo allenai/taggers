@@ -16,6 +16,10 @@ NP2 := TypePatternTagger {
    (?:@NP1 (?: (?:<string=","> @NP1)* <string=",">? <string=/and|or|and\/or/> @NP1 )? )
 }
 
+NP2 := TypePatternTagger {
+   (?:@NP1 (?: (?:<string=","> @NP1)* <string=",">? <string=/and|or|and\/or/> @NP1 )? )
+}
+
 NG := TypePatternTagger {
    (?:@NP2 (?: (?:<string="of"> | <pos="POS">) @NP2 )? )
    | (?:@NP2 <string="("> @NP2 <string=")"> )
