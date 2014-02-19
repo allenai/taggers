@@ -200,7 +200,7 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
           tables.append("\n\n")
           */
 
-          LevelResponse(level.toString, types.reverse map formatType)
+          LevelResponse(level, types.reverse map formatType)
         }
 
         val allTypes = levels.map(_._2).flatten
