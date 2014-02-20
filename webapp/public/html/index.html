@@ -28,15 +28,15 @@
                 <div class="tab-content">
                   <div class="tab-pane active" id="taggers">
                     <div>Enter taggers to run over the text:</div>
-                    <textarea ng-model="taggersModel.taggers" rows='20'></textarea>
+                    <textarea ng-model="taggersModel.taggers" rows='30'></textarea>
                   </div>
                   <div class="tab-pane" id="extractors">
                     <div>Enter extractors to run over the output types:</div>
-                    <textarea ng-model="taggersModel.extractors" rows='20'></textarea>
+                    <textarea ng-model="taggersModel.extractors" rows='30'></textarea>
                   </div>
                   <div class="tab-pane" id="sentences">
                     <div>Enter the sentences to run over:</div>
-                    <textarea ng-model="taggersModel.sentences" rows='20'></textarea>
+                    <textarea ng-model="taggersModel.sentences" rows='30'></textarea>
                   </div>
                 </div>
 
@@ -48,11 +48,11 @@
         <div class="col-md-6">
           <div ng-repeat="sentence in response.sentences">
             <h4>{{ sentence.text }}</h4>
-            <div ng-repeat="extractor in sentence.extractors">
-              <pre ng-if="extractor.extractions.length > 0">{{ extractor.extractions.join("\n") }}</pre>
-            </div>
             <div class="panel panel-default">
               <div class="panel-body">
+                <div ng-repeat="extractor in sentence.extractors">
+                  <pre ng-if="extractor.extractions.length > 0">{{ extractor.extractions.join("\n") }}</pre>
+                </div>
                 <ul class="pagination">
                   <li ng-repeat="level in sentence.levels" ng-class="{active: $last}">
                     <a href="#S{{ $parent.$index }}L{{ $index }}" data-toggle="tab">{{ level.name }}</a>
