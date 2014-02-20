@@ -48,6 +48,9 @@
         <div class="col-md-6">
           <div ng-repeat="sentence in response.sentences">
             <h4>{{ sentence.text }}</h4>
+            <div ng-repeat="extractor in sentence.extractors">
+              <pre ng-if="extractor.extractions.length > 0">{{ extractor.extractions.join("\n") }}</pre>
+            </div>
             <div class="panel panel-default">
               <div class="panel-body">
                 <ul class="pagination">
@@ -57,7 +60,24 @@
                 </ul>
                 <div class="tab-content">
                   <div class="tab-pane" ng-repeat="level in sentence.levels" id="S{{ $parent.$index }}L{{ $index }}" ng-class="{active: $last}">
-                    <pre>{{ level.types.join("\n") }}</pre>
+                    <p ng-if="level.types.length == 0">No types found on this level.</p>
+                    <pre ng-if="level.types.length > 0">{{ level.types.join("\n") }}</pre>
+                    <table class="table table-bordered">
+                      <tr>
+                        <th>string</th>
+                        <th>lemma</th>
+                        <th>postag</th>
+                        <th>chunk</th>
+                        <th>out types</th>
+                      </tr>
+                      <tr ng-repeat="token in level.tokens">
+                        <td>{{ token.text }}</td>
+                        <td>{{ token.lemma }}</td>
+                        <td>{{ token.postag }}</td>
+                        <td>{{ token.chunk }}</td>
+                        <td>{{ token.types.join(", ") }}</td>
+                      </tr>
+                    </table>
                   </div>
                 </div>
               </div>

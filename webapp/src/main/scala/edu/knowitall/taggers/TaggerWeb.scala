@@ -46,21 +46,6 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
     }
   }
 
-/*
-  def buildTable(header: Seq[String], rows: Iterable[Seq[String]]) =
-    buildColoredTable(header, rows map (items => (None, items)))
-
-  def buildColoredTable(header: Seq[String], rows: Iterable[(Option[String], Seq[String])]) =
-    "<table>" +
-      "<tr>" + header.map("<th>" + _ + "</th>").mkString("") + "</tr>" +
-      rows.map { case (color, items) =>
-        "<tr>" + items.map( item =>
-          "<td" + color.map(" style=\"background-color: " + _ + "\")").getOrElse("") + ">" + item + "</td>"
-        ).mkString("") + "</tr>"
-      }.mkString("") +
-    "</table>"
-    */
-
   def run() {
     val staticContentRoot = "public"
 
@@ -71,8 +56,9 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
     import DefaultJsonProtocol._
     implicit val requestFormat = jsonFormat3(Request.apply)
 
+    implicit val tokenResponseFormat = jsonFormat5(TokenResponse.apply)
     implicit val extractorResponseFormat = jsonFormat2(ExtractorResponse.apply)
-    implicit val levelResponseFormat = jsonFormat2(LevelResponse.apply)
+    implicit val levelResponseFormat = jsonFormat3(LevelResponse.apply)
     implicit val sentenceResponseFormat = jsonFormat3(SentenceResponse.apply)
     implicit val responseFormat = jsonFormat1(Response.apply)
 
@@ -106,8 +92,9 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
   case class Request(taggers: String, extractors: String, sentences: String)
 
   case class Response(sentences: Seq[SentenceResponse])
+  case class TokenResponse(text: String, lemma: String, postag: String, chunk: String, types: Seq[String])
   case class SentenceResponse(text: String, levels: Seq[LevelResponse], extractors: Seq[ExtractorResponse])
-  case class LevelResponse(name: String, types: Seq[String])
+  case class LevelResponse(name: String, tokens: Seq[TokenResponse], types: Seq[String])
   case class ExtractorResponse(extractor: String, extractions: Seq[String])
 
   def doPost(request: Request): Response = {
@@ -182,25 +169,15 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
         val levelResponses = for {
           (level, types) <- levels.toSeq
         } yield {
-          /*
-          val tokens = PatternTagger.buildTypedTokens(sentence, cascade.levels(level).filterTypes(allTypes))
-          val table = buildTable(Seq("index", "string", "postag", "chunk", "in types", "out types"), tokens map { typed =>
-            val outTypes = types filter (_.tokenInterval contains typed.index)
-            Seq(typed.index.toString,
-              typed.token.string,
-              typed.token.postag,
-              typed.token.chunk,
-              typed.types map formatType mkString (", "),
-              outTypes map formatType mkString (", "))
-          })
-          tables.append(s"<h4>$level: ${sentence.text}</h4>")
-          tables.append("<p>")
-          tables.append(table)
-          tables.append("</p>")
-          tables.append("\n\n")
-          */
+          val tokens = PatternTagger.buildTypedTokens(sentence, Set.empty)
+          val tokenResponses = for ((typedToken, index) <- tokens.zipWithIndex) yield {
+            val outTypes = types filter (_.tokenInterval contains index)
+            val lemmatized = typedToken.token
+            val token = lemmatized.token
+            TokenResponse(token.string, lemmatized.lemma, token.postag, token.chunk, outTypes map (_.name))
+          }
 
-          LevelResponse(level, types.reverse map formatType)
+          LevelResponse(level, tokenResponses, types.reverse map formatType)
         }
 
         val allTypes = levels.map(_._2).flatten
