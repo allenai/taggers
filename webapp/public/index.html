@@ -46,38 +46,45 @@
           </form>
         </div>
         <div class="col-md-6">
-          <div ng-repeat="sentence in response.sentences">
-            <h4>{{ sentence.text }}</h4>
-            <div class="panel panel-default">
-              <div class="panel-body">
-                <div ng-repeat="extractor in sentence.extractors">
-                  <pre ng-if="extractor.extractions.length > 0">{{ extractor.extractions.join("\n") }}</pre>
-                </div>
-                <ul class="pagination">
-                  <li ng-repeat="level in sentence.levels" ng-class="{active: $last}">
-                    <a href="#S{{ $parent.$index }}L{{ $index }}" data-toggle="tab">{{ level.name }}</a>
-                  </li>
-                </ul>
-                <div class="tab-content">
-                  <div class="tab-pane" ng-repeat="level in sentence.levels" id="S{{ $parent.$index }}L{{ $index }}" ng-class="{active: $last}">
-                    <p ng-if="level.types.length == 0">No types found on this level.</p>
-                    <pre ng-if="level.types.length > 0">{{ level.types.join("\n") }}</pre>
-                    <table class="table table-bordered">
-                      <tr>
-                        <th>string</th>
-                        <th>lemma</th>
-                        <th>postag</th>
-                        <th>chunk</th>
-                        <th>out types</th>
-                      </tr>
-                      <tr ng-repeat="token in level.tokens">
-                        <td>{{ token.text }}</td>
-                        <td>{{ token.lemma }}</td>
-                        <td>{{ token.postag }}</td>
-                        <td>{{ token.chunk }}</td>
-                        <td>{{ token.outputTypes.join(", ") }}</td>
-                      </tr>
-                    </table>
+          <div ng-show='response'>
+            <div class="nav nav-pills nav-stacked">
+              <li ng-repeat="sentence in response.sentences" ng-class="{active: $parent.sentence == sentence}">
+                <a ng-click="$parent.sentence = sentence" href="#">{{ sentence.text }}</a>
+              </li>
+            </div>
+            <div>
+              <div class="panel panel-default">
+                <div class="panel-body">
+                  <h4>{{ sentence.text }}</h4>
+                  <div ng-repeat="extractor in sentence.extractors">
+                    <pre ng-if="extractor.extractions.length > 0">{{ extractor.extractions.join("\n") }}</pre>
+                  </div>
+                  <ul class="pagination">
+                    <li ng-repeat="level in sentence.levels" ng-class="{active: $last}">
+                      <a href="#S{{ $parent.$index }}L{{ $index }}" data-toggle="tab">{{ level.name }}</a>
+                    </li>
+                  </ul>
+                  <div class="tab-content">
+                    <div class="tab-pane" ng-repeat="level in sentence.levels" id="S{{ $parent.$index }}L{{ $index }}" ng-class="{active: $last}">
+                      <p ng-if="level.types.length == 0">No types found on this level.</p>
+                      <pre ng-if="level.types.length > 0">{{ level.types.join("\n") }}</pre>
+                      <table class="table table-bordered">
+                        <tr>
+                          <th>string</th>
+                          <th>lemma</th>
+                          <th>postag</th>
+                          <th>chunk</th>
+                          <th>out types</th>
+                        </tr>
+                        <tr ng-repeat="token in level.tokens">
+                          <td>{{ token.text }}</td>
+                          <td>{{ token.lemma }}</td>
+                          <td>{{ token.postag }}</td>
+                          <td>{{ token.chunk }}</td>
+                          <td>{{ token.outputTypes.join(", ") }}</td>
+                        </tr>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>

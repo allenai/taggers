@@ -5,8 +5,9 @@ var TaggersCtrl = function($scope, $http) {
   $scope.submit = function() {
     $http.post("/", $scope.taggersModel).then(
       function(response) {
-        $scope.response = response.data
-        $scope.responseString = angular.toJson(response.data, pretty=true)
+        $scope.response = response.data;
+        $scope.sentence = response.data.sentences[0];
+        $scope.responseString = angular.toJson(response.data, pretty=true);
       }
     )
   }
