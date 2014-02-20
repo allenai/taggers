@@ -21,7 +21,7 @@ case class Level[-S <: Tagger.Sentence](name: String, taggers: Seq[Tagger[S]]) {
       levelTypes = levelTypes ++ taggerTypes
 
       if (tagger.isInstanceOf[ConsumingTagger[_]]) {
-        taggerTypes foreach (sentence.consume(_))
+        (taggerTypes filter (_.name == tagger.name)) foreach (sentence.consume(_))
       }
     }
 
