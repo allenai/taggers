@@ -92,7 +92,7 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
   case class Request(taggers: String, extractors: String, sentences: String)
 
   case class Response(sentences: Seq[SentenceResponse])
-  case class TokenResponse(text: String, lemma: String, postag: String, chunk: String, consumed: Boolean, consumingType: String, types: Seq[String])
+  case class TokenResponse(text: String, lemma: String, postag: String, chunk: String, consumed: Boolean, inputTypes: Seq[String], outputTypes: Seq[String])
   case class SentenceResponse(text: String, levels: Seq[LevelResponse], extractors: Seq[ExtractorResponse])
   case class LevelResponse(name: String, tokens: Seq[TokenResponse], types: Seq[String])
   case class ExtractorResponse(extractor: String, extractions: Seq[String])
@@ -166,23 +166,27 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
       val sentenceResponses = for {
         (sentence, levels) <- results
       } yield {
+        var allTypes = Set.empty[Type] // collection of types seen so far
         val levelResponses = for {
           (level, types) <- levels.toSeq
         } yield {
-          val tokens = PatternTagger.buildTypedTokens(sentence, Set.empty)
+          val tokens = PatternTagger.buildTypedTokens(sentence, allTypes)
           val tokenResponses = for ((typedToken, index) <- tokens.zipWithIndex) yield {
+            val inputTypes = typedToken.types.iterator.map(_.name).toSeq
             val consumingType = sentence.consumingTypes(index)
             val consumed = consumingType.isDefined
             val outTypes = types filter (_.tokenInterval contains index)
             val lemmatized = typedToken.token
             val token = lemmatized.token
-            TokenResponse(token.string, lemmatized.lemma, token.postag, token.chunk, consumed, (consumingType map (_.name)).getOrElse(""), outTypes map (_.name))
+            TokenResponse(token.string, lemmatized.lemma, token.postag, token.chunk, consumed, inputTypes, outTypes map (_.name))
           }
+
+          // Update the types seen so far.
+          allTypes = allTypes ++ types
 
           LevelResponse(level, tokenResponses, types.reverse map formatType)
         }
 
-        val allTypes = levels.map(_._2).flatten
         val extractorResponses =
           cascade.extract(allTypes).toSeq map { case (extractor, extractions) =>
             ExtractorResponse(extractor, extractions)
