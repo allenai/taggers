@@ -67,7 +67,7 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
       respondWithHeader(cacheControlMaxAge) {
         path ("") {
           get {
-            getFromFile(staticContentRoot + "/html/index.html")
+            getFromFile(staticContentRoot + "/index.html")
           } ~
           post {
             entity(as[Request]) { request =>
