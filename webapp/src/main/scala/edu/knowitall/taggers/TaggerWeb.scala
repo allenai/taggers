@@ -56,7 +56,7 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
     import DefaultJsonProtocol._
     implicit val requestFormat = jsonFormat3(Request.apply)
 
-    implicit val tokenResponseFormat = jsonFormat5(TokenResponse.apply)
+    implicit val tokenResponseFormat = jsonFormat6(TokenResponse.apply)
     implicit val extractorResponseFormat = jsonFormat2(ExtractorResponse.apply)
     implicit val levelResponseFormat = jsonFormat3(LevelResponse.apply)
     implicit val sentenceResponseFormat = jsonFormat3(SentenceResponse.apply)
@@ -92,7 +92,7 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
   case class Request(taggers: String, extractors: String, sentences: String)
 
   case class Response(sentences: Seq[SentenceResponse])
-  case class TokenResponse(text: String, lemma: String, postag: String, chunk: String, types: Seq[String])
+  case class TokenResponse(text: String, lemma: String, postag: String, chunk: String, consumed: Boolean, types: Seq[String])
   case class SentenceResponse(text: String, levels: Seq[LevelResponse], extractors: Seq[ExtractorResponse])
   case class LevelResponse(name: String, tokens: Seq[TokenResponse], types: Seq[String])
   case class ExtractorResponse(extractor: String, extractions: Seq[String])
@@ -171,10 +171,11 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
         } yield {
           val tokens = PatternTagger.buildTypedTokens(sentence, Set.empty)
           val tokenResponses = for ((typedToken, index) <- tokens.zipWithIndex) yield {
+            val consumedIndices = sentence.consumingTypes(index).isDefined
             val outTypes = types filter (_.tokenInterval contains index)
             val lemmatized = typedToken.token
             val token = lemmatized.token
-            TokenResponse(token.string, lemmatized.lemma, token.postag, token.chunk, outTypes map (_.name))
+            TokenResponse(token.string, lemmatized.lemma, token.postag, token.chunk, consumedIndices, outTypes map (_.name))
           }
 
           LevelResponse(level, tokenResponses, types.reverse map formatType)
