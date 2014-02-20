@@ -1,4 +1,4 @@
-RelatedTuples := TypePatternTagger {
+consume RelatedTuples := TypePatternTagger {
   (?: (<Tuple1>:@S|@NP) (<Relation>:@Rel) (<Tuple2>:@S|@NP) )
   | (?: (<Tuple1>:@S|@NP) (<Relation>:@RelTo|<string="to">) (<Tuple2>:@VP) )
   | (?: (<Tuple1>:@S|@NP) (<Relation>:@RelFor) (<Tuple2>:@S|@VP|@NP) )
