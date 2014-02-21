@@ -49,7 +49,7 @@
           <div ng-show='response'>
             <div class="nav nav-pills nav-stacked">
               <li ng-repeat="sentence in response.sentences" ng-class="{active: $parent.sentence == sentence}">
-                <a ng-click="$parent.sentence = sentence" href="#">{{ sentence.text }}</a>
+                <a ng-click="$parent.sentence = sentence; $parent.level = sentence.levels[0]" href="#">{{ sentence.text }}</a>
               </li>
             </div>
             <div>
