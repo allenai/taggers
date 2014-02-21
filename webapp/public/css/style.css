@@ -7,3 +7,7 @@ textarea {
 consumed {
   font-weight: bold;
 }
+
+.nav-tabs a {
+ cursor: pointer;
+}

@@ -1,12 +1,12 @@
-<html lang="en" ng-app>
+<html lang="en" ng-app='taggers'>
   <head>
     <title>Tagger Web</title>
     <link rel="stylesheet" href="/css/style.css" type="text/css" />
     <link rel="stylesheet" href="/css/bootstrap-3.1.1.min.css">
 
     <script src="/js/jquery-2.0.1.min.js"></script>
-    <script src="/js/bootstrap-3.1.1.min.js"></script>
     <script src="/js/angular-1.2.13.min.js"></script>
+    <script src="/js/ui-bootstrap-tpls-0.10.0.min.js"></script>
     <script src="/js/main.js"></script>
 
     <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
@@ -20,25 +20,20 @@
           <form>
             <div class="panel panel-default">
               <div class="panel-body">
-                <ul class="nav nav-tabs">
-                  <li class="active"><a href="#taggers" data-toggle="tab">Taggers</a></li>
-                  <li><a href="#extractors" data-toggle="tab">Extractors</a></li>
-                  <li><a href="#sentences" data-toggle="tab">Sentences</a></li>
-                </ul>
-                <div class="tab-content">
-                  <div class="tab-pane active" id="taggers">
+                <tabset>
+                  <tab heading="Taggers">
                     <div>Enter taggers to run over the text:</div>
                     <textarea ng-model="taggersModel.taggers" rows='30'></textarea>
-                  </div>
-                  <div class="tab-pane" id="extractors">
+                  </tab>
+                  <tab heading="Extractors">
                     <div>Enter extractors to run over the output types:</div>
                     <textarea ng-model="taggersModel.extractors" rows='30'></textarea>
-                  </div>
-                  <div class="tab-pane" id="sentences">
+                  </tab>
+                  <tab heading="Sentences">
                     <div>Enter the sentences to run over:</div>
                     <textarea ng-model="taggersModel.sentences" rows='30'></textarea>
-                  </div>
-                </div>
+                  </tab>
+                </tabset>
 
                 <input ng-click="submit()" type="submit" value="Execute" class="btn btn-default">
               </div>
@@ -65,12 +60,12 @@
                     <pre ng-if="extractor.extractions.length > 0">{{ extractor.extractions.join("\n") }}</pre>
                   </div>
                   <ul class="pagination">
-                    <li ng-repeat="level in sentence.levels" ng-class="{active: $last}">
-                      <a href="#S{{ $parent.$index }}L{{ $index }}" data-toggle="tab">{{ level.name }}</a>
+                    <li ng-repeat="level in sentence.levels" ng-class="{active: $parent.level == level}">
+                      <a ng-click='$parent.level = level' href="#">{{ level.name }}</a>
                     </li>
                   </ul>
                   <div class="tab-content">
-                    <div class="tab-pane" ng-repeat="level in sentence.levels" id="S{{ $parent.$index }}L{{ $index }}" ng-class="{active: $last}">
+                    <div>
                       <p ng-if="level.types.length == 0">No types found on this level.</p>
                       <pre ng-if="level.types.length > 0">{{ level.types.join("\n") }}</pre>
                       <table class="table table-bordered">
@@ -87,8 +82,8 @@
                           <td>{{ token.lemma }}</td>
                           <td>{{ token.postag }}</td>
                           <td>{{ token.chunk }}</td>
-                          <td><span class="pop" data-container="body" data-toggle="popover" data-placement="bottom" data-content='{{ token.inputTypes.join("\n") }}'>{{ token.inputTypes.join(", ") }}</span></td>
-                          <td><span class="pop" data-container="body" data-toggle="popover" data-placement="bottom" data-content='{{ token.outputTypes.join("\n") }}'>{{ token.outputTypes.join(", ") }}</span></td>
+                          <td><span popover-title="Input Types" popover-html="true" popover-trigger="mouseenter" popover-placement="bottom" popover='{{ token.inputTypes.join(" ") }}'>{{ token.inputTypes.slice(-1)[0] || "" }}</span></td>
+                          <td><span popover-title="Output Types" popover-html="true" popover-trigger="mouseenter" popover-placement="bottom" popover='{{ token.outputTypes.join(" ") }}'>{{ token.outputTypes.slice(-1)[0] || "" }}</span></td>
                         </tr>
                       </table>
                     </div>
