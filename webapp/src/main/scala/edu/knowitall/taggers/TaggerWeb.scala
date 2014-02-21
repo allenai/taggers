@@ -15,8 +15,8 @@ import edu.knowitall.tool.stem.MorphaStemmer
 import edu.knowitall.tool.typer.Type
 
 import akka.actor._
-import org.apache.commons.lang3.StringEscapeUtils
 import spray.http._
+import spray.http.StatusCodes._
 import spray.httpx.SprayJsonSupport
 import spray.json._
 import spray.routing._
@@ -62,29 +62,65 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
     implicit val sentenceResponseFormat = jsonFormat3(SentenceResponse.apply)
     implicit val responseFormat = jsonFormat1(Response.apply)
 
+    implicit val throwableWriter = new RootJsonWriter[Throwable] {
+      /** Write a throwable as an object with 'message' and 'stackTrace' fields. */
+      def write(t: Throwable) = {
+        def getMessageChain(throwable: Throwable): List[String] = {
+          Option(throwable) match {
+            case Some(throwable) => Option(throwable.getMessage) match {
+              case Some(message) => (throwable.getClass + ": " + message) :: getMessageChain(throwable.getCause)
+              case None => getMessageChain(throwable.getCause)
+            }
+            case None => Nil
+          }
+        }
+        val stackTrace = {
+          val stackTraceWriter = new java.io.StringWriter()
+          t.printStackTrace(new java.io.PrintWriter(stackTraceWriter))
+          stackTraceWriter.toString
+        }
+        JsObject(
+          "messages" -> JsArray(getMessageChain(t) map (JsString(_))),
+          "stackTrace" -> JsString(stackTrace))
+      }
+    }
+
+    implicit def exceptionHandler(implicit log: spray.util.LoggingContext) =
+        ExceptionHandler {
+          case e: Throwable => ctx =>
+            // log in akka, which is configured to use slf4j
+            log.error(e, "Unexpected Error.")
+
+            // return the error formatted as json
+            ctx.complete((InternalServerError, e.toJson.prettyPrint))
+        }
+
+
     startServer(interface = "0.0.0.0", port = port) {
       import MediaTypes._
-      respondWithHeader(cacheControlMaxAge) {
-        path ("") {
-          get {
-            getFromFile(staticContentRoot + "/index.html")
-          } ~
-          post {
-            entity(as[Request]) { request =>
-              complete {
-                doPost(request)
+      handleExceptions(exceptionHandler) {
+        respondWithHeader(cacheControlMaxAge) {
+          path ("") {
+            get {
+              getFromFile(staticContentRoot + "/index.html")
+            } ~
+            post {
+              entity(as[Request]) { request =>
+                complete {
+                  doPost(request)
+                }
               }
             }
-          }
-        } ~
-        path ("fields") {
-          get {
-            complete {
-              Request(taggersText, extractorText, sentenceText)
+          } ~
+          path ("fields") {
+            get {
+              complete {
+                Request(taggersText, extractorText, sentenceText)
+              }
             }
-          }
-        } ~
-        unmatchedPath { p => getFromFile(staticContentRoot + p) }
+          } ~
+          unmatchedPath { p => getFromFile(staticContentRoot + p) }
+        }
       }
     }
   }
@@ -98,120 +134,103 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
   case class ExtractorResponse(extractor: String, extractions: Seq[String])
 
   def doPost(request: Request): Response = {
-    try {
-      def takeWhile[T](it: BufferedIterator[T], cond: T=>Boolean): Seq[T] = {
-        var result = Seq.empty[T]
-        while (it.hasNext && cond(it.head)) {
-          result = result :+ it.head
+    def takeWhile[T](it: BufferedIterator[T], cond: T=>Boolean): Seq[T] = {
+      var result = Seq.empty[T]
+      while (it.hasNext && cond(it.head)) {
+        result = result :+ it.head
 
-          it.next()
-        }
-
-        result
+        it.next()
       }
 
-      def dropWhile[T](it: BufferedIterator[T], cond: T=>Boolean): Unit = {
-        while (it.hasNext && cond(it.head)) {
-          it.next()
-        }
-      }
-
-      val linesIt = request.taggers.split("\n").iterator.buffered
-      var sections = Seq.empty[(String, String)]
-      var Seperator = "(?m)^>>>\\s*(.*)\\s*$".r
-      var EmptyLine = "(?m)^\\s*$".r
-      if (linesIt.hasNext) {
-        var firstLoop = true
-
-        // Read the levels.
-        while (linesIt.hasNext) {
-          // consume empty lines
-          dropWhile(linesIt, (line: String) => EmptyLine.pattern.matcher(line).matches)
-
-          // match the header
-          val header = linesIt.head match {
-            case Seperator(h) => linesIt.next(); h
-            case _ if firstLoop => "anonymous" // there may be no header
-            case _ => throw new MatchError("Header not found, rather: " + linesIt.head)
-          }
-
-          val body = takeWhile(linesIt, (line: String) => !Seperator.pattern.matcher(line).matches)
-          sections = sections :+ (header, body.mkString("\n"))
-
-          firstLoop = false
-        }
-      }
-
-      val levels: Seq[Level[Sent]] =
-        sections map { case (title, text) => Level.fromString(title, text) }
-
-      val extractorParser = new ExtractorParser()
-      val extractors = for (line <- request.extractors.split("\n") filter (!_.trim.isEmpty)) yield {
-        extractorParser.parse(line).get
-      }
-
-      val cascade = new Cascade[Sent](levels, extractors)
-
-      val results = for (line <- request.sentences.split("\n")) yield {
-        val sentence = process(line)
-        val levels = cascade.levelTypes(sentence)
-
-        (sentence, levels)
-      }
-
-      def formatType(typ: Type) = {
-        typ.name + "(" + typ.text + ")"
-      }
-
-      val sentenceResponses = for {
-        (sentence, levels) <- results
-      } yield {
-        var allTypes = Set.empty[Type] // collection of types seen so far
-        val levelResponses = for {
-          (level, types) <- levels.toSeq
-        } yield {
-          val tokens = PatternTagger.buildTypedTokens(sentence, allTypes)
-          val tokenResponses = for ((typedToken, index) <- tokens.zipWithIndex) yield {
-            val inputTypes = typedToken.types.iterator.map(_.name).toSeq
-            val consumingType = sentence.consumingTypes(index)
-            val consumed = consumingType.isDefined
-            val outTypes = types filter (_.tokenInterval contains index)
-            val lemmatized = typedToken.token
-            val token = lemmatized.token
-            TokenResponse(token.string, lemmatized.lemma, token.postag, token.chunk, consumed, inputTypes, outTypes map (_.name))
-          }
-
-          // Update the types seen so far.
-          allTypes = allTypes ++ types
-
-          LevelResponse(level, tokenResponses, types.reverse map formatType)
-        }
-
-        val extractorResponses =
-          cascade.extract(allTypes).toSeq map { case (extractor, extractions) =>
-            ExtractorResponse(extractor, extractions)
-          }
-
-        SentenceResponse(sentence.text, levelResponses, extractorResponses)
-      }
-
-      Response(sentenceResponses)
-    } catch {
-      case e: Throwable =>
-        e.printStackTrace()
-        throw e
-        /*
-        def getMessageChain(throwable: Throwable): List[String] = {
-          Option(throwable) match {
-            case Some(throwable) => Option(throwable.getMessage) match {
-              case Some(message) => (throwable.getClass + ": " + message) :: getMessageChain(throwable.getCause)
-              case None => getMessageChain(throwable.getCause)
-            }
-            case None => Nil
-          }
-        }
-        */
+      result
     }
+
+    def dropWhile[T](it: BufferedIterator[T], cond: T=>Boolean): Unit = {
+      while (it.hasNext && cond(it.head)) {
+        it.next()
+      }
+    }
+
+    val linesIt = request.taggers.split("\n").iterator.buffered
+    var sections = Seq.empty[(String, String)]
+    var Seperator = "(?m)^>>>\\s*(.*)\\s*$".r
+    var EmptyLine = "(?m)^\\s*$".r
+    if (linesIt.hasNext) {
+      var firstLoop = true
+
+      // Read the levels.
+      while (linesIt.hasNext) {
+        // consume empty lines
+        dropWhile(linesIt, (line: String) => EmptyLine.pattern.matcher(line).matches)
+
+        // match the header
+        val header = linesIt.head match {
+          case Seperator(h) => linesIt.next(); h
+          case _ if firstLoop => "anonymous" // there may be no header
+          case _ => throw new MatchError("Header not found, rather: " + linesIt.head)
+        }
+
+        val body = takeWhile(linesIt, (line: String) => !Seperator.pattern.matcher(line).matches)
+        sections = sections :+ (header, body.mkString("\n"))
+
+        firstLoop = false
+      }
+    }
+
+    val levels: Seq[Level[Sent]] =
+      sections map { case (title, text) => Level.fromString(title, text) }
+
+    val extractorParser = new ExtractorParser()
+    val extractors = for (line <- request.extractors.split("\n") filter (!_.trim.isEmpty)) yield {
+      extractorParser.parse(line).get
+    }
+
+    val cascade = new Cascade[Sent](levels, extractors)
+
+    val results = for (line <- request.sentences.split("\n")) yield {
+      val sentence = process(line)
+      val levels = cascade.levelTypes(sentence)
+
+      (sentence, levels)
+    }
+
+    def formatType(typ: Type) = {
+      typ.name + "(" + typ.text + ")"
+    }
+
+    val sentenceResponses = for {
+      (sentence, levels) <- results
+    } yield {
+      var allTypes = Set.empty[Type] // collection of types seen so far
+      val levelResponses = for {
+        (level, types) <- levels.toSeq
+      } yield {
+        val tokens = PatternTagger.buildTypedTokens(sentence, allTypes)
+        val tokenResponses = for ((typedToken, index) <- tokens.zipWithIndex) yield {
+          val inputTypes = typedToken.types.iterator.map(_.name).toSeq
+          val consumingType = sentence.consumingTypes(index)
+          val consumed = consumingType.isDefined
+          val outTypes = types filter (_.tokenInterval contains index)
+          val lemmatized = typedToken.token
+          val token = lemmatized.token
+          TokenResponse(token.string, lemmatized.lemma, token.postag, token.chunk, consumed, inputTypes, outTypes map (_.name))
+        }
+
+        // Update the types seen so far.
+        allTypes = allTypes ++ types
+
+        LevelResponse(level, tokenResponses, types.reverse map formatType)
+      }
+
+      val extractorResponses =
+        cascade.extract(allTypes).toSeq map { case (extractor, extractions) =>
+          ExtractorResponse(extractor, extractions)
+        }
+
+      SentenceResponse(sentence.text, levelResponses, extractorResponses)
+    }
+
+    Response(sentenceResponses)
   }
 }
 
