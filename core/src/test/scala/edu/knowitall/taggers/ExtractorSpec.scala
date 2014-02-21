@@ -22,22 +22,22 @@ class ExtractorSpec extends FlatSpec {
 
   "Extractor helper methods" should "work correctly" in {
     val l0 =
-      """consume TupleRelation := TypePatternTagger {
+      """consume TupleRelation := TypedOpenRegex {
         (?:<string="in"> <string="order"> <string="to">)
       }"""
 
     val l1 =
       """
-      NP := PatternTagger {
+      NP := OpenRegex {
         <chunk='B-NP'> <chunk='I-NP'>*
       }
-      VG := TypePatternTagger {
+      VG := TypedOpenRegex {
         <string="to">? <pos=/VB[DPZGN]?/> <pos=/R[PB]/>?
       }
-      Tuple := TypePatternTagger {
+      Tuple := TypedOpenRegex {
         (<Arg1>:@NP)? (<Rel>:@VG) (<Arg2>:@NP)?
       }
-      RelatedTuples := TypePatternTagger {
+      RelatedTuples := TypedOpenRegex {
         (<Tuple1>:@Tuple) (<TupleRel>:@TupleRelation) (<Tuple2>:@Tuple)
       }"""
 

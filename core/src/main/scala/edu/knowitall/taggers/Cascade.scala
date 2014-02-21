@@ -20,7 +20,7 @@ import scala.collection.immutable
 import scala.util.{ Try, Success, Failure }
 
 /** Represents a sequence of taggers applied in order.
-  * After each level of taggers, PatternTaggers can only use
+  * After each level of taggers, OpenRegexs can only use
   * type information from previous levels.
   *
   * @param  levels  stores the taggers applied on each level

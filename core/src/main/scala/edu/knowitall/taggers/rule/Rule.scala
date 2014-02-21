@@ -4,7 +4,7 @@ import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.taggers.Import
 import edu.knowitall.taggers.constraint.Constraint
 import edu.knowitall.taggers.tag.ConstrainedTagger
-import edu.knowitall.taggers.tag.PatternTagger
+import edu.knowitall.taggers.tag.OpenRegex
 import edu.knowitall.taggers.tag.Tagger
 
 import java.io.FileReader
