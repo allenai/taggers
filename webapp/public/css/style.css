@@ -3,3 +3,7 @@ textarea {
   white-space: pre;
   word-wrap: normal;
 }
+
+consumed {
+  font-weight: bold;
+}

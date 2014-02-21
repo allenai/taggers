@@ -4,10 +4,10 @@
     <link rel="stylesheet" href="/css/style.css" type="text/css" />
     <link rel="stylesheet" href="/css/bootstrap-3.1.1.min.css">
 
-    <script src="/js/main.js"></script>
     <script src="/js/jquery-2.0.1.min.js"></script>
     <script src="/js/bootstrap-3.1.1.min.js"></script>
     <script src="/js/angular-1.2.13.min.js"></script>
+    <script src="/js/main.js"></script>
 
     <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
     <META HTTP-EQUIV="Expires" CONTENT="-1">
@@ -48,7 +48,8 @@
         <div class="col-md-6">
           <div ng-hide='response'>
             Enter a tagger pattern and sentence, and then click 'Execute' to get started.
-            Or, use <a ng-click='taggersModel.sentences = "The fat black cat was hidden in the dark corner."; taggersModel.extractors = ""; taggersModel.taggers = "AnimalTagger := LemmatizedKeywordTagger( cat )"' href="#">an example</a>.
+            Or, use <a ng-click='taggersModel.sentences = "The fat black cat was hidden in the dark corner."; taggersModel.extractors = ""; taggersModel.taggers = "AnimalTagger := LemmatizedKeywordTagger( cat )"; submit()' href="#">an example</a>.
+
           </div>
           <div ng-show='response'>
             <div class="nav nav-pills nav-stacked">
@@ -78,14 +79,16 @@
                           <th>lemma</th>
                           <th>postag</th>
                           <th>chunk</th>
+                          <th>in types</th>
                           <th>out types</th>
                         </tr>
-                        <tr ng-repeat="token in level.tokens">
+                        <tr ng-repeat="token in level.tokens" ng-class="{consumed: token.consumed}">
                           <td>{{ token.text }}</td>
                           <td>{{ token.lemma }}</td>
                           <td>{{ token.postag }}</td>
                           <td>{{ token.chunk }}</td>
-                          <td>{{ token.outputTypes.join(", ") }}</td>
+                          <td><span class="pop" data-container="body" data-toggle="popover" data-placement="bottom" data-content='{{ token.inputTypes.join("\n") }}'>{{ token.inputTypes.join(", ") }}</span></td>
+                          <td><span class="pop" data-container="body" data-toggle="popover" data-placement="bottom" data-content='{{ token.outputTypes.join("\n") }}'>{{ token.outputTypes.join(", ") }}</span></td>
                         </tr>
                       </table>
                     </div>

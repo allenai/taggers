@@ -1,3 +1,5 @@
+$('.pop').popover();
+
 var TaggersCtrl = function($scope, $http) {
   $http.get('/fields').then(function(response) {
     $scope.taggersModel = response.data;
