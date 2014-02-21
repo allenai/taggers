@@ -43,7 +43,7 @@
         <div class="col-md-6">
           <div ng-hide='response'>
             Enter a tagger pattern and sentence, and then click 'Execute' to get started.
-            Or, use <a ng-click='taggersModel.sentences = "The fat black cat was hidden in the dark corner."; taggersModel.extractors = ""; taggersModel.taggers = "AnimalTagger := LemmatizedKeywordTagger( cat )"; submit()' href="#">an example</a>.
+            Or, use <a ng-click='showExample()' href="#">an example</a>.
 
           </div>
           <div ng-show='response'>
