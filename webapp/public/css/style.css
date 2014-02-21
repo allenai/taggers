@@ -1,0 +1,13 @@
+textarea {
+  width: 100%;
+  white-space: pre;
+  word-wrap: normal;
+}
+
+consumed {
+  font-weight: bold;
+}
+
+.nav-tabs a {
+ cursor: pointer;
+}
