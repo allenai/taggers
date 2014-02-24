@@ -16,15 +16,21 @@ var TaggersCtrl = function($scope, $http) {
   }
 
   $scope.submit = function() {
+    $scope.working = true;
     $http.post("/", $scope.taggersModel)
       .success(function(data, status, headers, config) {
+        $scope.working = false;
+
         $scope.errorResponse = undefined
         $scope.response = data;
+
         $scope.sentence = data.sentences[0];
         $scope.level = $scope.sentence.levels[0];
         $scope.responseString = angular.toJson(data, pretty=true);
       })
       .error(function(data, status, headers, config) {
+        $scope.working = false;
+
         $scope.response = undefined
         $scope.errorResponse = data
         $scope.errorResponse.status = status

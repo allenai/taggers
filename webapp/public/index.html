@@ -15,6 +15,9 @@
   <body>
     <div ng-controller="TaggersCtrl" class="container">
       <h1>Tagger Web <small>An engine for quickly writing extractors</small></h1>
+      <div ng-show='working' class="spinner">
+        <img src="/img/spinner.gif" />
+      </div>
       <div class="row">
         <div class="col-md-6">
           <form>
@@ -41,6 +44,11 @@
           </form>
         </div>
         <div class="col-md-6">
+          <div ng-hide='response || errorResponse'>
+            Enter a tagger pattern and sentence, and then click 'Execute' to get started.
+            Or, use <a ng-click='showExample()' href="#">an example</a>.
+
+          </div>
           <div ng-show='errorResponse'>
             <h3>There was a problem serving your request ({{ errorResponse.status }}).</h3>
             <div ng-repeat="message in errorResponse.messages" class="alert alert-danger">
@@ -50,11 +58,6 @@
               <summary>Stack Trace</summary>
               <p><pre>{{ errorResponse.stackTrace }}</pre></p>
             </details>
-          </div>
-          <div ng-hide='response || errorResponse'>
-            Enter a tagger pattern and sentence, and then click 'Execute' to get started.
-            Or, use <a ng-click='showExample()' href="#">an example</a>.
-
           </div>
           <div ng-show='response'>
             <div class="nav nav-pills nav-stacked">
