@@ -69,9 +69,9 @@
               <div class="panel panel-default">
                 <div class="panel-body">
                   <h4>
-                    <span ng-repeat="token in sentence.tokens">
+                    <span ng-repeat="token in sentence.tokens track by $index">
                       <span class="highlightable-string" ng-class="{active: $index >= highlightedInterval.start && $index < highlightedInterval.end}">{{ token }}
-                      </span> 
+                      </span>
                     </span>
                   </h4>
                   <div ng-repeat="extractor in sentence.extractors">
