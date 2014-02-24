@@ -26,6 +26,10 @@ var TaggersCtrl = function($scope, $http) {
 
         $scope.sentence = data.sentences[0];
         $scope.level = $scope.sentence.levels[0];
+        $scope.highlightedInterval = {
+          start: 0,
+          end: 0
+        }
         $scope.responseString = angular.toJson(data, pretty=true);
       })
       .error(function(data, status, headers, config) {
@@ -35,5 +39,19 @@ var TaggersCtrl = function($scope, $http) {
         $scope.errorResponse = data
         $scope.errorResponse.status = status
       })
+  }
+
+  $scope.selectHighlight = function(type) {
+    $scope.highlightedInterval = {
+      start: type.startIndex,
+      end: type.endIndex
+    }
+  }
+
+  $scope.noHighlight = function() {
+    $scope.highlightedInterval = {
+      start: 0,
+      end: 0
+    }
   }
 }

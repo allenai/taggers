@@ -68,7 +68,12 @@
             <div>
               <div class="panel panel-default">
                 <div class="panel-body">
-                  <h4>{{ sentence.text }}</h4>
+                  <h4>
+                    <span ng-repeat="token in sentence.tokens">
+                      <span class="highlightable-string" ng-class="{active: $index >= highlightedInterval.start && $index < highlightedInterval.end}">{{ token }}
+                      </span> 
+                    </span>
+                  </h4>
                   <div ng-repeat="extractor in sentence.extractors">
                     <pre ng-if="extractor.extractions.length > 0">{{ extractor.extractions.join("\n") }}</pre>
                   </div>
@@ -80,7 +85,11 @@
                   <div class="tab-content">
                     <div>
                       <p ng-if="level.types.length == 0">No types found on this level.</p>
-                      <pre ng-if="level.types.length > 0">{{ level.types.join("\n") }}</pre>
+                      <ul>
+                        <li ng-repeat="type in level.types" />
+                          <span ng-mouseenter="selectHighlight(type)" ng-mouseleave="noHighlight()">{{ type.name }} ({{type.text}})</span>
+                        </li>
+                      </ul>
                       <table class="table table-bordered">
                         <tr>
                           <th>string</th>

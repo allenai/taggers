@@ -19,3 +19,12 @@ textarea {
   height: 400;
   margin: 0 auto;
 }
+
+.highlightable-string {
+  padding: 2px 3px;
+  border-radius: 3px;
+}
+.highlightable-string.active {
+  background-color: rgba(0, 0, 255, 0.5);
+  color: white;
+}

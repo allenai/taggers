@@ -56,10 +56,22 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
     import DefaultJsonProtocol._
     implicit val requestFormat = jsonFormat3(Request.apply)
 
+    implicit val typeFormat = new JsonFormat[Type] {
+      def write(typ: Type): JsValue = {
+        JsObject(
+          "name" -> JsString(typ.name),
+          "text" -> JsString(typ.text),
+          "startIndex" -> JsNumber(typ.tokenInterval.start),
+          "endIndex" -> JsNumber(typ.tokenInterval.end))
+      }
+
+      // This unfortunately exists to support the following jsonFormat calls.
+      def read(value: JsValue): Type = throw new UnsupportedOperationException()
+    }
     implicit val tokenResponseFormat = jsonFormat7(TokenResponse.apply)
     implicit val extractorResponseFormat = jsonFormat2(ExtractorResponse.apply)
     implicit val levelResponseFormat = jsonFormat3(LevelResponse.apply)
-    implicit val sentenceResponseFormat = jsonFormat3(SentenceResponse.apply)
+    implicit val sentenceResponseFormat = jsonFormat4(SentenceResponse.apply)
     implicit val responseFormat = jsonFormat1(Response.apply)
 
     implicit val throwableWriter = new RootJsonWriter[Throwable] {
@@ -129,8 +141,8 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
 
   case class Response(sentences: Seq[SentenceResponse])
   case class TokenResponse(text: String, lemma: String, postag: String, chunk: String, consumed: Boolean, inputTypes: Seq[String], outputTypes: Seq[String])
-  case class SentenceResponse(text: String, levels: Seq[LevelResponse], extractors: Seq[ExtractorResponse])
-  case class LevelResponse(name: String, tokens: Seq[TokenResponse], types: Seq[String])
+  case class SentenceResponse(text: String, tokens: Seq[String], levels: Seq[LevelResponse], extractors: Seq[ExtractorResponse])
+  case class LevelResponse(name: String, tokens: Seq[TokenResponse], types: Seq[Type])
   case class ExtractorResponse(extractor: String, extractions: Seq[String])
 
   def doPost(request: Request): Response = {
@@ -194,10 +206,6 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
       (sentence, levels)
     }
 
-    def formatType(typ: Type) = {
-      typ.name + "(" + typ.text + ")"
-    }
-
     val sentenceResponses = for {
       (sentence, levels) <- results
     } yield {
@@ -219,7 +227,7 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
         // Update the types seen so far.
         allTypes = allTypes ++ types
 
-        LevelResponse(level, tokenResponses, types.reverse map formatType)
+        LevelResponse(level, tokenResponses, types.reverse)
       }
 
       val extractorResponses =
@@ -227,7 +235,7 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
           ExtractorResponse(extractor, extractions)
         }
 
-      SentenceResponse(sentence.text, levelResponses, extractorResponses)
+      SentenceResponse(sentence.text, sentence.tokens.map(_.string), levelResponses, extractorResponses)
     }
 
     Response(sentenceResponses)
