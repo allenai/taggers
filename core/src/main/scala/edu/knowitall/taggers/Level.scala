@@ -9,6 +9,7 @@ import edu.knowitall.tool.typer.Type
 import java.io.File
 import java.io.Reader
 import scala.io.Source
+import scala.util.control.NonFatal
 
 case class Level[-S <: Tagger.Sentence](name: String, taggers: Seq[Tagger[S]]) {
   def apply(sentence: S, types: Seq[Type]): Seq[Type] = {
@@ -31,8 +32,11 @@ case class Level[-S <: Tagger.Sentence](name: String, taggers: Seq[Tagger[S]]) {
   def typecheck(definedTypes: Set[String]): Unit = {
     var allDefinedTypes = definedTypes
     for (tagger <- taggers) {
-      if (!tagger.typecheck(allDefinedTypes)) {
-        throw new IllegalArgumentException(s"${tagger.name} contains undefined type.")
+      try {
+        tagger.typecheck(allDefinedTypes)
+      } catch {
+        case NonFatal(e) =>
+          throw new IllegalArgumentException(s"${tagger.name} contains undefined type.", e)
       }
 
       allDefinedTypes += tagger.name
