@@ -87,7 +87,7 @@
                       <p ng-if="level.types.length == 0">No types found on this level.</p>
                       <ul>
                         <li ng-repeat="type in level.types" />
-                          <span ng-mouseenter="selectHighlight(type)" ng-mouseleave="noHighlight()">{{ type.name }} ({{type.text}})</span>
+                          <span style="cursor: pointer;" ng-mouseenter="selectHighlight(type)" ng-mouseleave="noHighlight()">{{ type.name }} ({{type.text}})</span>
                         </li>
                       </ul>
                       <table class="table table-bordered">
