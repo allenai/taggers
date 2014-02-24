@@ -104,8 +104,8 @@
                           <td>{{ token.lemma }}</td>
                           <td>{{ token.postag }}</td>
                           <td>{{ token.chunk }}</td>
-                          <td><span popover-title="Input Types" popover-html="true" popover-trigger="mouseenter" popover-placement="bottom" popover='{{ token.inputTypes.join(" ") }}'>{{ token.inputTypes.slice(-1)[0] || "" }}</span></td>
-                          <td><span popover-title="Output Types" popover-html="true" popover-trigger="mouseenter" popover-placement="bottom" popover='{{ token.outputTypes.join(" ") }}'>{{ token.outputTypes.slice(-1)[0] || "" }}</span></td>
+                          <td><span style="cursor: pointer;" popover-title="Input Types" popover-html="true" popover-trigger="click" popover-placement="bottom" popover='{{ token.inputTypes.join(" ") }}'>{{ token.inputTypes.slice(-1)[0] || "" }}</span></td>
+                          <td><span style="cursor: pointer;" popover-title="Output Types" popover-html="true" popover-trigger="click" popover-placement="bottom" popover='{{ token.outputTypes.join(" ") }}'>{{ token.outputTypes.slice(-1)[0] || "" }}</span></td>
                         </tr>
                       </table>
                     </div>
