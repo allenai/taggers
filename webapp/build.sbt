@@ -11,3 +11,10 @@ libraryDependencies ++= Seq(
     "io.spray" %% "spray-json" % "1.2.5")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
+
+javaOptions += "-Xmx1G"
+
+javaOptions += "-XX:+UseConcMarkSweepGC"
+
+fork in run := true
+

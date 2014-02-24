@@ -4,10 +4,27 @@ textarea {
   word-wrap: normal;
 }
 
-consumed {
-  font-weight: bold;
+.nav-tabs a {
+  cursor: pointer;
 }
 
-.nav-tabs a {
- cursor: pointer;
+.spinner {
+  z-index: 999;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 400;
+  height: 400;
+  margin: 0 auto;
+}
+
+.highlightable-string {
+  padding: 2px 3px;
+  border-radius: 3px;
+}
+.highlightable-string.active {
+  background-color: rgba(0, 0, 255, 0.5);
+  color: white;
 }
