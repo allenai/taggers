@@ -19,6 +19,29 @@ trait Consume {
       backing
     }
 
+    /** Only return types that came after the consuming type.
+      *
+      * This includes the consuming type.
+      */
+    def availableTypes(i: Int, types: Seq[Type]) = {
+      val typesHere = types filter (_.tokenInterval contains i)
+      consumingTypes(i) match {
+        case Some(consumer) =>
+          typesHere dropWhile (_ != consumer)
+        case None => typesHere
+      }
+    }
+
+    /** Only return types that came before the consuming type. */
+    def consumedTypes(i: Int, types: Seq[Type]) = {
+      val typesHere = types filter (_.tokenInterval contains i)
+      consumingTypes(i) match {
+        case Some(consumer) =>
+          typesHere takeWhile (_ != consumer)
+        case None => typesHere
+      }
+    }
+
     private def reset() {
       backing = Array.fill(this.tokens.size)(None)
     }

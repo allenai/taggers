@@ -209,7 +209,7 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
     val sentenceResponses = for {
       (sentence, levels) <- results
     } yield {
-      var allTypes = Set.empty[Type] // collection of types seen so far
+      var allTypes = Seq.empty[Type] // collection of types seen so far
       val levelResponses = for {
         (level, types) <- levels.toSeq
       } yield {

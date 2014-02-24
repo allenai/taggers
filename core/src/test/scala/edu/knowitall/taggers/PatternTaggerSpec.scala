@@ -161,7 +161,7 @@ class PatternTaggerSpec extends FlatSpec {
     assert(types.exists(_.name == "RelatedTuples"), "RelatedTuples type not found.")
   }
 
-  "the most recent consuming type" should "be the only applicable type" in {
+  "the most recent consuming type and the subsequent types" should "be the only applicable types" in {
     val l0 =
       """consume A := PatternTagger {
         (?:<string="a">)
@@ -185,6 +185,10 @@ class PatternTaggerSpec extends FlatSpec {
 
       F := TypePatternTagger {
         @C
+      }
+
+      G := TypePatternTagger {
+        @F
       }
       """
 
@@ -212,6 +216,8 @@ class PatternTaggerSpec extends FlatSpec {
     notExists("D")
     notExists("E")
     exists("F")
+
+    exists("G")
   }
 
   "type fields in PatternTagger" should "match correctly" in {
