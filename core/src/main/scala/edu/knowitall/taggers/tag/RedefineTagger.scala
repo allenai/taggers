@@ -35,7 +35,7 @@ case class RedefineTagger(name: String, target: String) extends Tagger[Tagger.Se
       if tag.name == this.target
 
       // Don't look at any types that are partially or wholly consumed.
-      if tag.tokenInterval forall (i => !sentence.consumingTypes(i).isDefined)
+      if tag.tokenInterval forall (i => !(sentence.consumedTypes(i, types) contains tag))
     } yield (Type(name, tag.source, tag.tokenInterval, tag.text))
   }
 }
