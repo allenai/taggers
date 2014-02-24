@@ -5497,7 +5497,7 @@ FemaleFirstName := LemmatizedKeywordTagger {
   Allyn
 }
 
-PersonName := TypePatternTagger {
+PersonName := TypedOpenRegex {
   (?:@MaleFirstName | @FemaleFirstName) <chunk="I-NP">?
 }
 

@@ -14,7 +14,7 @@ import org.scalatest.FlatSpec
 import scala.collection.immutable.IntMap
 import scala.collection.JavaConverters._
 
-class PatternTaggerSpec extends FlatSpec {
+class OpenRegexSpec extends FlatSpec {
   type MySentence = Tagger.Sentence with sentence.Chunks with sentence.Lemmas
 
   val chunker = new OpenNlpChunker();
@@ -24,9 +24,9 @@ class PatternTaggerSpec extends FlatSpec {
       override val lemmatizer = MorphaStemmer
     }
 
-  "a PatternTagger with an empty group" should "create an empty subtype" in {
+  "a OpenRegex with an empty group" should "create an empty subtype" in {
     val taggers = """
-      DescribedNoun := PatternTagger {
+      DescribedNoun := OpenRegex {
         (<Description>:<pos='JJ'>*) (<Noun>:<pos='NN'>+)
       }
       """
@@ -45,7 +45,7 @@ class PatternTaggerSpec extends FlatSpec {
     types.exists(typ => typ.text.isEmpty)
   }
 
-  "WorldCandy PatternTagger" should "match an occurrence from a sequence of Type Nationality and Type Candy" in {
+  "WorldCandy OpenRegex" should "match an occurrence from a sequence of Type Nationality and Type Candy" in {
     val taggers = """
         Candy := CaseInsensitiveKeywordTagger {
           choclate
@@ -65,7 +65,7 @@ class PatternTaggerSpec extends FlatSpec {
         }
 
       //more crazy := {comments} <asdf>+
-        WorldCandy := PatternTagger {
+        WorldCandy := OpenRegex {
           <type='Nationality'>+ <type='Candy'>+
         }
       """
@@ -96,9 +96,9 @@ class PatternTaggerSpec extends FlatSpec {
     assert(targetTypeOption.get.name === "WorldCandy")
   }
 
-  "expressions in PatternTagger" should "be able to span multiple lines" in {
+  "expressions in OpenRegex" should "be able to span multiple lines" in {
     val taggers =
-      """SimpleTagger := PatternTagger {
+      """SimpleTagger := OpenRegex {
            // first line
            <string = 'a'>
            // second line
@@ -116,9 +116,9 @@ class PatternTaggerSpec extends FlatSpec {
     assert(types.size === 1)
   }
 
-  "a TypePatternTagger with undefined types" should "fail typechecking" in {
+  "a TypedOpenRegex with undefined types" should "fail typechecking" in {
     val taggers =
-      """NotTypesafe := TypePatternTagger {
+      """NotTypesafe := TypedOpenRegex {
            @Asdf
          }"""
 
@@ -127,24 +127,24 @@ class PatternTaggerSpec extends FlatSpec {
     }
   }
 
-  "cascades with PatternTagger" should "work correctly" in {
+  "cascades with OpenRegex" should "work correctly" in {
     val l0 =
-      """consume TupleRelation := TypePatternTagger {
+      """consume TupleRelation := TypedOpenRegex {
         (?:<string="in"> <string="order"> <string="to">)
       }"""
 
     val l1 =
       """
-      NP := PatternTagger {
+      NP := OpenRegex {
         <chunk='B-NP'> <chunk='I-NP'>*
       }
-      VG := TypePatternTagger {
+      VG := TypedOpenRegex {
         <string="to">? <pos=/VB[DPZGN]?/> <pos=/R[PB]/>?
       }
-      Tuple := TypePatternTagger {
+      Tuple := TypedOpenRegex {
         (<Arg1>:@NP)? (<Rel>:@VG) (<Arg2>:@NP)?
       }
-      RelatedTuples := TypePatternTagger {
+      RelatedTuples := TypedOpenRegex {
         (<Tuple1>:@Tuple) (<TupleRel>:@TupleRelation) (<Tuple2>:@Tuple)
       }"""
 
@@ -163,31 +163,31 @@ class PatternTaggerSpec extends FlatSpec {
 
   "the most recent consuming type and the subsequent types" should "be the only applicable types" in {
     val l0 =
-      """consume A := PatternTagger {
+      """consume A := OpenRegex {
         (?:<string="a">)
       }
 
-      consume B := TypePatternTagger {
+      consume B := TypedOpenRegex {
         (?:@A <string="b">)
       }
 
-      consume C := TypePatternTagger {
+      consume C := TypedOpenRegex {
         (?:@B <string="c">)
       }
 
-      D := TypePatternTagger {
+      D := TypedOpenRegex {
         @A
       }
 
-      E := TypePatternTagger {
+      E := TypedOpenRegex {
         @B
       }
 
-      F := TypePatternTagger {
+      F := TypedOpenRegex {
         @C
       }
 
-      G := TypePatternTagger {
+      G := TypeOpenRegex {
         @F
       }
       """
@@ -220,21 +220,21 @@ class PatternTaggerSpec extends FlatSpec {
     exists("G")
   }
 
-  "type fields in PatternTagger" should "match correctly" in {
+  "type fields in OpenRegex" should "match correctly" in {
     val taggers =
       """AnimalTagger := KeywordTagger{
            the large cat
          }
-         TypeTaggerTest := PatternTagger {
+         TypeTaggerTest := OpenRegex {
            <type = 'AnimalTagger' >
          }
-         TypeStartTaggerTest := PatternTagger {
+         TypeStartTaggerTest := OpenRegex {
            <typeStart = 'AnimalTagger' >
          }
-         TypeContTaggerTest := PatternTagger {
+         TypeContTaggerTest := OpenRegex {
            <typeCont = 'AnimalTagger' >
          }
-         TypeEndTaggerTest := PatternTagger {
+         TypeEndTaggerTest := OpenRegex {
            (<aName>:<typeEnd = 'AnimalTagger' >)
          }
       """
@@ -273,16 +273,16 @@ class PatternTaggerSpec extends FlatSpec {
   }
 
 
-  "TypePatternTagger expressions" should "expand correctly" in {
+  "TypedOpenRegex expressions" should "expand correctly" in {
 
     val taggers  =
-      """VerbPhrase := PatternTagger{
+      """VerbPhrase := OpenRegex{
     		<pos='VBD'> || <pos='VBZ'>
     	}
-         TastyNounPhrase := PatternTagger{
+         TastyNounPhrase := OpenRegex{
     		<string='delicious'> <pos='NN'>
     	}
-         TypePatternPhrase := TypePatternTagger{
+         TypePatternPhrase := TypedOpenRegex{
     		@VerbPhrase @TastyNounPhrase <pos='RB'>
     	}
       """
@@ -299,14 +299,14 @@ class PatternTaggerSpec extends FlatSpec {
     assert(typeTypes.size === 1)
   }
 
-  "TypePatternTagger expressions" should "match adjacent types seperately" in {
+  "TypedOpenRegex expressions" should "match adjacent types seperately" in {
     val taggers  =
       """FemaleFirstName := KeywordTagger {
            mary
            jones
          }
 
-         FirstName := TypePatternTagger {
+         FirstName := TypedOpenRegex {
            (?:@FemaleFirstName)
          }"""
 

@@ -34,7 +34,7 @@ import scala.util.control._
   * @author schmmd
   *
   */
-class PatternTagger(patternTaggerName: String, expression: String) extends Tagger[Tagger.Sentence with Chunks with Lemmas] {
+class OpenRegex(patternTaggerName: String, expression: String) extends Tagger[Tagger.Sentence with Chunks with Lemmas] {
   override def name = patternTaggerName
   override def source = null
 
@@ -44,7 +44,7 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
     }
     catch {
       case NonFatal(e) =>
-        throw new PatternTagger.PatternTaggerException(s"Could not compile pattern for $patternTaggerName.", e)
+        throw new OpenRegex.OpenRegexException(s"Could not compile pattern for $patternTaggerName.", e)
     }
 
   /** The constructor used by reflection.
@@ -63,7 +63,7 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
     originalTags: Seq[Type]): Seq[Type] = {
 
     // convert tokens to TypedTokens
-    val typedTokens = PatternTagger.buildTypedTokens(sentence, originalTags)
+    val typedTokens = OpenRegex.buildTypedTokens(sentence, originalTags)
 
     val tags = for {
       tag <- this.findTags(typedTokens, sentence, pattern)
@@ -124,8 +124,8 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
   }
 }
 
-object PatternTagger {
-  class PatternTaggerException(message: String, cause: Throwable)
+object OpenRegex {
+  class OpenRegexException(message: String, cause: Throwable)
   extends Exception(message, cause)
 
   def buildTypedTokens(sentence: Tagger.Sentence with Chunks with Lemmas, types: Seq[Type]) = {

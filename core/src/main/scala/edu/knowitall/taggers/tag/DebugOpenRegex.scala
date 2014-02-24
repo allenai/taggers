@@ -41,8 +41,8 @@ import edu.knowitall.openregex.Pattern.Match
   * @author schmmd
   *
   */
-class DebugPatternTagger(patternTaggerName: String, expression: String)
-extends PatternTagger(patternTaggerName, expression) {
+class DebugOpenRegex(patternTaggerName: String, expression: String)
+extends OpenRegex(patternTaggerName, expression) {
   def this(name: String, expressionLines: Seq[String]) {
     this(name, expressionLines.mkString(" "))
   }

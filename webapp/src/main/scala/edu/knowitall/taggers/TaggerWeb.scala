@@ -9,7 +9,7 @@ import edu.knowitall.repr.sentence.Lemmatizer
 import edu.knowitall.repr.sentence.Sentence
 import edu.knowitall.taggers.rule._
 import edu.knowitall.taggers.tag.Tagger
-import edu.knowitall.taggers.tag.PatternTagger
+import edu.knowitall.taggers.tag.OpenRegex
 import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.MorphaStemmer
 import edu.knowitall.tool.typer.Type
@@ -213,7 +213,7 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
       val levelResponses = for {
         (level, types) <- levels.toSeq
       } yield {
-        val tokens = PatternTagger.buildTypedTokens(sentence, allTypes)
+        val tokens = OpenRegex.buildTypedTokens(sentence, allTypes)
         val tokenResponses = for ((typedToken, index) <- tokens.zipWithIndex) yield {
           val inputTypes = typedToken.types.iterator.map(_.name).toSeq
           val consumingType = sentence.consumingTypes(index)
