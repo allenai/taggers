@@ -41,7 +41,7 @@ contains the web demo.  The project is built with `sbt`.  For example, to run
 the web demo, you can execute the following command.
 
 ```
-sbt compile 'project webapp' run
+sbt compile 'project webapp' re-start
 ```
 
 You can also run taggers as a cli.
@@ -53,7 +53,7 @@ sbt compile 'project cli' 'run examples/reverb.taggers'
 If you want an example of how to use the taggers project as a dependency,
 please look at `taggers-webapp`.
 
-## PatternTagger
+## OpenRegex
 
 This tagger compiles regular expressions over the tokens in a sentence into an
 NFA.  A token is described as a logical formula between angled brackets `<>`.
@@ -87,7 +87,7 @@ create a `LinkedType` with the name `T.G1`.  If there is an unnamed matching
 group a `LinkedType` will be created with the group number (i.e. `T.1`).
 
 There is a lot of redundancy in their expressiveness. For example,
-PatternTagger supports pattern matching on the fields .This is not necessary
+OpenRegex supports pattern matching on the fields .This is not necessary
 but is an optimization and a shorthand.  For example, the following two'
 patterns match the same text.
 
@@ -115,10 +115,10 @@ grouping `( ... )`, not `!`, or `|`, and and `&`.  To learn more about
 the regular expression language, see https://github.com/knowitall/openregex.
 
 Named groups create output subtypes.  For example, if we had the following
-`PatternTagger` applied to the example below.
+`OpenRegex` applied to the example below.
 
 ```
-DescribedNoun := PatternTagger {
+DescribedNoun := OpenRegex {
     (<Description>:<pos='JJ'>+) (<Noun>:<pos='NN'>+)
 }
 ```
@@ -133,20 +133,50 @@ DescribedNoun.Description(huge fat)
 DescribedNoun.Noun(cat)
 ```
 
-## TypePatternTagger
+## TypedOpenRegex
 
-The `TypePatternTagger` extends the `PatternTagger` with added syntax to match
+The `TypedOpenRegex` extends the `OpenRegex` with added syntax to match
 types.  Since a type can span multiple tokens but the pattern language operates
 on the token level, matching types can be tedious and error prone.  For
 example, if you want to match the type `Animal`, you need the following
 pattern.
 
 ```
-(?:(?:<typeStart='Animal' & typeEnd='Animal'>) | (?: <typeStart='Animal' & !typeEnd='Animal'> <typeCont='Animal'>* <typeEnd='Animal'>))
+(?:(?:<typeStart='Animal' & typeEnd='Animal'>) | (?: <typeStart='Animal' & !typeEnd='Animal'> <typeCont='Animal' & !typeEnd='Animal'>* <typeEnd='Animal'>))
 ```
 
 Matching many types in this manner quickly makes unreadable patterns, so the
-`TypePatternTagger` adds the syntax `@Type` which, if the type is Animal
+`TypedOpenRegex` adds the syntax `@Type` which, if the type is Animal
 (`@Animal`) it would expand into the above expression.  With this syntax, it's
 easy to match on types.  For an implementation of `ReVerb`, see
 `examples/reverb.taggers`.
+
+## Extractors
+
+You can define extractors which build a structured string from a matched type.
+Extractors look similar to a Scala anonymous function.
+
+```
+x: NestedExtraction => (${x.Arg1}, ${x.NestedRelation}, (${x.BaseArg1}, ${x.BaseRelation}, ${x.BaseArg2}))
+```
+
+The left part (split it by `=>`) says we should apply this pattern to any
+`NestedExtraction` type.  The right part tells us what string we should build
+from that `NestedExtraction`.
+
+String substitutions are used to build an interesting string.  If the bound
+variable (look all the way to the left) is `x`, A string substitution looks
+like `${x.expr|expr|...}` where `expr` is either just a subtype, or a subtype
+with a matching expression.  Expressions can be chained with `|` in case one
+might fail.  The last part of a fallback chain may be a string.
+
+```
+${x.Arg1|x.Arg2|'fallback'}
+```
+
+If the last fallback option fails, an exception is thrown.
+
+Sometimes you want to move to another type.  In this case, the
+`x.subtype1:matching.subtype2` pattern is used.  Here matching is the type that
+overlaps `x.subtype1` and `subtype2` is a subtype of `matching.  You may chain
+matching expressions.
