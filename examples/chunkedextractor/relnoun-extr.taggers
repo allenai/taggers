@@ -1,29 +1,27 @@
-import RelationalNoun
-
-SimpleNounChunk := PatternTagger {
+SimpleNounChunk := OpenRegex {
   <chunk="B-NP"> <chunk="I-NP">*
 }
 
-NounChunk := TypePatternTagger {
+NounChunk := TypedOpenRegex {
   (?:@SimpleNounChunk (?:<string="of"> | <pos="POS">))* @SimpleNounChunk
 }
 
-SimpleProperNounChunk := PatternTagger {
+SimpleProperNounChunk := OpenRegex {
   (?:<chunk="B-NP" & pos=/NNPS?/> <chunk="I-NP">*) | (?:<chunk="B-NP"> <chunk="I-NP">* <chunk="I-NP" & pos=/NNPS?/> <chunk="I-NP">*)
 }
 
-ProperNounChunk := TypePatternTagger {
+ProperNounChunk := TypedOpenRegex {
   (?:@SimpleNounChunk <string="of">)* @SimpleProperNounChunk
 }
 
-SingularProperNoun := PatternTagger {
+SingularProperNoun := OpenRegex {
   <pos="NN">* <pos="NNP">+ <pos=/NN|NNP/>*
 }
 
 // "Barack Obama is the president of the United States."
 // (Barack Obama, is the president of, the United States)
 // TODO: since the relational noun is consumed, this pattern doesn't apply
-VerbBasedExtraction := TypePatternTagger {
+VerbBasedExtraction := TypedOpenRegex {
   (<Arg1>: @NounChunk)
   (<Rel>: <lemma="be"> <pos="DT">? @NounChunk <pos="IN">)
   (<Arg2>: @NounChunk)
@@ -31,7 +29,7 @@ VerbBasedExtraction := TypePatternTagger {
 
 // "Chris Foo, a lawyer for ASDF, is 5 feet tall."
 // (Chris Foo, (is) a lawyer for, ASDF)
-AppositiveExtraction := TypePatternTagger {
+AppositiveExtraction := TypedOpenRegex {
   (<Arg1>: @ProperNounChunk)
 
   <string=",">
@@ -53,7 +51,7 @@ AppositiveExtraction := TypePatternTagger {
 
 // "U.S. leader Barack Obama"
 // (Barack Obama, (is) leader (of), U.S.)
-AdjectiveDescriptorExtractor := TypePatternTagger {
+AdjectiveDescriptorExtractor := TypedOpenRegex {
   // adjective
   (<adj>: <pos=/JJ|VBD|VBN/>*)
 
@@ -68,7 +66,7 @@ AdjectiveDescriptorExtractor := TypePatternTagger {
 
 // "America's leader Obama gave a speech."
 // (Obaja, (is) leader (of), America)
-PossessiveAppositiveExtractor := TypePatternTagger {
+PossessiveAppositiveExtractor := TypedOpenRegex {
   // proper noun (could be plural) (no preposition)
   (<Arg2>: @ProperNounChunk)
 
@@ -86,7 +84,7 @@ PossessiveAppositiveExtractor := TypePatternTagger {
 
 // "America's leader, Obama, gave a speech"
 // (Obama, [be] leader [of], America)
-PossessiveFullAppositiveExtractor := TypePatternTagger {
+PossessiveFullAppositiveExtractor := TypedOpenRegex {
   // Proper noun (could be plural) (no preposition)
   (<Arg2>: @ProperNounChunk)
 
@@ -104,7 +102,7 @@ PossessiveFullAppositiveExtractor := TypePatternTagger {
 
 // "AUC"s leader is Carlos Castano"
 // (Carlos Castano, (is) leader (of), AUC)
-PossessiveIsExtractor := TypePatternTagger {
+PossessiveIsExtractor := TypedOpenRegex {
   // {nouns} (no preposition)
   (<Arg2>: <pos="DT">? <pos="RB.*">* <pos="JJ.*">* <pos=/NNS?|NNPS?/>+)
 
@@ -123,7 +121,7 @@ PossessiveIsExtractor := TypePatternTagger {
 
 // "Johnny is John's son"
 // (Johnny, is son (of), John)
-IsPossessiveExtractor := TypePatternTagger {
+IsPossessiveExtractor := TypedOpenRegex {
   // {nouns} (no preposition)
   (<Arg1>: @ProperNounChunk)
 
@@ -136,7 +134,7 @@ IsPossessiveExtractor := TypePatternTagger {
 
 // "The father of Johnny is John."
 // (John, is the father of, Johnny)
-OfIsExtractor := TypePatternTagger {
+OfIsExtractor := TypedOpenRegex {
   (<Rel>: <chunk="B-NP"> <chunk="I-NP">* <typeStart="RelationalNoun" & typeEnd="RelationalNoun">)
   (<string="of">)
   (<Arg2>: <chunk=/.-NP/> <chunk="I-NP">*)
@@ -146,7 +144,7 @@ OfIsExtractor := TypePatternTagger {
 
 // Michele, Obama's wife, promotes home gardening.
 // (Michele, (is) wife (of), Obama)
-PossessiveReverseExtractor := TypePatternTagger {
+PossessiveReverseExtractor := TypedOpenRegex {
   // proper noun (no preposition)
   (<Arg1>: @ProperNounChunk)
 
@@ -169,7 +167,7 @@ PossessiveReverseExtractor := TypePatternTagger {
 
 // Obama, the US president.
 // (Obama, (is) president (of), U.S.)
-ProperNounAdjectiveExtractor := TypePatternTagger {
+ProperNounAdjectiveExtractor := TypedOpenRegex {
   (<Arg1>: @ProperNounChunk)
   <string=",">
   (<string=/a|an|the/> <pos=/JJ|VBD|VBN/>*)

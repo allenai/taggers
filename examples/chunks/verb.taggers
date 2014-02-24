@@ -1,18 +1,21 @@
-import Rel
-import RelTo
-
-Aux := PatternTagger {
+Aux := OpenRegex {
   <lemma=/be|have/> <pos="RB">? <string="been">?
 }
-V := PatternTagger {
+
+V := OpenRegex {
   (<Head>:<pos=/VB[DPZGN]?/> (?: <pos="RP" | pos="IN">)? )
 }
-VG := TypePatternTagger {
-  (?: <pos="MD">? <pos="RB">? @Aux? @V (?: <string=/and|or/> @V)? )
+V2 := TypedOpenRegex {
+  (?:@V (?: <string=/and|or|and\/or/> @V)? )
+  | (?:@V <string="("> @V <string=")"> )
+}
+
+VG := TypedOpenRegex {
+  (?: <pos="MD">? <pos="RB">? @Aux? @V2 )
   | (?: <pos="MD">? @Aux <pos="VBN"> <string="by"> )
   // groupings to exclude Relation matches
-  | (?: <pos="MD">? <pos="RB">? @Aux <string="to"> @V )
-  | (?: <pos="MD">? <pos="RB">? @Aux? <lemma=/want|like|need|wish|appear|seem|begin|start|continue|proceed|act|try/> <string="to"> @V )
-  | (?: <pos="MD">? <pos="RB">? <lemma="be"> <pos="RB">? @AP <string="to"> @V )
-  | (?: <pos="MD">? <lemma="be"> <pos="VBN"> <string="to"> @V )
+  | (?: <pos="MD">? <pos="RB">? @Aux <string="to"> @V2 )
+  | (?: <pos="MD">? <pos="RB">? @Aux? <lemma=/want|like|need|wish|appear|seem|begin|start|continue|proceed|act|try/> <string="to"> @V2 )
+  | (?: <pos="MD">? <pos="RB">? <lemma="be"> <pos="RB">? @AP <string="to"> @V2 )
+  | (?: <pos="MD">? <lemma="be"> <pos="VBN"> <string="to"> @V2 )
 }

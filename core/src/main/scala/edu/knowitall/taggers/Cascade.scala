@@ -20,36 +20,39 @@ import scala.collection.immutable
 import scala.util.{ Try, Success, Failure }
 
 /** Represents a sequence of taggers applied in order.
-  * After each level of taggers, PatternTaggers can only use
+  * After each level of taggers, OpenRegexs can only use
   * type information from previous levels.
   *
   * @param  levels  stores the taggers applied on each level
   */
-case class Cascade[-S <: Sentence](levels: Seq[Level[S]] = Seq.empty, extractors: Seq[Extractor] = Seq.empty) {
+case class Cascade[-S <: Tagger.Sentence](levels: Seq[Level[S]] = Seq.empty, extractors: Seq[Extractor] = Seq.empty) {
   lazy val chunker = new OpenNlpChunker()
 
   // Make sure all the imports are valid.
   // Make sure all extractors are for defined types.
-  {
-    var definedTypes = Set.empty[String]
-    for ((level, i) <- levels.zipWithIndex) {
-      try {
-        level.typecheck(definedTypes)
-      } catch {
-        case e: Exception =>
-          throw new IllegalArgumentException("Import error on level: " + i, e)
-      }
-      definedTypes ++= level.taggers.iterator.map(_.name)
-    }
-
-    for (extractor <- extractors) {
-      require(definedTypes contains extractor.targetType,
-        "Extractor depends on undefined type: " + extractor.targetType)
-    }
-  }
+  typecheck()
 
   /** Convenience constructor to make a Cascade with a single Level. */
   def this(level: Level[S]) = this(Seq(level), Seq.empty)
+
+  def typecheck() = {
+    var definedTypes = Set.empty[String]
+    for (level <- levels) {
+      try {
+        level.typecheck(definedTypes)
+      }
+      catch {
+        case e: Exception => 
+          throw new IllegalArgumentException("Typechecking error on level: " + level.name, e)
+      }
+
+      definedTypes ++= (level.taggers.iterator map (_.name)).toSet
+    }
+
+    for (extractor <- extractors) {
+      extractor.typecheck(definedTypes)
+    }
+  }
 
   /** Apply the cascade to a sentence.
     *
@@ -57,12 +60,8 @@ case class Cascade[-S <: Sentence](levels: Seq[Level[S]] = Seq.empty, extractors
     */
   def apply(sentence: S): (Seq[Type], Seq[String]) = {
     var previousTypes = Seq.empty[Type]
-    var definedTypes = Set.empty[String]
     var previousLevelTypes = Seq.empty[Type]
     for (level <- levels) {
-      level.typecheck(definedTypes)
-      definedTypes ++= (level.taggers.iterator map (_.name)).toSet
-
       val levelTypes = level.apply(sentence, previousTypes)
 
       previousTypes ++= levelTypes
@@ -86,17 +85,16 @@ case class Cascade[-S <: Sentence](levels: Seq[Level[S]] = Seq.empty, extractors
     *
     * @returns  the found types at each level
     */
-  def levelTypes(sentence: S): immutable.ListMap[Int, Seq[Type]] = {
+  def levelTypes(sentence: S): immutable.ListMap[String, Seq[Type]] = {
     var previousTypes = Seq.empty[Type]
-    var result = immutable.ListMap.empty[Int, Seq[Type]]
+    var result = immutable.ListMap.empty[String, Seq[Type]]
     var definedTypes = Set.empty[String]
-    for ((level, index) <- levels.zipWithIndex) {
-      level.typecheck(definedTypes)
+    for (level <- levels) {
       definedTypes ++= (level.taggers.iterator map (_.name)).toSet
 
       val levelTags = level.apply(sentence, previousTypes)
 
-      result += index -> levelTags
+      result += level.name -> levelTags
       previousTypes ++= levelTags
     }
 
@@ -113,20 +111,20 @@ object Cascade {
   case class RawLevel(filename: String, text: String)
 
   // load a cascade definition file
-  def load[S <: Sentence](cascadeFile: File): Cascade[S] = {
+  def load[S <: Tagger.Sentence](cascadeFile: File): Cascade[S] = {
     using(Source.fromFile(cascadeFile)) { source =>
       load(cascadeFile.getParentFile, source)
     }
   }
 
-  def load[S <: Sentence](basePath: File, cascadeSource: Source): Cascade[S] = {
+  def load[S <: Tagger.Sentence](basePath: File, cascadeSource: Source): Cascade[S] = {
     System.err.println("Loading cascade definition: " + basePath)
 
     var levels = Seq.empty[Level[S]]
     val (taggerEntries, extractors) = partialLoad(basePath, cascadeSource.getLines)
     for (RawLevel(filename, text) <- taggerEntries) {
       System.err.println("Parsing taggers from: " + filename)
-      levels = levels :+ Level.fromString(text)
+      levels = levels :+ Level.fromString(filename, text)
     }
 
     System.err.println("Done loading cascade.")

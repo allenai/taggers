@@ -1,13 +1,10 @@
-Wp := PatternTagger {
-  <pos="WP">
-}
-SimpleNounChunk := PatternTagger {
+SimpleNounChunk := OpenRegex {
   <chunk="B-NP"> <chunk="I-NP">* (?:<pos="POS">? <chunk="I-NP">*)*
 }
-NounChunk := TypePatternTagger {
+NounChunk := TypedOpenRegex {
   (?:@SimpleNounChunk <string="of">)* @SimpleNounChunk
 }
-Verb := PatternTagger {
+Verb := OpenRegex {
         // Optional adverb
         <pos="RB">?
         // Modal or other verbs
@@ -16,20 +13,20 @@ Verb := PatternTagger {
         <pos="RP">? <pos="RB">?
 
 }
-Word := PatternTagger {
+Word := OpenRegex {
   <pos="$" | pos="PRP$" | pos="CD" | pos="DT" | pos=/JJS?R?/ | pos=/NNP?S?/ | pos="POS" | pos="PRP" | pos="RB" | pos=/RB[RS]/ | pos=/VB[NG]/>
 }
-Prep := PatternTagger {
+Prep := OpenRegex {
   <pos="IN" | pos="TO" | pos="RP"> <pos="RB">?
 }
-ShortRelation := TypePatternTagger {
+ShortRelation := TypedOpenRegex {
   // (VP?)+
   (?:@Verb (?:@Prep)?)+
 }
-LongRelation := TypePatternTagger {
+LongRelation := TypedOpenRegex {
   // (V(W*P+)?)+
   (?:@Verb (?:(?:@Word)* (?:@Prep)+)?)+
 }
-Relation := TypePatternTagger {
+Relation := TypedOpenRegex {
   @ShortRelation | @LongRelation
 }

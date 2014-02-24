@@ -13,8 +13,16 @@ import edu.washington.cs.knowitall.regex.Expression.NamedGroup
 
 import scala.util.matching.Regex
 
-class TypePatternTagger(name: String, expression: String)
-    extends PatternTagger(name, TypePatternTagger.expandWholeTypeSyntax(expression)) {
+class TypedOpenRegex(name: String, expression: String)
+    extends OpenRegex(name, TypedOpenRegex.expandWholeTypeSyntax(expression)) {
+  val targetTypes: Set[String] = {
+    val names = for (data <- TypedOpenRegex.wholeTypeSyntaxPattern.findAllIn(expression).matchData) yield {
+      data.group(1)
+    }
+
+    names.toSet
+  }
+
   /** The constructor used by reflection.
     *
     * Multiple lines are collapsed to create a single expression.
@@ -22,15 +30,19 @@ class TypePatternTagger(name: String, expression: String)
   def this(name: String, expressions: Seq[String]) = {
     this(name, expressions.mkString(" "))
   }
+
+  override def typecheck(definedTypes: Set[String]) = {
+    targetTypes forall (definedTypes contains _)
+  }
 }
 
-object TypePatternTagger {
+object TypedOpenRegex {
   // Match an @-sign followed by a type name.
   val wholeTypeSyntaxPattern = new Regex("@(\\w+(?:\\.\\w+)?)(?![^<]*>)")
 
   private def expandWholeTypeSyntax(str: String): String = {
     wholeTypeSyntaxPattern.replaceAllIn(str, m => {
-      "(?:(?:<typeStart='" + m.group(1) + "' & typeEnd='" + m.group(1) + "'>) | (?: <typeStart='" + m.group(1) + "' & !typeEnd='" + m.group(1) + "'> <typeCont='" + m.group(1) + "'>* <typeEnd='" + m.group(1) + "'>))"
+      "(?:(?:<typeStart='" + m.group(1) + "' & typeEnd='" + m.group(1) + "'>) | (?: <typeStart='" + m.group(1) + "' & !typeEnd='" + m.group(1) + "'> (?: <typeCont='" + m.group(1) + "' & !typeEnd='" + m.group(1) + "'>)* <typeEnd='" + m.group(1) + "'>))"
     })
   }
 }

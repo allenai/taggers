@@ -41,8 +41,8 @@ import edu.knowitall.openregex.Pattern.Match
   * @author schmmd
   *
   */
-class DebugPatternTagger(patternTaggerName: String, expression: String)
-extends PatternTagger(patternTaggerName, expression) {
+class DebugOpenRegex(patternTaggerName: String, expression: String)
+extends OpenRegex(patternTaggerName, expression) {
   def this(name: String, expressionLines: Seq[String]) {
     this(name, expressionLines.mkString(" "))
   }
@@ -52,7 +52,7 @@ extends PatternTagger(patternTaggerName, expression) {
     *
     * Matching groups will create a type with the name or index
     * appended to the name.
-    * 
+    *
     * The text used here provides information that is useful for debugging
     * patterns.
     *
@@ -66,7 +66,7 @@ extends PatternTagger(patternTaggerName, expression) {
     pattern: openregex.Pattern[TypedToken]) = {
 
     var tags = Seq.empty[Type]
-    
+
     def matchString(m: Match[TypedToken]) = {
       def groupString(group: Group[TypedToken]) = {
         s"[${group.expr} : ${group.tokens.mkString(" ")}]"

@@ -22,7 +22,7 @@ class KeywordTaggerSpec extends FlatSpec {
   "a keyword tagger" should "match the last token in a sentence" in {
     val sentenceText = "The man had run down the road"
     val opennlpChunker = new OpenNlpChunker
-    val s = new Sentence(sentenceText) with sentence.Chunker with sentence.Lemmatizer {
+    val s = new Sentence(sentenceText) with sentence.Chunker with sentence.Lemmatizer with Consume {
       override val chunker = new OpenNlpChunker
       override val lemmatizer = MorphaStemmer
     }

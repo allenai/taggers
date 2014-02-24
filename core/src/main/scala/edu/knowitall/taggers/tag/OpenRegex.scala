@@ -34,7 +34,7 @@ import scala.util.control._
   * @author schmmd
   *
   */
-class PatternTagger(patternTaggerName: String, expression: String) extends Tagger[Sentence with Chunks with Lemmas] {
+class OpenRegex(patternTaggerName: String, expression: String) extends Tagger[Tagger.Sentence with Chunks with Lemmas] {
   override def name = patternTaggerName
   override def source = null
 
@@ -44,7 +44,7 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
     }
     catch {
       case NonFatal(e) =>
-        throw new PatternTagger.PatternTaggerException(s"Could not compile pattern for $patternTaggerName.", e)
+        throw new OpenRegex.OpenRegexException(s"Could not compile pattern for $patternTaggerName.", e)
     }
 
   /** The constructor used by reflection.
@@ -55,21 +55,17 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
     this(name, expressionLines.mkString(" "))
   }
 
-  override def findTags(sentence: TheSentence) = {
-    this.findTagsWithTypes(sentence, Seq.empty[Type], Seq.empty[Int])
-  }
-
   /** This method overrides Tagger's default implementation. This
     * implementation uses information from the Types that have been assigned to
     * the sentence so far.
     */
-  override def findTagsWithTypes(sentence: TheSentence,
-    originalTags: Seq[Type], consumedIndices: Seq[Int]): Seq[Type] = {
+  override def tag(sentence: TheSentence,
+    originalTags: Seq[Type]): Seq[Type] = {
 
     val originalTagSet = originalTags.toSet
 
     // convert tokens to TypedTokens
-    val typedTokens = PatternTagger.buildTypedTokens(sentence, originalTagSet, consumedIndices)
+    val typedTokens = OpenRegex.buildTypedTokens(sentence, originalTagSet)
 
     val tags = for {
       tag <- this.findTags(typedTokens, sentence, pattern)
@@ -130,13 +126,22 @@ class PatternTagger(patternTaggerName: String, expression: String) extends Tagge
   }
 }
 
-object PatternTagger {
-  class PatternTaggerException(message: String, cause: Throwable)
+object OpenRegex {
+  class OpenRegexException(message: String, cause: Throwable)
   extends Exception(message, cause)
 
-  def buildTypedTokens(sentence: Sentence with Chunks with Lemmas, types: Set[Type], consumedIndices: Seq[Int] = Seq.empty) = {
+  def buildTypedTokens(sentence: Tagger.Sentence with Chunks with Lemmas, types: Set[Type]) = {
     for ((token, i) <- sentence.lemmatizedTokens.zipWithIndex) yield {
-      new TypedToken(token, i, types filter (_.tokenInterval contains i), consumedIndices contains i)
+      val consumingType = sentence.consumingTypes(i)
+      val tokenTypes = types filter { t =>
+        // Type overlaps index i.
+        (t.tokenInterval contains i) &&
+        // If there is a consuming type, it has the same name as this type.
+        // We only want to allow matching on the most recently consuming type.
+        (consumingType map (_.name == t.name)).getOrElse(true)
+      }
+      val consumed = sentence.consumingTypes(i).isDefined
+      new TypedToken(token, i, tokenTypes, consumed)
     }
   }
 }

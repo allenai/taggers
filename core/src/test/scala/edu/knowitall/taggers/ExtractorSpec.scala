@@ -2,6 +2,7 @@ package edu.knowitall.taggers
 
 import edu.knowitall.repr.sentence
 import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.taggers.tag.Tagger
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.Lemmatized
@@ -10,39 +11,39 @@ import edu.knowitall.tool.stem.MorphaStemmer
 import org.scalatest.FlatSpec
 
 class ExtractorSpec extends FlatSpec {
-  type MySentence = Sentence with sentence.Chunks with sentence.Lemmas
+  type MySentence = Tagger.Sentence with sentence.Chunks with sentence.Lemmas
 
   val chunker = new OpenNlpChunker();
   def makeSentence(text: String): MySentence =
-    new Sentence(text) with sentence.Chunker with sentence.Lemmatizer {
+    new Sentence(text) with sentence.Chunker with sentence.Lemmatizer with Consume {
       override val chunker = new OpenNlpChunker
       override val lemmatizer = MorphaStemmer
     }
 
   "Extractor helper methods" should "work correctly" in {
     val l0 =
-      """TupleRelation := TypePatternTagger {
+      """consume TupleRelation := TypedOpenRegex {
         (?:<string="in"> <string="order"> <string="to">)
       }"""
 
     val l1 =
-      """import TupleRelation
-      NP := PatternTagger {
+      """
+      NP := OpenRegex {
         <chunk='B-NP'> <chunk='I-NP'>*
       }
-      VG := TypePatternTagger {
+      VG := TypedOpenRegex {
         <string="to">? <pos=/VB[DPZGN]?/> <pos=/R[PB]/>?
       }
-      Tuple := TypePatternTagger {
+      Tuple := TypedOpenRegex {
         (<Arg1>:@NP)? (<Rel>:@VG) (<Arg2>:@NP)?
       }
-      RelatedTuples := TypePatternTagger {
+      RelatedTuples := TypedOpenRegex {
         (<Tuple1>:@Tuple) (<TupleRel>:@TupleRelation) (<Tuple2>:@Tuple)
       }"""
 
     val cascade = new Cascade(Seq(
-      Level.fromString[MySentence](l0),
-      Level.fromString[MySentence](l1)))
+      Level.fromString[MySentence]("l0", l0),
+      Level.fromString[MySentence]("l1", l1)))
 
     val testSentence = "animals eat in order to get nutrients"
     val s = makeSentence(testSentence)
@@ -62,8 +63,18 @@ class ExtractorSpec extends FlatSpec {
     val tuple1Subtypes = Extractor.findSubtypesWithName(types)(relatedTuplesType, "Tuple1")
     assert(tuple1Subtypes.size === 1)
 
-    val parsed = new ExtractorParser().parse("x: RelatedTuples => (${x.Tuple1->Tuple.Arg1|None}, ${x.Tuple1->Tuple.Rel}, ${x.Tuple1->Tuple.Arg2|None}) --${x.TupleRel}-> (${x.Tuple2->Tuple.Arg1|None}, ${x.Tuple2->Tuple.Rel}, ${x.Tuple2->Tuple.Arg2|None})").get
+    val parsed = new ExtractorParser().parse("x: RelatedTuples => (${x.Tuple1->Tuple.Arg1|'None'}, ${x.Tuple1->Tuple.Rel}, ${x.Tuple1->Tuple.Arg2|'None'}) --${x.TupleRel}-> (${x.Tuple2->Tuple.Arg1|'None'}, ${x.Tuple2->Tuple.Rel}, ${x.Tuple2->Tuple.Arg2|'None'})").get
     assert(parsed(types).head === "(animals, eat, None) --in order to-> (None, get, nutrients)")
+
+    // This is a rather bogus extractor to test that when the Arg2 is missing
+    // the Arg1 is used instead.
+    val parsed2 = new ExtractorParser().parse("x: RelatedTuples => (${x.Tuple1->Tuple.Arg1|x.Tuple1->Tuple.Arg2}, ${x.Tuple1->Tuple.Rel}, ${x.Tuple1->Tuple.Arg2|x.Tuple1->Tuple.Arg1}) --${x.TupleRel}-> (${x.Tuple2->Tuple.Arg1|'None'}, ${x.Tuple2->Tuple.Rel}, ${x.Tuple2->Tuple.Arg2|'None'})").get
+    assert(parsed2(types).head === "(animals, eat, animals) --in order to-> (None, get, nutrients)")
+
+    // This is another rather bogus extractor to test that when the Arg2 is missing,
+    // it tries again and then gives up and uses a string.
+    val parsed3 = new ExtractorParser().parse("x: RelatedTuples => (${x.Tuple1->Tuple.Arg1|x.Tuple1->Tuple.Arg2}, ${x.Tuple1->Tuple.Rel}, ${x.Tuple1->Tuple.Arg2|x.Tuple1->Tuple.Arg2|'asdf'}) --${x.TupleRel}-> (${x.Tuple2->Tuple.Arg1|'None'}, ${x.Tuple2->Tuple.Rel}, ${x.Tuple2->Tuple.Arg2|'None'})").get
+    assert(parsed3(types).head === "(animals, eat, asdf) --in order to-> (None, get, nutrients)")
   }
 
   "Extractor" should "be parsed correctly" in {

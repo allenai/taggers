@@ -1,6 +1,3 @@
-import Rel
-import RelTo
-
-AP := PatternTagger {
+AP := OpenRegex {
    (?: <pos='RB'>? <pos=/JJ.*/>+ )
 }

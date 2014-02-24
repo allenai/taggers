@@ -1,9 +1,10 @@
 package edu.knowitall.taggers.rule
 
 import edu.knowitall.repr.sentence.Sentence
+import edu.knowitall.taggers.tag.Tagger
 
 /** A representation of a parsed definition rule in the DSL. */
-case class DefinitionRule[-S <: Sentence](name: String, definition: String) extends Rule[S] {
+case class DefinitionRule[-S <: Tagger.Sentence](name: String, definition: String) extends Rule[S] {
   override def toString = s"$name ${Rule.definitionSyntax} $definition"
 
   def replace(string: String) = {

@@ -7,6 +7,7 @@ libraryDependencies ++= Seq(
     "edu.washington.cs.knowitall" %% "openregex-scala" % "1.0.4",
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "io.spray" % "spray-can" % sprayVersion,
-    "io.spray" % "spray-routing" % sprayVersion)
+    "io.spray" % "spray-routing" % sprayVersion,
+    "io.spray" %% "spray-json" % "1.2.5")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")

@@ -1,7 +1,3 @@
-import NG
-import Rel
-import RelTo
-
-PP := TypePatternTagger {
-  (?: <pos="RB">? <pos="IN" | pos="TO" | pos="RP"> <pos="RB">? ) (?:@NG)
+PP := TypedOpenRegex {
+  <pos="RB">? <pos="IN" | pos="TO" | pos="RP"> <pos="RB">? @NG
 }
