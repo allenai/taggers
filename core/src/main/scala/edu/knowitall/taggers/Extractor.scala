@@ -222,7 +222,7 @@ class ExtractorParser extends RegexParsers {
   def parse(string: String): Try[Extractor] = this.parse(new StringReader(string))
   def parse(reader: Reader): Try[Extractor] = parseAll(spec, reader) match {
     case this.Success(ast, _) => scala.util.Success(ast)
-    case this.NoSuccess(err, next) => Try(throw new IllegalArgumentException("failed to parse rule " +
+    case this.NoSuccess(err, next) => Try(throw new IllegalArgumentException("failed to parse tagger definition " +
       "(line " + next.pos.line + ", column " + next.pos.column + "):\n" +
       err + "\n" +
       next.pos.longString))

@@ -41,7 +41,17 @@
           </form>
         </div>
         <div class="col-md-6">
-          <div ng-hide='response'>
+          <div ng-show='errorResponse'>
+            <h3>There was a problem serving your request ({{ errorResponse.status }}).</h3>
+            <div ng-repeat="message in errorResponse.messages" class="alert alert-danger">
+              {{ message }}
+            </div>
+            <details>
+              <summary>Stack Trace</summary>
+              <p><pre>{{ errorResponse.stackTrace }}</pre></p>
+            </details>
+          </div>
+          <div ng-hide='response || errorResponse'>
             Enter a tagger pattern and sentence, and then click 'Execute' to get started.
             Or, use <a ng-click='showExample()' href="#">an example</a>.
 

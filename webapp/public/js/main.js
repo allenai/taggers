@@ -7,8 +7,8 @@ var TaggersCtrl = function($scope, $http) {
   });
 
   $scope.showExample = function() {
-    $scope.taggersModel.sentences = "The fat black cat was hidden in the dark corner.\nThe song birds sing new songs in the spring."; 
-    $scope.taggersModel.extractors = "x: DescribedAnimal => described animal: ${x}"; 
+    $scope.taggersModel.sentences = "The fat black cat was hidden in the dark corner.\nThe song birds sing new songs in the spring.";
+    $scope.taggersModel.extractors = "x: DescribedAnimal => described animal: ${x}";
     $scope.taggersModel.taggers = "Animal := LemmatizedKeywordTagger {\n  cat\n  bird\n  frog\n}" + "\n\n" +
       "DescribedAnimal := TypePatternTagger ( <pos='JJ'>+ @Animal )";
 
@@ -16,13 +16,18 @@ var TaggersCtrl = function($scope, $http) {
   }
 
   $scope.submit = function() {
-    $http.post("/", $scope.taggersModel).then(
-      function(response) {
-        $scope.response = response.data;
-        $scope.sentence = response.data.sentences[0];
+    $http.post("/", $scope.taggersModel)
+      .success(function(data, status, headers, config) {
+        $scope.errorResponse = undefined
+        $scope.response = data;
+        $scope.sentence = data.sentences[0];
         $scope.level = $scope.sentence.levels[0];
-        $scope.responseString = angular.toJson(response.data, pretty=true);
-      }
-    )
+        $scope.responseString = angular.toJson(data, pretty=true);
+      })
+      .error(function(data, status, headers, config) {
+        $scope.response = undefined
+        $scope.errorResponse = data
+        $scope.errorResponse.status = status
+      })
   }
 }
