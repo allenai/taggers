@@ -20,13 +20,13 @@
       </div>
       <div class="row">
         <div class="col-md-6">
-          <form>
+          <form name="form">
             <div class="panel panel-default">
               <div class="panel-body">
                 <tabset>
                   <tab heading="Taggers">
                     <div>Enter taggers to run over the text:</div>
-                    <textarea ng-model="taggersModel.taggers" rows='30'></textarea>
+                    <textarea ng-model="taggersModel.taggers" rows='30' required></textarea>
                   </tab>
                   <tab heading="Extractors">
                     <div>Enter extractors to run over the output types:</div>
@@ -34,11 +34,11 @@
                   </tab>
                   <tab heading="Sentences">
                     <div>Enter the sentences to run over:</div>
-                    <textarea ng-model="taggersModel.sentences" rows='30'></textarea>
+                    <textarea ng-model="taggersModel.sentences" rows='30' required></textarea>
                   </tab>
                 </tabset>
 
-                <input ng-click="submit()" type="submit" value="Execute" class="btn btn-default">
+                <input ng-click="submit()" ng-disabled="form.$invalid" type="submit" value="Execute" class="btn btn-default">
               </div>
             </div>
           </form>
@@ -85,6 +85,7 @@
                   <div class="tab-content">
                     <div>
                       <p ng-if="level.types.length == 0">No types found on this level.</p>
+                      Types:
                       <ul>
                         <li ng-repeat="type in level.types" />
                           <span style="cursor: pointer;" ng-mouseenter="selectHighlight(type)" ng-mouseleave="noHighlight()">{{ type.name }} ({{type.text}})</span>
