@@ -187,7 +187,7 @@ class OpenRegexSpec extends FlatSpec {
         @C
       }
 
-      G := TypeOpenRegex {
+      G := TypedOpenRegex {
         @F
       }
       """
