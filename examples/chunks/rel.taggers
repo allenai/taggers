@@ -1,17 +1,17 @@
-And := PatternTagger {
+And := OpenRegex {
   <string=",">? <string=/and|that|which/>
 }
-Modal := PatternTagger {
+Modal := OpenRegex {
   <pos="MD"> <pos="RB">?
 }
-Be := PatternTagger {
+Be := OpenRegex {
   <lemma="be"> <pos="RB">?
 }
-Help := PatternTagger {
+Help := OpenRegex {
   <lemma=/(help|aid|allow|assist|enable)/>
 }
 
-EffectRel := TypePatternTagger {
+EffectRel := TypedOpenRegex {
 // in order for
 (?:<lemma="in"> <string="order"> <string=/for|that/> )
 // which helps with
@@ -33,7 +33,7 @@ EffectRel := TypePatternTagger {
 // by which
 | (?: <string="by"> <string="which"> )
 }
-EffectRelTo := TypePatternTagger {
+EffectRelTo := TypedOpenRegex {
 // in order to
 (?:<lemma="in"> <string="order"> <string="to"> )
 // which helps to
@@ -42,7 +42,7 @@ EffectRelTo := TypePatternTagger {
 | (?:@Modal? @Be <pos="DT" | pos="CD">? <string=/way(s)?/> <string="to"> )
 }
 
-CauseRel := TypePatternTagger {
+CauseRel := TypedOpenRegex {
 // may be because of
 (?:(?:@Modal? @Be)? <lemma="because"> <string="of">? )
 // may be caused by
@@ -53,16 +53,16 @@ CauseRel := TypePatternTagger {
 | (?:@Modal? @Be? <lemma="due"> <string="to"> )
 }
 
-FunctionRel := TypePatternTagger {
+FunctionRel := TypedOpenRegex {
 // which may be responsible for
 (?:@And? @Modal? @Be <string=/used|responsible/> <string="for"> )
 }
-FunctionRelTo := TypePatternTagger {
+FunctionRelTo := TypedOpenRegex {
 // which may be used to
 (?:@And? @Modal? @Be <string="used"> <string="to"> )
 }
 
-ExampleRel := TypePatternTagger {
+ExampleRel := TypedOpenRegex {
 // which may include
 (?:@And? @Modal? <lemma="include"> )
 // such as
@@ -73,25 +73,25 @@ ExampleRel := TypePatternTagger {
 | (?:@And? <string="is"> <string=/a(n)?/> )
 }
 
-RequiredRel := TypePatternTagger {
+RequiredRel := TypedOpenRegex {
 // which may be necessary for
 (?:@And? @Modal? @Be <string=/necessary|needed|required/> <string="for"> )
 }
-RequiredRelTo := TypePatternTagger {
+RequiredRelTo := TypedOpenRegex {
 // which may be necessary to
 (?:@And? @Modal? @Be <string=/necessary|needed|required/> <string="to"> )
 }
 
 
-consume Rel := TypePatternTagger {
+consume Rel := TypedOpenRegex {
   (?:@EffectRel | @CauseRel | @ExampleRel)
 }
 
-consume RelTo := TypePatternTagger {
+consume RelTo := TypedOpenRegex {
   (?:@EffectRelTo | @FunctionRelTo | @RequiredRelTo)
 }
 
-consume RelFor := TypePatternTagger {
+consume RelFor := TypedOpenRegex {
   (?:@FunctionRel | @RequiredRel)
 }
 

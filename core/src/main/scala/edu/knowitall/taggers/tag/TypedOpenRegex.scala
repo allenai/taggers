@@ -13,10 +13,10 @@ import edu.washington.cs.knowitall.regex.Expression.NamedGroup
 
 import scala.util.matching.Regex
 
-class TypePatternTagger(name: String, expression: String)
-    extends PatternTagger(name, TypePatternTagger.expandWholeTypeSyntax(expression)) {
+class TypedOpenRegex(name: String, expression: String)
+    extends OpenRegex(name, TypedOpenRegex.expandWholeTypeSyntax(expression)) {
   val targetTypes: Set[String] = {
-    val names = for (data <- TypePatternTagger.wholeTypeSyntaxPattern.findAllIn(expression).matchData) yield {
+    val names = for (data <- TypedOpenRegex.wholeTypeSyntaxPattern.findAllIn(expression).matchData) yield {
       data.group(1)
     }
 
@@ -36,7 +36,7 @@ class TypePatternTagger(name: String, expression: String)
   }
 }
 
-object TypePatternTagger {
+object TypedOpenRegex {
   // Match an @-sign followed by a type name.
   val wholeTypeSyntaxPattern = new Regex("@(\\w+(?:\\.\\w+)?)(?![^<]*>)")
 

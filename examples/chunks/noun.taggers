@@ -1,9 +1,9 @@
-Det := PatternTagger {
+Det := OpenRegex {
    (?: <pos='PDT'>? <pos='DT' | pos='CD' | pos='PRP$'> )
    | (?: <pos='PDT'>? <pos='DT'> <pos='CD'> )
 }
 
-NP1 := TypePatternTagger {
+NP1 := TypedOpenRegex {
    (?: @Det? @AP? <pos=/NN.*/>+ )
    | (?: (?: @Det | @AP ) @AP? <pos=/VB[GN]/>? <pos=/NN.*/>+ )
    | (?: @Det @AP )
@@ -12,11 +12,11 @@ NP1 := TypePatternTagger {
    // | (?:@Name)
 }
 
-NP2 := TypePatternTagger {
+NP2 := TypedOpenRegex {
    (?:@NP1 (?: (?:<string=","> @NP1)* <string=",">? <string=/and|or|and\/or/> @NP1 )? )
 }
 
-NG := TypePatternTagger {
+NG := TypedOpenRegex {
    (?:@NP2 (?: (?:<string="of"> | <pos="POS">) @NP2 )? )
    | (?:@NP2 <string="("> @NP2 <string=")"> )
    | (?: <pos='PRP'> )

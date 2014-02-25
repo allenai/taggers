@@ -1,18 +1,18 @@
-RelClause := TypePatternTagger {
+RelClause := TypedOpenRegex {
   (?: <string=",">? <string=/that|which/> @NG? @VG @NG? )
 }
 
-NP := TypePatternTagger {
+NP := TypedOpenRegex {
   (?:@NG @PP* @RelClause?)
 }
 
-VP := TypePatternTagger {
+VP := TypedOpenRegex {
   (?: (<Rel>:@VG) (<Arg2>:@NP)? (<Arg>:@PP*) )
   // | (?: (<Rel>:@VG) (<Arg2>:@NP) (<Arg3>:@NP) (<Arg>:@PP*) )
   | (?: (<Rel>:@VG) (<Arg2>:@AP) (<Arg>:@PP*) )
   | (?: (<Rel>:@VG) (<Arg2>:<pos=/RB.*/>) (<Arg>:@PP*) )
 }
 
-S := TypePatternTagger {
+S := TypedOpenRegex {
   (<Arg1>:@NP) <string="to">? (<VP>:@VP)
 }
