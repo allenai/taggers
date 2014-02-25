@@ -43,13 +43,13 @@
         <div class="col-md-6">
           <div ng-hide='response'>
             Enter a tagger pattern and sentence, and then click 'Execute' to get started.
-            Or, use <a ng-click='taggersModel.sentences = "The fat black cat was hidden in the dark corner."; taggersModel.extractors = ""; taggersModel.taggers = "AnimalTagger := LemmatizedKeywordTagger( cat )"; submit()' href="#">an example</a>.
+            Or, use <a ng-click='showExample()' href="#">an example</a>.
 
           </div>
           <div ng-show='response'>
             <div class="nav nav-pills nav-stacked">
               <li ng-repeat="sentence in response.sentences" ng-class="{active: $parent.sentence == sentence}">
-                <a ng-click="$parent.sentence = sentence" href="#">{{ sentence.text }}</a>
+                <a ng-click="$parent.sentence = sentence; $parent.level = sentence.levels[0]" href="#">{{ sentence.text }}</a>
               </li>
             </div>
             <div>
