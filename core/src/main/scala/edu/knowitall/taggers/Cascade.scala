@@ -42,7 +42,7 @@ case class Cascade[-S <: Tagger.Sentence](levels: Seq[Level[S]] = Seq.empty, ext
         level.typecheck(definedTypes)
       }
       catch {
-        case e: Exception => 
+        case e: Exception =>
           throw new IllegalArgumentException("Typechecking error on level: " + level.name, e)
       }
 

@@ -32,7 +32,11 @@ class TypedOpenRegex(name: String, expression: String)
   }
 
   override def typecheck(definedTypes: Set[String]) = {
-    targetTypes forall (definedTypes contains _)
+    def baseType(t: String) = t takeWhile (_ != '.')
+    targetTypes find { t => !(definedTypes contains baseType(t)) } match {
+      case Some(t) => throw new IllegalArgumentException(s"Unknown type $t in $name: $expression")
+      case None =>
+    }
   }
 }
 
