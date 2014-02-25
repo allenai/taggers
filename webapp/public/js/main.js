@@ -7,22 +7,51 @@ var TaggersCtrl = function($scope, $http) {
   });
 
   $scope.showExample = function() {
-    $scope.taggersModel.sentences = "The fat black cat was hidden in the dark corner.\nThe song birds sing new songs in the spring."; 
-    $scope.taggersModel.extractors = "x: DescribedAnimal => described animal: ${x}"; 
-    $scope.taggersModel.taggers = "Animal := LemmatizedKeywordTagger {\n  cat\n  bird\n  frog\n}" + "\n\n" +
+    $scope.taggersModel.sentences = "The fat black cat was hidden in the dark corner.\nThe song birds sing new songs in the spring.";
+    $scope.taggersModel.extractors = "x: DescribedAnimal => described animal: ${x}";
+    $scope.taggersModel.taggers = ">>> Level 1\n\nAnimal := LemmatizedKeywordTagger {\n  cat\n  bird\n  frog\n}" + "\n\n" +
       "DescribedAnimal := TypePatternTagger ( <pos='JJ'>+ @Animal )";
 
     $scope.submit()
   }
 
   $scope.submit = function() {
-    $http.post("/", $scope.taggersModel).then(
-      function(response) {
-        $scope.response = response.data;
-        $scope.sentence = response.data.sentences[0];
+    $scope.working = true;
+    $http.post("/", $scope.taggersModel)
+      .success(function(data, status, headers, config) {
+        $scope.working = false;
+
+        $scope.errorResponse = undefined
+        $scope.response = data;
+
+        $scope.sentence = data.sentences[0];
         $scope.level = $scope.sentence.levels[0];
-        $scope.responseString = angular.toJson(response.data, pretty=true);
-      }
-    )
+        $scope.highlightedInterval = {
+          start: 0,
+          end: 0
+        }
+        $scope.responseString = angular.toJson(data, pretty=true);
+      })
+      .error(function(data, status, headers, config) {
+        $scope.working = false;
+
+        $scope.response = undefined
+        $scope.errorResponse = data
+        $scope.errorResponse.status = status
+      })
+  }
+
+  $scope.selectHighlight = function(type) {
+    $scope.highlightedInterval = {
+      start: type.startIndex,
+      end: type.endIndex
+    }
+  }
+
+  $scope.noHighlight = function() {
+    $scope.highlightedInterval = {
+      start: 0,
+      end: 0
+    }
   }
 }

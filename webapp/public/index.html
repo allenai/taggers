@@ -15,15 +15,18 @@
   <body>
     <div ng-controller="TaggersCtrl" class="container">
       <h1>Tagger Web <small>An engine for quickly writing extractors</small></h1>
+      <div ng-show='working' class="spinner">
+        <img src="/img/spinner.gif" />
+      </div>
       <div class="row">
         <div class="col-md-6">
-          <form>
+          <form name="form">
             <div class="panel panel-default">
               <div class="panel-body">
                 <tabset>
                   <tab heading="Taggers">
                     <div>Enter taggers to run over the text:</div>
-                    <textarea ng-model="taggersModel.taggers" rows='30'></textarea>
+                    <textarea ng-model="taggersModel.taggers" rows='30' required></textarea>
                   </tab>
                   <tab heading="Extractors">
                     <div>Enter extractors to run over the output types:</div>
@@ -31,20 +34,30 @@
                   </tab>
                   <tab heading="Sentences">
                     <div>Enter the sentences to run over:</div>
-                    <textarea ng-model="taggersModel.sentences" rows='30'></textarea>
+                    <textarea ng-model="taggersModel.sentences" rows='30' required></textarea>
                   </tab>
                 </tabset>
 
-                <input ng-click="submit()" type="submit" value="Execute" class="btn btn-default">
+                <input ng-click="submit()" ng-disabled="form.$invalid" type="submit" value="Execute" class="btn btn-default">
               </div>
             </div>
           </form>
         </div>
         <div class="col-md-6">
-          <div ng-hide='response'>
+          <div ng-hide='response || errorResponse'>
             Enter a tagger pattern and sentence, and then click 'Execute' to get started.
             Or, use <a ng-click='showExample()' href="#">an example</a>.
 
+          </div>
+          <div ng-show='errorResponse'>
+            <h3>There was a problem serving your request ({{ errorResponse.status }}).</h3>
+            <div ng-repeat="message in errorResponse.messages" class="alert alert-danger">
+              {{ message }}
+            </div>
+            <details>
+              <summary>Stack Trace</summary>
+              <p><pre>{{ errorResponse.stackTrace }}</pre></p>
+            </details>
           </div>
           <div ng-show='response'>
             <div class="nav nav-pills nav-stacked">
@@ -55,7 +68,12 @@
             <div>
               <div class="panel panel-default">
                 <div class="panel-body">
-                  <h4>{{ sentence.text }}</h4>
+                  <h4>
+                    <span ng-repeat="token in sentence.tokens track by $index">
+                      <span class="highlightable-string" ng-class="{active: $index >= highlightedInterval.start && $index < highlightedInterval.end}">{{ token }}
+                      </span>
+                    </span>
+                  </h4>
                   <div ng-repeat="extractor in sentence.extractors">
                     <pre ng-if="extractor.extractions.length > 0">{{ extractor.extractions.join("\n") }}</pre>
                   </div>
@@ -67,7 +85,12 @@
                   <div class="tab-content">
                     <div>
                       <p ng-if="level.types.length == 0">No types found on this level.</p>
-                      <pre ng-if="level.types.length > 0">{{ level.types.join("\n") }}</pre>
+                      Types:
+                      <ul>
+                        <li ng-repeat="type in level.types" />
+                          <span style="cursor: pointer;" ng-mouseenter="selectHighlight(type)" ng-mouseleave="noHighlight()">{{ type.name }} ({{type.text}})</span>
+                        </li>
+                      </ul>
                       <table class="table table-bordered">
                         <tr>
                           <th>string</th>
@@ -82,8 +105,8 @@
                           <td>{{ token.lemma }}</td>
                           <td>{{ token.postag }}</td>
                           <td>{{ token.chunk }}</td>
-                          <td><span popover-title="Input Types" popover-html="true" popover-trigger="mouseenter" popover-placement="bottom" popover='{{ token.inputTypes.join(" ") }}'>{{ token.inputTypes.slice(-1)[0] || "" }}</span></td>
-                          <td><span popover-title="Output Types" popover-html="true" popover-trigger="mouseenter" popover-placement="bottom" popover='{{ token.outputTypes.join(" ") }}'>{{ token.outputTypes.slice(-1)[0] || "" }}</span></td>
+                          <td><span style="cursor: pointer;" popover-title="Input Types" popover-html="true" popover-trigger="click" popover-placement="bottom" popover='{{ token.inputTypes.join(" ") }}'>{{ token.inputTypes.slice(-1)[0] || "" }}</span></td>
+                          <td><span style="cursor: pointer;" popover-title="Output Types" popover-html="true" popover-trigger="click" popover-placement="bottom" popover='{{ token.outputTypes.join(" ") }}'>{{ token.outputTypes.slice(-1)[0] || "" }}</span></td>
                         </tr>
                       </table>
                     </div>
