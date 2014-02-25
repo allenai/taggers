@@ -32,7 +32,6 @@ Type(name=Animal, text="Kittens", interval=[0, 1))
 Type(name=Animal, text="cats", interval=[10, 11))
 ```
 
-
 ## Running
 
 The `taggers` project is composed of three subprojects: `core`, which contains
@@ -53,7 +52,25 @@ sbt compile 'project cli' 'run examples/reverb.taggers'
 If you want an example of how to use the taggers project as a dependency,
 please look at `taggers-webapp`.
 
-## OpenRegex
+## Cascades
+
+Taggers can be organized into a cascade with multiple levels.  A cascade is defined
+by a cascade file which contains a list of taggers files (separated by newline) followed
+by any number of extractor definitions (see the "Extractors" section).
+
+For example, we might have `hello.cascade` as follows:
+
+```
+first.taggers
+second.taggers
+```
+
+We can use the multiple files to organize our tagger definitions.  Cascades can also
+share tagger definition files between them.
+
+## Types of Taggers
+
+### OpenRegex
 
 This tagger compiles regular expressions over the tokens in a sentence into an
 NFA.  A token is described as a logical formula between angled brackets `<>`.
@@ -133,7 +150,7 @@ DescribedNoun.Description(huge fat)
 DescribedNoun.Noun(cat)
 ```
 
-## TypedOpenRegex
+### TypedOpenRegex
 
 The `TypedOpenRegex` extends the `OpenRegex` with added syntax to match
 types.  Since a type can span multiple tokens but the pattern language operates
