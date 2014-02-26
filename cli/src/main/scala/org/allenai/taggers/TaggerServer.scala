@@ -41,7 +41,7 @@ object TaggerServerMain extends SimpleRoutingApp {
           info.keys mkString "\n"
         }
       } ~
-      path("info" / "\\w+".r) { key =>
+      path("info" / Segment) { key =>
         complete {
           info.get(key) match {
             case Some(key) => key
