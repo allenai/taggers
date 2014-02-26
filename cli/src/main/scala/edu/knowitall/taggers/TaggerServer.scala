@@ -71,6 +71,21 @@ object TaggerServerMain extends SimpleRoutingApp {
             complete(extractions.mkString("\n"))
           }
         }
+      } ~
+      // TODO(schmmd): add a "cascade" / level route to show taggers.
+      path("cascade") {
+        get {
+          complete {
+            cascade.levels map (_.name) mkString ("\n")
+          }
+        }
+      } ~
+      path("extractors") {
+        get {
+          complete {
+            cascade.extractors mkString ("\n")
+          }
+        }
       } ~ infoRoute
     }
   }
