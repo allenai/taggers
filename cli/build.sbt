@@ -11,4 +11,4 @@ libraryDependencies ++= Seq(
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
 
-mainClass in Revolver.reStart := Some("edu.knowitall.taggers.TaggerServerMain")
+mainClass in Revolver.reStart := Some("org.allenai.taggers.TaggerServerMain")
