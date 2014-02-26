@@ -25,15 +25,22 @@ import scala.util.{ Try, Success, Failure }
   *
   * @param  levels  stores the taggers applied on each level
   */
-case class Cascade[-S <: Tagger.Sentence](levels: Seq[Level[S]] = Seq.empty, extractors: Seq[Extractor] = Seq.empty) {
+case class Cascade[-S <: Tagger.Sentence](name: String, levels: Seq[Level[S]] = Seq.empty, extractors: Seq[Extractor] = Seq.empty) {
   lazy val chunker = new OpenNlpChunker()
 
   // Make sure all the imports are valid.
   // Make sure all extractors are for defined types.
   typecheck()
 
-  /** Convenience constructor to make a Cascade with a single Level. */
-  def this(level: Level[S]) = this(Seq(level), Seq.empty)
+  /** Convenience constructor to make a Cascade with a single level.
+    * This is primarily used by the test cases.  The resulting cascade
+    * will be unnamed. */
+  private[taggers] def this(level: Level[S]) = this("unnamed", Seq(level), Seq.empty)
+
+  /** Convenience constructor to make a Cascade with a multiple levels.
+    * This is primarily used by the test cases.  The resulting cascade
+    * will be unnamed. */
+  private[taggers] def this(levels: Seq[Level[S]]) = this("unnamed", levels, Seq.empty)
 
   def typecheck() = {
     var definedTypes = Set.empty[String]
@@ -111,13 +118,13 @@ object Cascade {
   case class RawLevel(filename: String, text: String)
 
   // load a cascade definition file
-  def load[S <: Tagger.Sentence](cascadeFile: File): Cascade[S] = {
+  def load[S <: Tagger.Sentence](cascadeFile: File, cascadeName: String): Cascade[S] = {
     using(Source.fromFile(cascadeFile)) { source =>
-      load(cascadeFile.getParentFile, source)
+      load(cascadeFile.getParentFile, source, cascadeName)
     }
   }
 
-  def load[S <: Tagger.Sentence](basePath: File, cascadeSource: Source): Cascade[S] = {
+  def load[S <: Tagger.Sentence](basePath: File, cascadeSource: Source, cascadeName: String): Cascade[S] = {
     System.err.println("Loading cascade definition: " + basePath)
 
     var levels = Seq.empty[Level[S]]
@@ -130,7 +137,7 @@ object Cascade {
     System.err.println("Done loading cascade.")
     System.err.println()
 
-    Cascade(levels, extractors)
+    Cascade(cascadeName, levels, extractors)
   }
 
   def partialLoad(cascadeFile: File): (Seq[RawLevel], Seq[Extractor]) = {
