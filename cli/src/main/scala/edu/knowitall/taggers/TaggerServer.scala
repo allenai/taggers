@@ -57,7 +57,7 @@ object TaggerServerMain extends SimpleRoutingApp {
       path("") {
         get {
           complete {
-            "POST a sentence to process it."
+            s"POST a sentence to extract it with ${cascade.name}."
           }
         } ~
         // TODO(schmmd): this should return a Future, but OpenNLP is not threadsafe.
