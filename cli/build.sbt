@@ -7,3 +7,6 @@ libraryDependencies ++= Seq(
     "edu.washington.cs.knowitall" %% "openregex-scala" % "1.0.4")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
+
+// SBT native packager configs.
+packageArchetype.java_application

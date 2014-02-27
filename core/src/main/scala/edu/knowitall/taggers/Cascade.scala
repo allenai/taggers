@@ -56,7 +56,7 @@ case class Cascade[-S <: Tagger.Sentence](levels: Seq[Level[S]] = Seq.empty, ext
 
   /** Apply the cascade to a sentence.
     *
-    * @returns  the found types and extractions
+    * @return  the found types and extractions
     */
   def apply(sentence: S): (Seq[Type], Seq[String]) = {
     var previousTypes = Seq.empty[Type]
@@ -73,7 +73,7 @@ case class Cascade[-S <: Tagger.Sentence](levels: Seq[Level[S]] = Seq.empty, ext
 
   /** Apply the extractors to the types yielded by this cascade.
     *
-    * @returns  the found extractions
+    * @return  the found extractions
     */
   def extract(types: Iterable[Type]): Map[String, Seq[String]] = {
     (for (extractor <- extractors) yield {
@@ -83,7 +83,7 @@ case class Cascade[-S <: Tagger.Sentence](levels: Seq[Level[S]] = Seq.empty, ext
 
   /** Apply the cascade to a sentence, keeping types found at all levels.
     *
-    * @returns  the found types at each level
+    * @return  the found types at each level
     */
   def levelTypes(sentence: S): immutable.ListMap[String, Seq[Type]] = {
     var previousTypes = Seq.empty[Type]
