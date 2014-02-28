@@ -12,7 +12,7 @@ object TaggerBuild extends Build {
     publish := { },
     publishTo := Some("bogus" at "http://nowhere.com"),
     publishLocal := { }
-  ).aggregate(core, cli, webapp)
+  ).aggregate(core, cli, server, webapp)
 
   val buildSettings = Defaults.defaultSettings ++ ReleaseSettings.defaults ++ Format.settings ++ Revolver.settings ++
     Seq(
@@ -57,5 +57,10 @@ object TaggerBuild extends Build {
   lazy val cli = Project(
     id = "cli",
     base = file("cli"),
+    settings = buildSettings) dependsOn(core)
+
+  lazy val server = Project(
+    id = "server",
+    base = file("server"),
     settings = buildSettings) dependsOn(core)
 }

@@ -29,7 +29,7 @@ object TaggerServerMain extends SimpleRoutingApp {
 
   def run(config: Config): Unit = {
     val cascade = Cascade.load(config.cascadeFile, config.cascadeFile.getName)
-    val app = new TaggerApp(cascade)
+    val app = new ChunkedTaggerApp(cascade)
 
     val info = Map(
         "name" -> cascade.name

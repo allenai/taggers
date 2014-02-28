@@ -51,7 +51,7 @@ object TaggerCliMain {
   def run(config: Config): Unit = {
     val cascade = Cascade.load(config.cascadeFile, config.cascadeFile.getName)
 
-    val app = new TaggerApp(cascade)
+    val app = new ChunkedTaggerApp(cascade)
 
     using(config.sentenceSource()) { source =>
       // iterate over sentences

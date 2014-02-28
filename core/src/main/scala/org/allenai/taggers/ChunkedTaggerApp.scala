@@ -12,7 +12,9 @@ import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.tool.stem.MorphaStemmer
 import edu.knowitall.tool.typer.Type
 
-class TaggerApp(cascade: Cascade[Tagger.Sentence with Chunks with Lemmas]) {
+/** A self-contained class for processing sentences and running taggers
+  * over chunked sentences. */
+class ChunkedTaggerApp(cascade: Cascade[Tagger.Sentence with Chunks with Lemmas]) {
   type Sent = Tagger.Sentence with Chunks with Lemmas
   val chunker = new OpenNlpChunker()
 
@@ -20,9 +22,9 @@ class TaggerApp(cascade: Cascade[Tagger.Sentence with Chunks with Lemmas]) {
     typ.name + "(" + typ.text + ")"
   }
 
-  def process(text: String): Sent = {
+  def process(text: String): Sent = this.synchronized {
     new Sentence(text) with Consume with Chunker with Lemmatizer {
-      val chunker = TaggerApp.this.chunker
+      val chunker = ChunkedTaggerApp.this.chunker
       val lemmatizer = MorphaStemmer
     }
   }
