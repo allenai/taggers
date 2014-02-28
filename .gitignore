@@ -1,2 +1,9 @@
-project/project
-target
+.cache
+.classpath
+.history
+.project
+.settings
+# Ignore any bin directory in the project root.
+bin/**
+logs/
+target/
