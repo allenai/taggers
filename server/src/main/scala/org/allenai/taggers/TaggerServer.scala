@@ -53,7 +53,7 @@ object TaggerServerMain extends SimpleRoutingApp {
 
     implicit val system = ActorSystem("tagger-server")
 
-    startServer(interface = "localhost", port = config.port) {
+    startServer(interface = "0.0.0.0", port = config.port) {
       path("") {
         get {
           complete {
