@@ -28,6 +28,11 @@ object TaggerServerMain extends SimpleRoutingApp {
   }
 
   def run(config: Config): Unit = {
+    // used for level routes
+    val levelTextMap: Map[String, String] =
+      (for (level <- Cascade.partialLoad(config.cascadeFile)._1)
+      yield level.filename -> level.text)(scala.collection.breakOut)
+
     val cascade = Cascade.load(config.cascadeFile, config.cascadeFile.getName)
     val app = new ChunkedTaggerApp(cascade)
 
@@ -53,40 +58,60 @@ object TaggerServerMain extends SimpleRoutingApp {
 
     implicit val system = ActorSystem("tagger-server")
 
+    implicit def exceptionHandler(implicit log: spray.util.LoggingContext) =
+      ExceptionHandler {
+        case e: Throwable => ctx =>
+          // log in akka, which is configured to use slf4j
+          log.error(e, "Unexpected Error.")
+
+          // return the error formatted as json
+          ctx.complete((spray.http.StatusCodes.InternalServerError, e.getMessage))
+      }
+
     startServer(interface = "0.0.0.0", port = config.port) {
-      path("") {
-        get {
-          complete {
-            s"POST a sentence to extract it with ${cascade.name}."
+      handleExceptions(exceptionHandler) {
+        path("") {
+          get {
+            complete {
+              s"POST a sentence to extract it with ${cascade.name}."
+            }
+          } ~
+          // TODO(schmmd): this should return a Future, but OpenNLP is not threadsafe.
+          // The models (the bulk of the memory footprint) ARE threadsafe.  Ideally
+          // there would be a blocking queue of 8 to 16 OpenNLP tools, or we would use
+          // a threadsafe POS tagger/chunker.
+          post {
+            entity(as[String]) { sentence =>
+              val processed = app.process(sentence)
+              val (types, extractions) = app(processed)
+              complete(extractions.mkString("\n"))
+            }
           }
         } ~
-        // TODO(schmmd): this should return a Future, but OpenNLP is not threadsafe.
-        // The models (the bulk of the memory footprint) ARE threadsafe.  Ideally
-        // there would be a blocking queue of 8 to 16 OpenNLP tools, or we would use
-        // a threadsafe POS tagger/chunker.
-        post {
-          entity(as[String]) { sentence =>
-            val processed = app.process(sentence)
-            val (types, extractions) = app(processed)
-            complete(extractions.mkString("\n"))
+        path("cascade") {
+          get {
+            complete {
+              cascade.levels map (_.name) mkString ("\n")
+            }
           }
-        }
-      } ~
-      // TODO(schmmd): add a "cascade" / level route to show taggers.
-      path("cascade") {
-        get {
-          complete {
-            cascade.levels map (_.name) mkString ("\n")
+        } ~
+        path("cascade" / Segment) { level =>
+          get {
+            complete {
+              levelTextMap map (_._1) foreach println
+              levelTextMap.getOrElse(level,
+                throw new IllegalArgumentException("Unknown level: " + level))
+            }
           }
-        }
-      } ~
-      path("extractors") {
-        get {
-          complete {
-            cascade.extractors mkString ("\n")
+        } ~
+        path("extractors") {
+          get {
+            complete {
+              cascade.extractors mkString ("\n")
+            }
           }
-        }
-      } ~ infoRoute
+        } ~ infoRoute
+      }
     }
   }
 }
