@@ -4,6 +4,12 @@ import Keys._
 import spray.revolver.RevolverPlugin._
 
 object TaggerBuild extends Build {
+  val slf4j = "org.slf4j" % "slf4j-api" % "1.7.5"
+  val logbackVersion = "1.0.13"
+  val logbackCore = "ch.qos.logback" % "logback-core" % logbackVersion
+  val logbackClassic = "ch.qos.logback" % "logback-classic" % logbackVersion
+  val loggingImplementations = Seq(logbackCore, logbackClassic)
+
   val sprayVersion = "1.2.0"
   val akkaVersion = "2.2.3"
   val nlptoolsVersion = SettingKey[String]("nlptools-version", "The version of nlptools used for building.")

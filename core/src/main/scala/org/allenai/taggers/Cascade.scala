@@ -12,6 +12,7 @@ import edu.knowitall.tool.stem.MorphaStemmer
 import edu.knowitall.tool.typer.Type
 
 import io.Source
+import org.slf4j.LoggerFactory
 
 import java.io.File
 import java.io.FileReader
@@ -110,6 +111,8 @@ case class Cascade[-S <: Tagger.Sentence](name: String, levels: Seq[Level[S]] = 
 }
 
 object Cascade {
+  val logger = LoggerFactory.getLogger(this.getClass)
+
   /** RawLevel models a file with a level definition.
     *
     * @param  filename  the name of the file
@@ -125,17 +128,16 @@ object Cascade {
   }
 
   def load[S <: Tagger.Sentence](basePath: File, cascadeSource: Source, cascadeName: String): Cascade[S] = {
-    System.err.println("Loading cascade definition: " + basePath)
+    logger.info("Loading cascade definition: " + basePath)
 
     var levels = Seq.empty[Level[S]]
     val (taggerEntries, extractors) = partialLoad(basePath, cascadeSource.getLines)
     for (RawLevel(filename, text) <- taggerEntries) {
-      System.err.println("Parsing taggers from: " + filename)
+      logger.info("Parsing taggers from: " + filename)
       levels = levels :+ Level.fromString(filename, text)
     }
 
-    System.err.println("Done loading cascade.")
-    System.err.println()
+    logger.info("Done loading cascade.")
 
     Cascade(cascadeName, levels, extractors)
   }
@@ -170,14 +172,14 @@ object Cascade {
       // Determine if this line contains a tagger file or an extractor.
       extractorParser.parse(line) match {
         case Success(extractor) =>
-          System.err.println("Adding extractor: " + extractor.toString)
+          logger.debug("Adding extractor: " + extractor.toString)
           extractors :+= extractor
         case Failure(e) =>
           // A line is composed of a tagger file path
           val taggerFilePath = line
           val taggerFile = makeFile(taggerFilePath)
 
-          System.err.println("Loading taggers from: " + taggerFile)
+          logger.debug("Loading taggers from: " + taggerFile)
 
           val taggerText = using(Source.fromFile(taggerFile)) { source =>
             source.getLines.mkString("\n")

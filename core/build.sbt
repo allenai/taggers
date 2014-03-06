@@ -17,4 +17,5 @@ libraryDependencies ++= Seq(
       case "2.9.3" => "2.9.2"
       case "2.10.2" => "2.10"
       case x => x
-    })
+    },
+    slf4j)
