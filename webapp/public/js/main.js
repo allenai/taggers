@@ -25,7 +25,7 @@ var TaggersCtrl = function($scope, $http) {
         $scope.response = data;
 
         $scope.sentence = data.sentences[0];
-        $scope.level = $scope.sentence.levels[0];
+        $scope.level = $scope.sentence.levels[$scope.sentence.levels.length - 1];
         $scope.highlightedInterval = {
           start: 0,
           end: 0
