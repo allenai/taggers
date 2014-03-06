@@ -13,3 +13,5 @@ scalacOptions ++= Seq("-unchecked", "-deprecation")
 
 // SBT native packager configs.
 packageArchetype.java_application
+
+Deploy.settings
