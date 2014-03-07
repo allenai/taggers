@@ -79,7 +79,7 @@ PossessiveAppositiveExtraction := TypedOpenRegex {
   // {proper noun} (no preposition)
   // the proper noun is required to distinguish this noun from the previous
   // consider: Baghdad"s deputy governor (deputy is a relnoun)
-  (<Arg1>: @ProperNounChunk)
+  (<Arg1>: @SingularProperNoun)
 }
 
 // "America's leader, Obama, gave a speech"
