@@ -51,7 +51,7 @@ AppositiveExtraction := TypedOpenRegex {
 
 // "U.S. leader Barack Obama"
 // (Barack Obama, (is) leader (of), U.S.)
-AdjectiveDescriptorExtractor := TypedOpenRegex {
+AdjectiveDescriptorExtraction := TypedOpenRegex {
   // adjective
   (<adj>: <pos=/JJ|VBD|VBN/>*)
 
@@ -66,7 +66,7 @@ AdjectiveDescriptorExtractor := TypedOpenRegex {
 
 // "America's leader Obama gave a speech."
 // (Obaja, (is) leader (of), America)
-PossessiveAppositiveExtractor := TypedOpenRegex {
+PossessiveAppositiveExtraction := TypedOpenRegex {
   // proper noun (could be plural) (no preposition)
   (<Arg2>: @ProperNounChunk)
 
@@ -84,7 +84,7 @@ PossessiveAppositiveExtractor := TypedOpenRegex {
 
 // "America's leader, Obama, gave a speech"
 // (Obama, [be] leader [of], America)
-PossessiveFullAppositiveExtractor := TypedOpenRegex {
+PossessiveFullAppositiveExtraction := TypedOpenRegex {
   // Proper noun (could be plural) (no preposition)
   (<Arg2>: @ProperNounChunk)
 
@@ -102,7 +102,7 @@ PossessiveFullAppositiveExtractor := TypedOpenRegex {
 
 // "AUC"s leader is Carlos Castano"
 // (Carlos Castano, (is) leader (of), AUC)
-PossessiveIsExtractor := TypedOpenRegex {
+PossessiveIsExtraction := TypedOpenRegex {
   // {nouns} (no preposition)
   (<Arg2>: <pos="DT">? <pos="RB.*">* <pos="JJ.*">* <pos=/NNS?|NNPS?/>+)
 
@@ -121,7 +121,7 @@ PossessiveIsExtractor := TypedOpenRegex {
 
 // "Johnny is John's son"
 // (Johnny, is son (of), John)
-IsPossessiveExtractor := TypedOpenRegex {
+IsPossessiveExtraction := TypedOpenRegex {
   // {nouns} (no preposition)
   (<Arg1>: @ProperNounChunk)
 
@@ -134,7 +134,7 @@ IsPossessiveExtractor := TypedOpenRegex {
 
 // "The father of Johnny is John."
 // (John, is the father of, Johnny)
-OfIsExtractor := TypedOpenRegex {
+OfIsExtraction := TypedOpenRegex {
   (<Rel>: <chunk="B-NP"> <chunk="I-NP">* <typeStart="RelationalNoun" & typeEnd="RelationalNoun">)
   (<string="of">)
   (<Arg2>: <chunk=/.-NP/> <chunk="I-NP">*)
@@ -144,7 +144,7 @@ OfIsExtractor := TypedOpenRegex {
 
 // Michele, Obama's wife, promotes home gardening.
 // (Michele, (is) wife (of), Obama)
-PossessiveReverseExtractor := TypedOpenRegex {
+PossessiveReverseExtraction := TypedOpenRegex {
   // proper noun (no preposition)
   (<Arg1>: @ProperNounChunk)
 
@@ -167,7 +167,7 @@ PossessiveReverseExtractor := TypedOpenRegex {
 
 // Obama, the US president.
 // (Obama, (is) president (of), U.S.)
-ProperNounAdjectiveExtractor := TypedOpenRegex {
+ProperNounAdjectiveExtraction := TypedOpenRegex {
   (<Arg1>: @ProperNounChunk)
   <string=",">
   (<string=/a|an|the/> <pos=/JJ|VBD|VBN/>*)
