@@ -2,7 +2,7 @@ SimpleNounChunk := OpenRegex {
   <chunk="B-NP"> <chunk="I-NP">*
 }
 
-NounChunk := TypedOpenRegex {
+ComplexNounChunk := TypedOpenRegex {
   (?:@SimpleNounChunk (?:<string="of"> | <pos="POS">))* @SimpleNounChunk
 }
 
@@ -15,16 +15,17 @@ ProperNounChunk := TypedOpenRegex {
 }
 
 SingularProperNoun := OpenRegex {
-  <pos="NN">* <pos="NNP">+ <pos=/NN|NNP/>*
+  <pos="NNP">+
 }
+
 
 // "Barack Obama is the president of the United States."
 // (Barack Obama, is the president of, the United States)
 // TODO: since the relational noun is consumed, this pattern doesn't apply
 VerbBasedExtraction := TypedOpenRegex {
-  (<Arg1>: @NounChunk)
-  (<Rel>: <lemma="be"> <pos="DT">? @NounChunk <pos="IN">)
-  (<Arg2>: @NounChunk)
+  (<Arg1>: @SimpleNounChunk | @ComplexNounChunk | @SimpleProperNounChunk | @ProperNounChunk | @SingularProperNoun)
+  (<Rel>: <lemma="be"> <pos="DT">? @RelationalNoun <pos="IN">)
+  (<Arg2>: @SimpleNounChunk | @ComplexNounChunk | @SimpleProperNounChunk | @ProperNounChunk | @SingularProperNoun)
 }
 
 // "Chris Foo, a lawyer for ASDF, is 5 feet tall."
@@ -152,7 +153,7 @@ PossessiveReverseExtraction := TypedOpenRegex {
   <string=",">
 
   // Noun chunk
-  (<Arg2>: @NounChunk)
+  (<Arg2>: @SimpleNounChunk | @ComplexNounChunk | @SimpleProperNounChunk | @ProperNounChunk | @SingularProperNoun)
 
   // {possessive}
   <pos="POS">
