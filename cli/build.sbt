@@ -2,7 +2,8 @@ name := "taggers-cli"
 
 description := "Tag sentences with XML-specified logic."
 
-libraryDependencies ++= Seq("com.github.scopt" %% "scopt" % "3.2.0")
+libraryDependencies ++= Seq(
+    "com.github.scopt" %% "scopt" % "3.2.0") ++ loggingImplementations
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
 
