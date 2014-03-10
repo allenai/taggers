@@ -40,7 +40,7 @@ contains the web demo.  The project is built with `sbt`.  For example, to run
 the web demo, you can execute the following command.
 
 ```
-sbt compile 'project webapp' re-start
+sbt compile 'project webapp' run
 ```
 
 You can also run taggers as a cli.
