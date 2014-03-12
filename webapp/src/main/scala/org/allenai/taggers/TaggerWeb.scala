@@ -7,6 +7,7 @@ import edu.knowitall.repr.sentence.Chunks
 import edu.knowitall.repr.sentence.Lemmas
 import edu.knowitall.repr.sentence.Lemmatizer
 import edu.knowitall.repr.sentence.Sentence
+import org.allenai.taggers.Cascade.LevelDefinition
 import org.allenai.taggers.rule._
 import org.allenai.taggers.tag.Tagger
 import org.allenai.taggers.tag.OpenRegex
@@ -30,7 +31,9 @@ import scala.util.{ Try, Success, Failure }
 
 // This is a separate class so that optional dependencies are not loaded
 // unless a server instance is being create.
-class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String, port: Int) extends SimpleRoutingApp with SprayJsonSupport {
+class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, sentenceText: String, port: Int)
+  extends SimpleRoutingApp with SprayJsonSupport {
+
   // A type alias for convenience since TaggerWeb always
   // deals with sentences that are chunked and lemmatized
   type Sent = Tagger.Sentence with Chunks with Lemmas
@@ -54,6 +57,7 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
     implicit val system = ActorSystem("tagger-web")
 
     import DefaultJsonProtocol._
+    implicit val levelFormat = jsonFormat2(LevelDefinition.apply)
     implicit val requestFormat = jsonFormat3(Request.apply)
 
     implicit val typeFormat = new JsonFormat[Type] {
@@ -127,7 +131,7 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
           path ("fields") {
             get {
               complete {
-                Request(taggersText, extractorText, sentenceText)
+                Request(levelDefinitions, extractorText, sentenceText)
               }
             }
           } ~
@@ -137,7 +141,7 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
     }
   }
 
-  case class Request(taggers: String, extractors: String, sentences: String)
+  case class Request(levelDefinitions: Seq[LevelDefinition], extractors: String, sentences: String)
 
   case class Response(sentences: Seq[SentenceResponse])
   case class TokenResponse(text: String, lemma: String, postag: String, chunk: String, consumed: Boolean, inputTypes: Seq[String], outputTypes: Seq[String])
@@ -146,51 +150,8 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
   case class ExtractorResponse(extractor: String, extractions: Seq[String])
 
   def doPost(request: Request): Response = {
-    def takeWhile[T](it: BufferedIterator[T], cond: T=>Boolean): Seq[T] = {
-      var result = Seq.empty[T]
-      while (it.hasNext && cond(it.head)) {
-        result = result :+ it.head
-
-        it.next()
-      }
-
-      result
-    }
-
-    def dropWhile[T](it: BufferedIterator[T], cond: T=>Boolean): Unit = {
-      while (it.hasNext && cond(it.head)) {
-        it.next()
-      }
-    }
-
-    val linesIt = request.taggers.split("\n").iterator.buffered
-    var sections = Seq.empty[(String, String)]
-    var Seperator = "(?m)^>>>\\s*(.*)\\s*$".r
-    var EmptyLine = "(?m)^\\s*$".r
-    if (linesIt.hasNext) {
-      var firstLoop = true
-
-      // Read the levels.
-      while (linesIt.hasNext) {
-        // consume empty lines
-        dropWhile(linesIt, (line: String) => EmptyLine.pattern.matcher(line).matches)
-
-        // match the header
-        val header = linesIt.head match {
-          case Seperator(h) => linesIt.next(); h
-          case _ if firstLoop => "anonymous" // there may be no header
-          case _ => throw new MatchError("Header not found, rather: " + linesIt.head)
-        }
-
-        val body = takeWhile(linesIt, (line: String) => !Seperator.pattern.matcher(line).matches)
-        sections = sections :+ (header, body.mkString("\n"))
-
-        firstLoop = false
-      }
-    }
-
     val levels: Seq[Level[Sent]] =
-      sections map { case (title, text) => Level.fromString(title, text) }
+      request.levelDefinitions map { case LevelDefinition(title, text) => Level.fromString(title, text) }
 
     val extractorParser = new ExtractorParser()
     val extractors = for (line <- request.extractors.split("\n") filter (!_.trim.isEmpty)) yield {
@@ -244,14 +205,11 @@ class TaggerWeb(taggersText: String, extractorText: String, sentenceText: String
 
 object TaggerWebMain extends App {
   case class Config(ruleInputFile: Option[File] = None, sentenceInputFile: Option[File] = None, port: Int = 8080) {
-    def cascadeText(): (String, String) = ruleInputFile match {
+    def cascade(): (String, Seq[LevelDefinition]) = ruleInputFile match {
       case Some(file) =>
         val (levels, extractors) = Cascade.partialLoad(file)
-        val mapped = levels map { entry =>
-          s">>> ${entry.filename}\n\n${entry.text}"
-        }
-        (extractors.mkString("\n"), mapped.mkString("\n\n\n"))
-      case None => ("", "")
+        (extractors.mkString("\n"), levels)
+      case None => ("", Seq(LevelDefinition("anonymous", "")))
     }
 
     def sentenceText() = sentenceInputFile match {
@@ -276,8 +234,8 @@ object TaggerWebMain extends App {
   }
 
   parser.parse(args, Config()).foreach { config =>
-    val (extractorText, taggersText) = config.cascadeText()
-    val server = new TaggerWeb(taggersText, extractorText, config.sentenceText(), config.port)
+    val (extractorText, levelDefinitions) = config.cascade()
+    val server = new TaggerWeb(levelDefinitions, extractorText, config.sentenceText(), config.port)
     server.run()
   }
 }

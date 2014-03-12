@@ -113,12 +113,12 @@ case class Cascade[-S <: Tagger.Sentence](name: String, levels: Seq[Level[S]] = 
 object Cascade {
   val logger = LoggerFactory.getLogger(this.getClass)
 
-  /** RawLevel models a file with a level definition.
+  /** LevelDefinition models a file with a level definition.
     *
     * @param  filename  the name of the file
     * @param  text  the contents of the file
     */
-  case class RawLevel(filename: String, text: String)
+  case class LevelDefinition(filename: String, text: String)
 
   // load a cascade definition file
   def load[S <: Tagger.Sentence](cascadeFile: File, cascadeName: String): Cascade[S] = {
@@ -132,7 +132,7 @@ object Cascade {
 
     var levels = Seq.empty[Level[S]]
     val (taggerEntries, extractors) = partialLoad(basePath, cascadeSource.getLines)
-    for (RawLevel(filename, text) <- taggerEntries) {
+    for (LevelDefinition(filename, text) <- taggerEntries) {
       logger.info("Parsing taggers from: " + filename)
       levels = levels :+ Level.fromString(filename, text)
     }
@@ -142,17 +142,17 @@ object Cascade {
     Cascade(cascadeName, levels, extractors)
   }
 
-  def partialLoad(cascadeFile: File): (Seq[RawLevel], Seq[Extractor]) = {
+  def partialLoad(cascadeFile: File): (Seq[LevelDefinition], Seq[Extractor]) = {
     using(Source.fromFile(cascadeFile)) { source =>
       partialLoad(cascadeFile.getParentFile, source)
     }
   }
 
-  def partialLoad(basePath: File, cascadeSource: Source): (Seq[RawLevel], Seq[Extractor]) = {
+  def partialLoad(basePath: File, cascadeSource: Source): (Seq[LevelDefinition], Seq[Extractor]) = {
     partialLoad(basePath, cascadeSource.getLines)
   }
 
-  private def partialLoad(basePath: File, lines: Iterator[String]): (Seq[RawLevel], Seq[Extractor]) = {
+  private def partialLoad(basePath: File, lines: Iterator[String]): (Seq[LevelDefinition], Seq[Extractor]) = {
     // paths inside are either absolute or relative to the cascade definition file
     def makeFile(path: String) = {
       val file = new File(path)
@@ -164,7 +164,7 @@ object Cascade {
 
     // Iterate over the level definitions, load the tagger files,
     // and add them to the cascade.
-    var levels = Seq.empty[RawLevel]
+    var levels = Seq.empty[LevelDefinition]
     var extractors = Seq.empty[Extractor]
     for {
       line <- lines map (_.trim) if !line.isEmpty
@@ -185,7 +185,7 @@ object Cascade {
             source.getLines.mkString("\n")
           }
 
-          levels :+= RawLevel(taggerFile.getName, taggerText)
+          levels :+= LevelDefinition(taggerFile.getName, taggerText)
       }
     }
 

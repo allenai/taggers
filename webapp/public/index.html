@@ -26,7 +26,11 @@
                 <tabset>
                   <tab heading="Taggers">
                     <div>Enter taggers to run over the text:</div>
-                    <textarea ng-model="taggersModel.taggers" rows='30' required></textarea>
+                    <accordion close-others="never">
+                      <accordion-group ng-repeat="level in taggersModel.levelDefinitions" heading="{{ level.filename }}" is-open="{{ $first }}">
+                        <textarea ng-model="level.text" rows='25' required></textarea>
+                      </accordion-group>
+                    </accordion>
                   </tab>
                   <tab heading="Extractors">
                     <div>Enter extractors to run over the output types:</div>
