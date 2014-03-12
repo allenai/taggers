@@ -9,10 +9,15 @@ var TaggersCtrl = function($scope, $http) {
   $scope.showExample = function() {
     $scope.taggersModel.sentences = "The fat black cat was hidden in the dark corner.\nThe song birds sing new songs in the spring.";
     $scope.taggersModel.extractors = "x: DescribedAnimal => described animal: ${x}";
-    $scope.taggersModel.taggers = ">>> Level 1\n\nAnimal := LemmatizedKeywordTagger {\n  cat\n  bird\n  frog\n}" + "\n\n" +
-      "DescribedAnimal := TypedOpenRegex ( <pos='JJ'>+ @Animal )";
+    $scope.taggersModel.levelDefinitions = [
+        {
+          filename: "Level 1",
+          text: "Animal := LemmatizedKeywordTagger {\n  cat\n  bird\n  frog\n}" + "\n\n" +
+                "DescribedAnimal := TypedOpenRegex ( <pos='JJ'>+ @Animal )"
+        }
+      ];
 
-    $scope.submit()
+    $scope.submit();
   }
 
   $scope.submit = function() {
