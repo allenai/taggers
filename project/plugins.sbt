@@ -8,3 +8,6 @@ addSbtPlugin("io.spray" % "sbt-revolver" % "0.7.1")
 
 // Native packager, for deploys.
 addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "0.6.4")
+
+// Check for updates.
+addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.4")
