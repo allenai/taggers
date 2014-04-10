@@ -1,0 +1,93 @@
+Modal := OpenRegex {
+  <pos="MD"> <pos="RB">?
+}
+Be := OpenRegex {
+  <lemma="be"> <pos="RB">?
+}
+Help := OpenRegex {
+  <lemma=/(help|aid|allow|assist|enable)/>
+}
+
+EffectRel := TypedOpenRegex {
+// in order for
+(?:<lemma="in"> <string="order"> <string=/for|that/> )
+// which helps with
+| (?: (?:<string=",">? <string=/and|that|which|to/>)? @Help <string=/with|in/> )
+// which helps
+| (?: <string=",">? <string=/and|that|which|to/> @Help <string=/with|in/>? )
+// which results in
+| (?:<string="results"> <string="in"> )
+// is the result of
+| (?:@Be <pos="DT" | pos="CD">? <string="result"> <string="of"> )
+// so that
+| (?:<string="so"> <string="that">? )
+// and by doing so
+| (?:<string="and">? <lemma="by"> <string="doing"> <string="so"> )
+// may be one way that
+| (?:@Modal? @Be <pos="DT" | pos="CD">? <lemma="way"> <string="that">? )
+// which is why
+| (?: (?:<string=",">? <string=/and|which/>)? @Modal? @Be <string=/why|how/> )
+// by which
+| (?: <string="by"> <string="which"> )
+}
+EffectRelTo := TypedOpenRegex {
+// in order to
+(?:<lemma="in"> <string="order"> <string="to"> )
+// which helps to
+| (?: (?:<string=",">? <string=/and|that|which|to/>)? @Help <string="to"> )
+// may be one way to
+| (?:@Modal? @Be <pos="DT" | pos="CD">? <string=/way(s)?/> <string="to"> )
+}
+
+CauseRel := TypedOpenRegex {
+// may be because of
+(?:(?:@Modal? @Be)? <lemma="because"> <string="of">? )
+// may be caused by
+| (?:@Modal? @Be <string="caused"> <string="by"> )
+// which causes
+| (?:<lemma="cause"> )
+// may be due to
+| (?:@Modal? @Be? <lemma="due"> <string="to"> )
+}
+
+FunctionRel := TypedOpenRegex {
+// which may be responsible for
+(?:@Modal? @Be <string=/used|responsible/> <string="for"> )
+}
+FunctionRelTo := TypedOpenRegex {
+// which may be used to
+(?:@Modal? @Be <string="used"> <string="to"> )
+}
+
+ExampleRel := TypedOpenRegex {
+// which may include
+(?:@Modal? <lemma="include"> )
+// such as
+| (?:<string="such"> <string="as"> )
+// is an example of
+| (?:@Modal? @Be? <pos="DT">? <lemma="example"> <string="of"> )
+// is a
+| (?:<string="is"> <string=/a(n)?/> )
+}
+
+RequiredRel := TypedOpenRegex {
+// which may be necessary for
+(?:@Modal? @Be <string=/necessary|needed|required/> <string="for"> )
+}
+RequiredRelTo := TypedOpenRegex {
+// which may be necessary to
+(?:@Modal? @Be <string=/necessary|needed|required/> <string="to"> )
+}
+
+
+consume Rel := TypedOpenRegex {
+  (?:@EffectRel | @CauseRel )
+}
+
+consume RelTo := TypedOpenRegex {
+  (?:@EffectRelTo | @FunctionRelTo | @RequiredRelTo)
+}
+
+consume RelFor := TypedOpenRegex {
+  (?:@FunctionRel | @RequiredRel)
+}

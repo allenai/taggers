@@ -1,0 +1,89 @@
+NP := TypedOpenRegex {
+   (?: @NP4)
+ | (?: @NG @RelClause @VG @NP4) 
+}
+
+NPNoDet := TypedOpenRegex {
+   (?: @NP4NoDet)
+ | (?: @NGNoDet @RelClause @VG @NP4)
+}
+
+VP1 := TypedOpenRegex {
+  (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>:@VG) (<Arg2>:@NP)? @AP1? (<Arg>:(@PP|(<pos="TO"> @VG))*))))
+  // | (?: (<Rel>:@VG) (<Arg2>:@NP) (<Arg3>:@NP) @AP1* (<Arg>:@PP*) )
+  | (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>:@VG) (<Arg2>:@AP1) (<Arg>:(@PP|(<pos="TO"> @VG))*) )))
+  | (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>:@VG) (<Arg2>:<pos=/RB.*/>) (<Arg>:(@PP|(<pos="TO"> @VG))*) )))
+  | (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>: (@Rel | @RelTo | @RelFor) @V2?) (<Arg2>:@NP)? @AP1? (<Arg>:(@PP|(<pos="TO"> @VG))*))))
+}
+
+VP := TypedOpenRegex {
+  (?: ((<AntecedentVP>: @VP1) ((<Rel>: @Rel | @RelTo | @RelFor | <lemma=/when|as/> | <string="to">) (<ConsequentVP>: @VP1))?))
+}
+
+VPComposite2 := TypedOpenRegex {
+   (?: (<FirstVP>: @VP1) (?: (<string=",">? (<string=/and|or|and\/or/> (<SecondVP>: @VP1)))))
+}
+
+VPComposite3 := TypedOpenRegex {
+   (?: (<FirstVP>: @VP1) (?: <string=","> (<SecondVP>: @VP1) (<string=",">? (<string=/and|or|and\/or/> (<ThirdVP>: @VP1)))))
+}
+
+VPComposite4 := TypedOpenRegex {
+   (?: (<FirstVP>: @VP1) (?: <string=","> (<SecondVP>: @VP1) <string=","> (<ThirdVP>:@VP1)? (<string=",">? (<string=/and|or|and\/or/> (<FourthVP>: @VP1)))))
+}
+
+
+S1 := TypedOpenRegex {
+  (<Arg1>:@NP) <string="to">? (<VP>:@VP1)
+}
+
+S := TypedOpenRegex {
+  (?: ((<AntecedentS>: @S1) (<Rel>: @Rel | @RelTo | @RelFor | <lemma=/when|as/>) (<ConsequentS>: @S1)))
+}
+
+consume Definition1_4 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern1) (<Facts>: @VPComposite4))
+}
+
+consume Definition1_3 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern1) (<Facts>: @VPComposite3))
+}
+
+consume Definition1_2 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern1) (<Facts>: @VPComposite2))
+}
+
+consume Definition1_1 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern1) (<Facts>: @VP1))
+}
+
+consume Definition2_2 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern2) (<Facts>: @S))
+}
+
+consume Definition2_1 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern2) (<Facts>: @S1))
+}
+
+consume Definition3_4 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern3) (<Facts>: @VPComposite4))
+}
+
+consume Definition3_3 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern3) (<Facts>: @VPComposite3))
+}
+
+consume Definition3_2 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern3) (<Facts>: @VPComposite2))
+}
+
+consume Definition3_1 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern3) (<Facts>: @VP1))
+}
+
+consume Definition4_2 := TypedOpenRegex {
+   (?: ((<Fact>: @DefnPattern3) (<pos="TO"> (<FactArg>: @VP1))))
+}
+consume Definition4_1 := TypedOpenRegex {
+   (?: (<Fact>: @DefnPattern3))
+}

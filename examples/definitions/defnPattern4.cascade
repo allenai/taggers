@@ -1,0 +1,9 @@
+adj.taggers
+noun.taggers
+prep.taggers
+defn.taggers
+verb.taggers
+rel.taggers
+sent.taggers
+
+y: DefnPattern3 => Definition Fact: (${y.Fact->DefnIsa.DefinedTerm|''}, is, ${y.Fact->DefnIsa.IsaWhat|''})
