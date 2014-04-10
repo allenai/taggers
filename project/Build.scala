@@ -11,7 +11,7 @@ object TaggerBuild extends Build {
   val loggingImplementations = Seq(logbackCore, logbackClassic)
 
   val sprayVersion = "1.3.1"
-  val akkaVersion = "2.3.0"
+  val akkaVersion = "2.3.2"
   val nlptoolsVersion = SettingKey[String]("nlptools-version", "The version of nlptools used for building.")
 
   lazy val root = Project(id = "taggers-root", base = file(".")).settings (
@@ -23,12 +23,19 @@ object TaggerBuild extends Build {
   val buildSettings = Defaults.defaultSettings ++ ReleaseSettings.defaults ++ Format.settings ++ Revolver.settings ++
     Seq(
       organization := "org.allenai.taggers",
-      crossScalaVersions := Seq("2.10.3"),
+      crossScalaVersions := Seq("2.10.4"),
       scalaVersion <<= crossScalaVersions { (vs: Seq[String]) => vs.head },
       nlptoolsVersion := "2.5.0-SNAPSHOT",
       scalacOptions ++= Seq("-unchecked", "-deprecation"),
       homepage := Some(url("http://github.com/knowitall/taggers")),
       licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
+      conflictManager := ConflictManager.strict,
+      dependencyOverrides ++= Set(
+          "com.google.guava" % "guava" % "15.0",
+          "org.scala-lang" % "scala-library" % "2.10.4",
+          "org.slf4j" % "slf4j-api" % "1.7.6",
+          "org.parboiled" %% "parboiled-scala" % "1.1.6",
+          "com.github.scopt" %% "scopt" % "3.2.0"),
       resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
       publishMavenStyle := true,
       publishTo <<= version { (v: String) =>

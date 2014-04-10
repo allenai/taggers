@@ -8,6 +8,9 @@ libraryDependencies ++= Seq(
     "io.spray" % "spray-can" % sprayVersion,
     "io.spray" % "spray-routing" % sprayVersion)
 
+dependencyOverrides ++= Set(
+    "com.github.scopt" %% "scopt" % "3.2.0")
+
 scalacOptions ++= Seq("-unchecked", "-deprecation")
 
 // SBT native packager configs.
