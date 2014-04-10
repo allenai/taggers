@@ -1,0 +1,39 @@
+RelClause := TypedOpenRegex {
+   (?: <string=",">? <string=/that|which/>)
+}
+
+DefnPronoun := CaseInsensitiveKeywordTagger {
+    it
+}
+
+NP4 := TypedOpenRegex {
+   (?:@NG @PP*)
+}
+
+NP4NoDet := TypedOpenRegex {
+  (?:@NGNoDet @PP*)
+}
+
+//NPNoRelClause := TypedOpenRegex {
+//  (?:@NG @PPNoRelClause*)
+//}
+
+consume DefnIsa := TypedOpenRegex {
+    (?: @Det? (<string="'">? (<DefinedTerm>: @NP4NoDet) <string="'">?) ((<string=/is|are|describes/>) | (<string=/refers/> <string=/to/>) | (<string=/is/> <string=/defined/> <string=/as/>)) @Det? (<IsaWhat>:@NP4NoDet))
+ |  (?: (<DefinedTerm>:@NP4NoDet) <string=":"> ((@DefnPronoun? | (@Det? <string="'">? @NP4NoDet <string="'">?)) ((<string=/is|are|describes/>) | (<string=/refers/> <string=/to/>) | (<string=/is/> <string=/defined/> <string=/as/>)))? @Det? (<IsaWhat>:@NP4NoDet))
+}
+
+consume DefnPattern1 := TypedOpenRegex {
+  (?:  (<DefnIsaPart>: @DefnIsa) @RelClause)
+ | (?:  (<DefnIsaPart>: @DefnIsa) @RelClause)
+}
+
+consume DefnPattern2 := TypedOpenRegex {
+   (?: (<DefnIsaPart>: @DefnIsa) ((<pos="IN"> <string=/which/>) | <string=/when|where|whereby/>))
+ | (?: (<DefnIsaPart>: @DefnIsa) ((<pos="IN"> <string=/which/>) | <string=/when|where|whereby/>))
+}
+
+consume DefnPattern3 := TypedOpenRegex {
+  (?:  (<Fact>: @DefnIsa))
+ | (?:  (<Fact>: @DefnIsa))
+}

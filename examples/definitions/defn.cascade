@@ -1,0 +1,52 @@
+adj.taggers
+noun.taggers
+prep.taggers
+defn.taggers
+verb.taggers
+rel.taggers
+sent.taggers
+
+x: Definition1_2 => Isa: (${x.Isa->DefnPattern1.DefnIsaPart->DefnIsa.DefinedTerm|''}, isa, ${x.Isa->DefnPattern1.DefnIsaPart->DefnIsa.IsaWhat|''})
+y: Definition1_2 => Definition Fact: (${y.Isa->DefnPattern1.DefnIsaPart->DefnIsa.DefinedTerm|''}, ${y.Facts->VPComposite2.FirstVP->VP1.Rel|''}, ${y.Facts->VPComposite2.FirstVP->VP1.Arg2|''})
+z: Definition1_2 => Definition Fact: (${z.Isa->DefnPattern1.DefnIsaPart->DefnIsa.DefinedTerm|''}, ${z.Facts->VPComposite2.SecondVP->VP1.Rel|''}, ${z.Facts->VPComposite2.SecondVP->VP1.Arg2|''})
+
+
+x: Definition1_1 => Isa: (${x.Isa->DefnPattern1.DefnIsaPart->DefnIsa.DefinedTerm|''}, isa, ${x.Isa->DefnPattern1.DefnIsaPart->DefnIsa.IsaWhat|''})
+y: Definition1_1 => Definition Fact: (${y.Isa->DefnPattern1.DefnIsaPart->DefnIsa.DefinedTerm|''}, ${y.Facts->VP1.Rel|''}, ${y.Facts->VP1.Arg2|''}, ${y.Facts->VP1.Arg|''})
+
+x: Definition1_3 => Isa: (${x.Isa->DefnPattern1.DefnIsaPart->DefnIsa.DefinedTerm|''}, isa, ${x.Isa->DefnPattern1.DefnIsaPart->DefnIsa.IsaWhat|''})
+x: Definition1_3 => Definition Fact: (${x.Isa->DefnPattern1.DefnIsaPart->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite3.FirstVP->VP1.Rel|''}, ${x.Facts->VPComposite3.FirstVP->VP1.Arg2|''})
+x: Definition1_3 => Definition Fact: (${x.Isa->DefnPattern1.DefnIsaPart->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite3.SecondVP->VP1.Rel|''}, ${x.Facts->VPComposite3.SecondVP->VP1.Arg2|''})
+x: Definition1_3 => Definition Fact: (${x.Isa->DefnPattern1.DefnIsaPart->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite3.ThirdVP->VP1.Rel|''}, ${x.Facts->VPComposite3.ThirdVP->VP1.Arg2|''})
+
+x: Definition1_4 => Isa: (${x.Isa->DefnPattern1.DefnIsaPart->DefnIsa.DefinedTerm|''}, isa, ${x.Isa->DefnPattern1.DefnIsaPart->DefnIsa.IsaWhat|''})
+x: Definition1_4 => Definition Fact: (${x.Isa->DefnPattern1.DefnIsaPart->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite4.FirstVP->VP1.Rel|''}, ${x.Facts->VPComposite4.FirstVP->VP1.Arg2|''})
+x: Definition1_4 => Definition Fact: (${x.Isa->DefnPattern1.DefnIsaPart->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite4.SecondVP->VP1.Rel|''}, ${x.Facts->VPComposite4.SecondVP->VP1.Arg2|''})
+x: Definition1_4 => Definition Fact: (${x.Isa->DefnPattern1.DefnIsaPart->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite4.ThirdVP->VP1.Rel|''}, ${x.Facts->VPComposite4.ThirdVP->VP1.Arg2|''})
+x: Definition1_4 => Definition Fact: (${x.Isa->DefnPattern1.DefnIsaPart->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite4.FourthVP->VP1.Rel|''}, ${x.Facts->VPComposite4.FourthVP->VP1.Arg2|''})
+
+
+x: Definition2_1 => Isa: (${x.Isa->DefnPattern2.DefnIsaPart->DefnIsa.DefinedTerm|''}, isa, ${x.Isa->DefnPattern2.DefnIsaPart->DefnIsa.IsaWhat|''})
+x: Definition2_1 => Definition Fact: (${x.Isa->DefnPattern2.DefnIsaPart->DefnIsa.DefinedTerm|''}, describes, (${x.Facts->S1.Arg1|''}, ${x.Facts->S1.VP->VP1.Rel|''}, ${x.Facts->S1.VP->VP1.Arg2|''}))
+
+x: Definition2_2 => Isa: (${x.Isa->DefnPattern2.DefnIsaPart->DefnIsa.DefinedTerm|''}, isa, ${x.Isa->DefnPattern2.DefnIsaPart->DefnIsa.IsaWhat|''})
+x: Definition2_2 => Definition Fact: (${x.Isa->DefnPattern2.DefnIsaPart->DefnIsa.DefinedTerm|''}, describes, ((${x.Facts->S.AntecedentS->S1.Arg1|''}, ${x.Facts->S.AntecedentS->S1.VP->VP1.Rel|''}, ${x.Facts->S.AntecedentS->S1.VP->VP1.Arg2|''}), ${x.Facts->S.Rel|''}, (${x.Facts->S.ConsequentS->S1.Arg1|''}, ${x.Facts->S.ConsequentS->S1.VP->VP1.Rel|''}, ${x.Facts->S.ConsequentS->S1.VP->VP1.Arg2|''})))
+
+x: Definition3_1 => Isa: (${x.Isa->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, isa, ${x.Isa->DefnPattern3.Fact->DefnIsa.IsaWhat|''})
+x: Definition3_1 => Definition Fact: (${x.Isa->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, ${x.Facts->VP1.Rel|''}, ${x.Facts->VP1.Arg2|''})
+x: Definition3_2 => Isa: (${x.Isa->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, isa, ${x.Isa->DefnPattern3.Fact->DefnIsa.IsaWhat|''})
+x: Definition3_2 => Definition Fact: (${x.Isa->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite2.FirstVP->VP1.Rel|''}, ${x.Facts->VPComposite2.FirstVP->VP1.Arg2|''})
+x: Definition3_2 => Definition Fact: (${x.Isa->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite2.SecondVP->VP1.Rel|''}, ${x.Facts->VPComposite2.SecondVP->VP1.Arg2|''})
+x: Definition3_3 => Isa: (${x.Isa->DefnPattern1.Isa->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, isa, ${x.Isa->DefnPattern3.DefnIsaPart->DefnIsa.IsaWhat|''})
+x: Definition3_3 => Definition Fact: (${x.Isa->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite3.FirstVP->VP1.Rel|''}, ${x.Facts->VPComposite3.FirstVP->VP1.Arg2|''})
+x: Definition3_3 => Definition Fact: (${x.Isa->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite3.SecondVP->VP1.Rel|''}, ${x.Facts->VPComposite3.SecondVP->VP1.Arg2|''})
+x: Definition3_3 => Definition Fact: (${x.Isa->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite3.ThirdVP->VP1.Rel|''}, ${x.Facts->VPComposite3.ThirdVP->VP1.Arg2|''})
+x: Definition3_4 => Isa: (${x.Isa->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, isa, ${x.Isa->DefnPattern3.DefnIsaPart->DefnIsa.IsaWhat|''})
+x: Definition3_4 => Definition Fact: (${x.Isa->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite4.FirstVP->VP1.Rel|''}, ${x.Facts->VPComposite4.FirstVP->VP1.Arg2|''})
+x: Definition3_4 => Definition Fact: (${x.Isa->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite4.SecondVP->VP1.Rel|''}, ${x.Facts->VPComposite4.SecondVP->VP1.Arg2|''})
+x: Definition3_4 => Definition Fact: (${x.Isa->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite4.ThirdVP->VP1.Rel|''}, ${x.Facts->VPComposite4.ThirdVP->VP1.Arg2|''})
+x: Definition3_4 => Definition Fact: (${x.Isa->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, ${x.Facts->VPComposite4.FourthVP->VP1.Rel|''}, ${x.Facts->VPComposite4.FourthVP->VP1.Arg2|''})
+
+
+x: Definition4_1 => Definition Fact: (${x.Fact->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, is, ${x.Fact->DefnPattern3.Fact->DefnIsa.IsaWhat|''})
+x: Definition4_2 => Definition Fact: (${x.Fact->DefnPattern3.Fact->DefnIsa.DefinedTerm|''}, is, (${x.Fact->DefnPattern3.Fact->DefnIsa.IsaWhat|''}, to, (, ${x.FactArg->VP1.Rel|''}, ${x.FactArg->VP1.Arg2|''}, ${x.FactArg->VP1.Arg|''})))

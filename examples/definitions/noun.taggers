@@ -1,0 +1,50 @@
+Det := OpenRegex {
+   (?: <pos='PDT'>? <pos='DT' | pos='CD' | pos='PRP$'> )
+   | (?: <pos='PDT'>? <pos='DT'> <pos='CD'> )
+}
+
+NP1 := TypedOpenRegex {
+   (?: @Det? @AP1? <pos=/NN.*/>+ )
+   | (?: (?: @Det | @AP1 ) @AP1? <pos=/VB[GN]/>? <pos=/NN.*/>+ )
+   | (?: @Det @AP1 )
+   | (?: @Det <pos=/VB[GN]/> )
+   | (?: <pos=/RB.?/> <pos=/NN.*/> )
+   // | (?:@Name)
+}
+
+NP1NoDet := TypedOpenRegex {
+   (?: @AP1? <pos=/NN.*/>+ )
+   | (?: (?: @AP1 ) @AP1? <pos=/VB[GN]/>? <pos=/NN.*/>+ )
+   | (?: <pos=/RB.?/> <pos=/NN.*/> )
+   // | (?:@Name)
+}
+
+NP2 := TypedOpenRegex {
+   (?: @NP1 (<string=",">? @AP2+)? )
+}
+
+NP2NoDet := TypedOpenRegex {
+   (?: @NP1NoDet (<string=",">? @AP2+)?)
+}
+
+NP3 := TypedOpenRegex {
+   (?:@NP2 (?: (?:<string=","> @NP2)* (<string=",">? <string=/and|or|and\/or/> @NP2)?)? )
+}
+
+NP3NoDet := TypedOpenRegex {
+   (?:@NP2NoDet (?: (?:<string=","> @NP2NoDet)* (<string=",">? <string=/and|or|and\/or/> @NP2NoDet)? )? )
+}
+
+NG := TypedOpenRegex {
+   (?: <pos='RB'>?@NP3 (?: (?:<string="of"> | <pos="POS">) @NP3 )? )
+   | (?: <pos='RB'>? @NP3 <string="("> @NP3 <string=")"> )
+   | (?: <pos='RB'>? <pos='PRP'> )
+   | (?: <pos='RB'>? <lemma=/this|these|those/> )
+}
+
+NGNoDet := TypedOpenRegex {
+   (?: <pos='RB'>? @NP3NoDet (?: (?:<string="of"> | <pos="POS">) @NP3)? )
+   | (?: <pos='RB'>? @NP3NoDet <string="("> @NP3NoDet <string=")"> )
+   | (?: <pos='RB'>? <pos='PRP'> )
+   | (?: <pos='RB'>? <lemma=/this|these|those/> )
+}

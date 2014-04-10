@@ -1,0 +1,10 @@
+adj.taggers
+noun.taggers
+prep.taggers
+defn.taggers
+verb.taggers
+rel.taggers
+sent.taggers
+
+x: DefnPattern3 => (${x.Fact->DefnIsa.DefinedTerm|''}, isa, ${x.Fact->DefnIsa.IsaWhat|''})
+y: VP => Definition Fact: (, ${y.AntecedentVP->VP1.Rel|''}, ${y.AntecedentVP->VP1.Arg2|''}) ${y.Rel|''} (, ${y.ConsequentVP->VP1.Rel|''}, ${y.ConsequentVP->VP1.Arg2|''})

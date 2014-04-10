@@ -1,0 +1,12 @@
+adj.taggers
+noun.taggers
+prep.taggers
+defn.taggers
+verb.taggers
+rel.taggers
+sent.taggers
+
+
+x: DefnPattern2 => (${x.DefnIsaPart->DefnIsa.DefinedTerm|''}, isa, ${x.DefnIsaPart->DefnIsa.IsaWhat|''})
+
+x: S => Definition Fact:  ((${x.AntecedentS->S1.Arg1|''}, ${x.AntecedentS->S1.VP->VP.AntecedentVP->VP1.MainVP->VP1.Rel|''}, ${x.AntecedentS->S1.VP->VP.AntecedentVP->VP1.MainVP->VP1.Arg2|''})  ${x.AntecedentS->S1.VP->VP.Rel|''} (${x.AntecedentS->S1.VP->VP.ConsequentVP->VP1.MainVP->VP1.Rel|''}, ${x.AntecedentS->S1.VP->VP.ConsequentVP->VP1.MainVP->VP1.Arg2|''})) ${x.Rel|''} ((${x.ConsequentS->S1.Arg1|''}, ${x.ConsequentS->S1.VP->VP.AntecedentVP->VP1.MainVP->VP1.Rel|''}, ${x.ConsequentS->S1.VP->VP.AntecedentVP->VP1.MainVP->VP1.Arg2|''})  ${x.ConsequentS->S1.VP->VP.Rel|''} (${x.ConsequentS->S1.VP->VP.ConsequentVP->VP1.MainVP->VP1.Rel|''}, ${x.ConsequentS->S1.VP->VP.ConsequentVP->VP1.MainVP->VP1.Arg2|''}))
