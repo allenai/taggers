@@ -5,7 +5,6 @@ name := "taggers-core"
 description := "Tag sentences with XML-specified logic."
 
 libraryDependencies ++= Seq(
-    "com.google.guava" % "guava" % "13.0.1",
     "org.allenai.nlptools" %% "nlptools-core" % nlptoolsVersion.value,
     "org.allenai.nlptools" %% "nlptools-chunk-opennlp" % nlptoolsVersion.value,
     "org.allenai.nlptools" %% "nlptools-stem-morpha" % nlptoolsVersion.value,
