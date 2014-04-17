@@ -3,7 +3,7 @@ Aux := OpenRegex {
 }
 
 V := OpenRegex {
-  (<Head>:<pos=/VB[DPZN]?/> (?: <pos="RP" | pos="IN">)? )
+  (<Head>:<pos=/VB[DPZNG]?/> (?: <pos="IN" | pos="RP">)? )
 }
 V2 := TypedOpenRegex {
   (?:@V (?: <string=/and|or|and\/or/> @V)? )

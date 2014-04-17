@@ -1,7 +1,7 @@
 AP1 := OpenRegex {
-   (?: <pos='RB'>? <pos=/JJ.*|VBG/>+ (<string=/and|or/> <pos=/JJ.*|VBG/>)?)
+   (?: (<pos='RBR' | pos='RBS'>? <pos='RB'>)? <pos=/JJ.*|VBG|VBN/>+ (<string=/and|or/> <pos=/JJ.*|VBG|VBN/>)?)
 }
 
 AP2 := OpenRegex {
-   (?: <pos='RB'>? <pos='JJ'> (<pos='TO'> | <pos='IN'>) <pos=/NN.*/>+)
+   (?: (<pos='RBR' | pos='RBS'>? <pos='RB'>)? <pos='JJ'> (<pos='TO'> | <pos='IN'>) <pos=/NN.*/>+)
 }

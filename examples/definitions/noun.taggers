@@ -20,31 +20,40 @@ NP1NoDet := TypedOpenRegex {
 }
 
 NP2 := TypedOpenRegex {
-   (?: @NP1 (<string=",">? @AP2+)? )
+   (?: (<pos='RBR' | pos='RBS'> <pos='IN'>)? @NP1 (<string=",">? @AP2+)? )
 }
 
 NP2NoDet := TypedOpenRegex {
-   (?: @NP1NoDet (<string=",">? @AP2+)?)
+   (?: (<pos='RBR' | pos='RBS'> <pos='IN'>)? @NP1NoDet (<string=",">? @AP2+)?)
 }
 
-NP3 := TypedOpenRegex {
-   (?:@NP2 (?: (?:<string=","> @NP2)* (<string=",">? <string=/and|or|and\/or/> @NP2)?)? )
+//NP3 := TypedOpenRegex {
+//   (?:@NP2 (?: (?:<string=","> @NP2)* (<string=",">? <string=/and|or|and\/or/> @NP2)?)? )
+//}
+
+//NP3NoDet := TypedOpenRegex {
+//   (?:@NP2NoDet (?: (?:<string=","> @NP2NoDet)* (<string=",">? <string=/and|or|and\/or/> @NP2NoDet)? )? )
+//}
+
+NG1 := TypedOpenRegex {
+   (?: <pos='RB'>?@NP2 (?: (?:<string="of"> | <pos="POS">) @NP2)? )
+   | (?: <pos='RB'>? @NP2 <string="("> @NP2 <string=")"> )
+   | (?: <pos='RB'>? <pos='PRP'> )
+   | (?: <pos='RB'>? <lemma=/this|these|those/> )
 }
 
-NP3NoDet := TypedOpenRegex {
-   (?:@NP2NoDet (?: (?:<string=","> @NP2NoDet)* (<string=",">? <string=/and|or|and\/or/> @NP2NoDet)? )? )
+NGNoDet1 := TypedOpenRegex {
+   (?: <pos='RB'>? @NP2NoDet (?: (?:<string="of"> | <pos="POS">) @NP2)? )
+   | (?: <pos='RB'>? @NP2NoDet <string="("> @NP2NoDet <string=")"> )
+   | (?: <pos='RB'>? <pos='PRP'> )
+   | (?: <pos='RB'>? <lemma=/this|these|those/> )
 }
 
 NG := TypedOpenRegex {
-   (?: <pos='RB'>?@NP3 (?: (?:<string="of"> | <pos="POS">) @NP3 )? )
-   | (?: <pos='RB'>? @NP3 <string="("> @NP3 <string=")"> )
-   | (?: <pos='RB'>? <pos='PRP'> )
-   | (?: <pos='RB'>? <lemma=/this|these|those/> )
+   (?:@NG1 (?: (?:<string="," | string="or"> @NG1)* <string=",">? <string=/and|or|and\/or/> @NG1 )? )
 }
 
 NGNoDet := TypedOpenRegex {
-   (?: <pos='RB'>? @NP3NoDet (?: (?:<string="of"> | <pos="POS">) @NP3)? )
-   | (?: <pos='RB'>? @NP3NoDet <string="("> @NP3NoDet <string=")"> )
-   | (?: <pos='RB'>? <pos='PRP'> )
-   | (?: <pos='RB'>? <lemma=/this|these|those/> )
+   (?:@NGNoDet1 (?: (?:<string="," | string="or"> @NG1)* <string=",">? <string=/and|or|and\/or/> @NG1 )? )
 }
+
