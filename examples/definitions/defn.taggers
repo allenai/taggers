@@ -1,36 +1,45 @@
 RelClause := TypedOpenRegex {
-   (?: <string=",">? <string=/that|which/>)
+   (?: <string=",">? <string=/that|which|who/>)
 }
 
 DefnPronoun := CaseInsensitiveKeywordTagger {
     it
 }
 
-NP4 := TypedOpenRegex {
-   (?:@NG @PP*)
+NP3NoDetNoRelClauseSimple := TypedOpenRegex {
+  (?:@NGNoDet1 @PP*)
 }
 
-NP4NoDet := TypedOpenRegex {
+NP3NoDetNoRelClause := TypedOpenRegex {
   (?:@NGNoDet @PP*)
 }
 
-//NPNoRelClause := TypedOpenRegex {
-//  (?:@NG @PPNoRelClause*)
+//consume DefnIsa := TypedOpenRegex {
+//   (?: (<string=/In/>?  (<Context>: <pos=/NN.*/>) (<string=/,|:/>)?)? @Det? (<string="'">? (<DefinedTerm>: @NP3NoDetNoRelClauseSimple) <string="'">?) ((<string=/is|are|describes/>) | (<string=/refers/> <string=/to/>) | (<string=/is/> <string=/defined/> <string=/as/>)) @Det? (<IsaWhat>:@NP3NoDetNoRelClause))
+// |  (?: (<DefinedTerm>:@NP3NoDetNoRelClauseSimple) <string=":"> (<string=/In/>?  (<Context>: <pos=/NN.*/> ) (<string=/,|:/>)?)? ((@DefnPronoun? | (@Det? <string="'">? @NP3NoDetNoRelClauseSimple <string="'">?)) ((<string=/is|are|describes/>) | (<string=/refers/> <string=/to/>) | (<string=/is/> <string=/defined/> <string=/as/>)))? @Det? (<IsaWhat>:@NP3NoDetNoRelClause))
 //}
 
 consume DefnIsa := TypedOpenRegex {
-    (?: @Det? (<string="'">? (<DefinedTerm>: @NP4NoDet) <string="'">?) ((<string=/is|are|describes/>) | (<string=/refers/> <string=/to/>) | (<string=/is/> <string=/defined/> <string=/as/>)) @Det? (<IsaWhat>:@NP4NoDet))
- |  (?: (<DefinedTerm>:@NP4NoDet) <string=":"> ((@DefnPronoun? | (@Det? <string="'">? @NP4NoDet <string="'">?)) ((<string=/is|are|describes/>) | (<string=/refers/> <string=/to/>) | (<string=/is/> <string=/defined/> <string=/as/>)))? @Det? (<IsaWhat>:@NP4NoDet))
+    (?: (<string=/In/>?  (<Context>: <pos=/NN.*/>) (<string=/,|:/>)?)? @Det? (<string="'">? (<DefinedTerm>: @NP3NoDetNoRelClauseSimple) <string="'">?) ((<string=/is|are|describes/>) | (<string=/refers/> <string=/to/>) | (<string=/is/> <string=/defined/> <string=/as/>)) @Det? (<IsaWhat>:@NP3NoDetNoRelClause))
+ |  (?: (<DefinedTerm>:@NP3NoDetNoRelClauseSimple) <string=":"> ((<string=/In/>?  (<Context>: <pos=/NN.*/>) (<string=/,|:/>)?)? (@DefnPronoun? | (@Det? <string="'">? @NP3NoDetNoRelClauseSimple <string="'">?)) ((<string=/is|are|describes/>) | (<string=/refers/> <string=/to/>) | (<string=/is/> <string=/defined/> <string=/as/>)))? @Det? (<IsaWhat>:@NP3NoDetNoRelClause))
+ |  (?: (<DefinedTerm>:@NP3NoDetNoRelClauseSimple) <string=":"> (<string=/In/>?  (<Context>: <pos=/NN.*/>) (<string=/:/>)?)? @Det? (<IsaWhat>:@NP3NoDetNoRelClause))
+ |  (?: (<DefinedTerm>:@NP3NoDetNoRelClauseSimple) <string=":"> (<string=/In/>?  (<Context>: <pos=/NN.*/>) (<string=/,/>)) @Det? (<IsaWhat>:(@NGNoDet1 (<string="," | string="or"> @NG1)* (<string=",">? (<string=/and|or|and\/or/> @NG1))?)))
 }
+
 
 consume DefnPattern1 := TypedOpenRegex {
   (?:  (<DefnIsaPart>: @DefnIsa) @RelClause)
  | (?:  (<DefnIsaPart>: @DefnIsa) @RelClause)
 }
 
-consume DefnPattern2 := TypedOpenRegex {
-   (?: (<DefnIsaPart>: @DefnIsa) ((<pos="IN"> <string=/which/>) | <string=/when|where|whereby/>))
- | (?: (<DefnIsaPart>: @DefnIsa) ((<pos="IN"> <string=/which/>) | <string=/when|where|whereby/>))
+consume DefnPattern2_1 := TypedOpenRegex {
+   (?: (<DefnIsaPart>: @DefnIsa) (<string=/when|where|whereby/>))
+ | (?: (<DefnIsaPart>: @DefnIsa) (<string=/when|where|whereby/>))
+}
+
+consume DefnPattern2_2 := TypedOpenRegex {
+   (?: (<DefnIsaPart>: @DefnIsa) ((<Prep>: <pos="IN">) <string=/which|whom/>))
+ | (?: (<DefnIsaPart>: @DefnIsa) ((<Prep>: <pos="IN">) <string=/which|whom/>))
 }
 
 consume DefnPattern3 := TypedOpenRegex {

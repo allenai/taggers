@@ -1,37 +1,45 @@
-NP := TypedOpenRegex {
-   (?: @NP4)
- | (?: @NG @RelClause @VG @NP4) 
+NP3 := TypedOpenRegex {
+   (?: @NG)
+ | (?: @NG @RelClause @VG @NG)
+ | (?: @NG <pos="IN" | pos="TO">  <pos="WDT"> @NG @VG @NG?) 
 }
 
-NPNoDet := TypedOpenRegex {
-   (?: @NP4NoDet)
- | (?: @NGNoDet @RelClause @VG @NP4)
+NP4 := TypedOpenRegex {
+   (?:@NP3 (?: (?:<string=","> @NP3)* <string=",">? <string=/and|or|and\/or/> @NP3)? )
+}
+
+NP5 := TypedOpenRegex {
+   (?:@NP3 @PP*)
+}
+
+NP := TypedOpenRegex {
+   (?:@NP5 (?: (?:<string=","> @NP5)* <string=",">? <string=/and|or|and\/or/> @NP5 )? )
 }
 
 VP1 := TypedOpenRegex {
-  (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>:@VG) (<Arg2>:@NP)? @AP1? (<Arg>:(@PP|(<pos="TO"> @VG))*))))
+  (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>:@VG) (<Arg2>:@NP4)? @AP1? (<Arg>:((<string=",">?) (@PP|(<pos="TO"> @VG @NP4)))*))))
+  | (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>:@VG) (<Arg2>:@NP5)? @AP1?)))
   // | (?: (<Rel>:@VG) (<Arg2>:@NP) (<Arg3>:@NP) @AP1* (<Arg>:@PP*) )
-  | (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>:@VG) (<Arg2>:@AP1) (<Arg>:(@PP|(<pos="TO"> @VG))*) )))
-  | (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>:@VG) (<Arg2>:<pos=/RB.*/>) (<Arg>:(@PP|(<pos="TO"> @VG))*) )))
-  | (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>: (@Rel | @RelTo | @RelFor) @V2?) (<Arg2>:@NP)? @AP1? (<Arg>:(@PP|(<pos="TO"> @VG))*))))
+  | (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>:@VG) (<Arg2>:@AP1) (<Arg>:((<string=",">?) (@PP|(<pos="TO"> @VG)))*) )))
+  | (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>:@VG) (<Arg2>:<pos=/RB.*/>) (<Arg>:((<string=",">?) (@PP|(<pos="TO"> @VG)))*) )))
+  | (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>: (@Rel | @RelTo | @RelFor) @V2?) (<Arg2>:@NP)? @AP1? (<Arg>:((<string=",">?) (@PP|(<pos="TO"> @VG)))*))))
 }
 
 VP := TypedOpenRegex {
-  (?: ((<AntecedentVP>: @VP1) ((<Rel>: @Rel | @RelTo | @RelFor | <lemma=/when|as/> | <string="to">) (<ConsequentVP>: @VP1))?))
+   (?:@VP1 (?: (?:(<string=","> | (<string=",">? <string=/or|but/>)) @VP1)* <string=",">? <string=/and|or|but|and\/or/> @VP1 )? )
 }
 
 VPComposite2 := TypedOpenRegex {
-   (?: (<FirstVP>: @VP1) (?: (<string=",">? (<string=/and|or|and\/or/> (<SecondVP>: @VP1)))))
+   (?: (<FirstVP>: @VP1) (?: ((<string=",">? <string=/and|or|but|and\/or/>) (<SecondVP>: @VP1))))
 }
 
 VPComposite3 := TypedOpenRegex {
-   (?: (<FirstVP>: @VP1) (?: <string=","> (<SecondVP>: @VP1) (<string=",">? (<string=/and|or|and\/or/> (<ThirdVP>: @VP1)))))
+   (?: (<FirstVP>: @VP1) (?: (<string=","> | (<string=",">? <string=/and|or|but|and\/or/>)) (<SecondVP>: @VP1) ((<string=","> | (<string=",">? <string=/and|or|but|and\/or/>)) (<ThirdVP>: @VP1))))
 }
 
 VPComposite4 := TypedOpenRegex {
-   (?: (<FirstVP>: @VP1) (?: <string=","> (<SecondVP>: @VP1) <string=","> (<ThirdVP>:@VP1)? (<string=",">? (<string=/and|or|and\/or/> (<FourthVP>: @VP1)))))
+   (?: (<FirstVP>: @VP1) (?: (<string=","> | (<string=",">? <string=/and|or|but|and\/or/>)) (<SecondVP>: @VP1) (<string=","> | (<string=",">? <string=/and|or|but|and\/or/>)) (<ThirdVP>:@VP1)? (<string=",">? ((<string=","> | (<string=",">? <string=/and|or|but|and\/or/>)) (<FourthVP>: @VP1)))))
 }
-
 
 S1 := TypedOpenRegex {
   (<Arg1>:@NP) <string="to">? (<VP>:@VP1)
@@ -39,6 +47,22 @@ S1 := TypedOpenRegex {
 
 S := TypedOpenRegex {
   (?: ((<AntecedentS>: @S1) (<Rel>: @Rel | @RelTo | @RelFor | <lemma=/when|as/>) (<ConsequentS>: @S1)))
+}
+
+VP3 := TypedOpenRegex {
+  (?: ((<AntecedentVP>: @VP1) (<Rel>: @Rel | @RelTo | @RelFor | <lemma=/when|as/> | <string="to">) (<ConsequentS>: @S1)))
+}
+
+VP2 := TypedOpenRegex {
+  (?: ((<AntecedentVP>: @VP1) (<Rel>: @Rel | @RelTo | @RelFor | <lemma=/when|as/> | <string="to">) (<ConsequentVP>: @VP1)))
+}
+
+consume Definition1_6 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern1) (<Facts>: @VP3))
+}
+
+consume Definition1_5 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern1) (<Facts>: @VP2))
 }
 
 consume Definition1_4 := TypedOpenRegex {
@@ -57,12 +81,28 @@ consume Definition1_1 := TypedOpenRegex {
    (?: (<Isa>: @DefnPattern1) (<Facts>: @VP1))
 }
 
-consume Definition2_2 := TypedOpenRegex {
-   (?: (<Isa>: @DefnPattern2) (<Facts>: @S))
+consume Definition2_1_2 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern2_1) (<Facts>: @S))
 }
 
-consume Definition2_1 := TypedOpenRegex {
-   (?: (<Isa>: @DefnPattern2) (<Facts>: @S1))
+consume Definition2_1_1 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern2_1) (<Facts>: @S1))
+}
+
+consume Definition2_2_2 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern2_2) (<Facts>: @S))
+}
+
+consume Definition2_2_1 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern2_2) (<Facts>: @S1))
+}
+
+consume Definition3_6 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern3) (<Facts>: @VP3))
+}
+
+consume Definition3_5 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern3) (<Facts>: @VP2))
 }
 
 consume Definition3_4 := TypedOpenRegex {
@@ -82,8 +122,9 @@ consume Definition3_1 := TypedOpenRegex {
 }
 
 consume Definition4_2 := TypedOpenRegex {
-   (?: ((<Fact>: @DefnPattern3) (<pos="TO"> (<FactArg>: @VP1))))
+   (?: (<Fact>: (<DefnPattern>: @DefnPattern3) (<PP>: ((@RelClause @VG @NG) | (<pos="IN" | pos="TO"> @VG @NG?) | (<pos="IN" | pos="TO">  <pos="WDT"> @NG @VG @NG?))*) (<pos="TO"> (<FactArg>: @VP1))))
 }
+
 consume Definition4_1 := TypedOpenRegex {
-   (?: (<Fact>: @DefnPattern3))
+   (?: (<Fact>: (<DefnPattern>: @DefnPattern3) (<PP>: ((@RelClause @VG @NG) | (<pos="IN" | pos="TO"> @VG @NG?) | (<pos="IN" | pos="TO">  <pos="WDT"> @NG @VG @NG?))*)))
 }

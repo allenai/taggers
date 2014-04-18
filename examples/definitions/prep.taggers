@@ -2,10 +2,6 @@ PP := TypedOpenRegex {
   <pos="RB">? <pos="IN" | pos="TO" | pos="RP"> <pos="RB">? @NG
 }
 
-//PPNoRelClause := TypedOpenRegex {
-//  <pos="RB">? <((!string="that" & !string="which") & (pos="IN | pos="TO" | pos="RP"))> <pos="RB">? @NG
-//}
-
 // for e.g.: "in doing so"
 consume PPWithVerbGerund := TypedOpenRegex {
    (<pos="RB">? <pos="IN" | pos="TO" | pos="RP"> <pos="RB">? <pos="VBG">  <pos="RB" | pos="IN" | pos="DT" | pos="WDT">)
