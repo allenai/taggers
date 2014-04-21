@@ -22,7 +22,7 @@ object TaggerServerMain extends SimpleRoutingApp {
 
       opt[String]("description") optional() action { (x, c) =>
         c.copy(extractorDescription = x)
-      } text ("description for the current extractor(s)")
+      } text ("description for the extractor(s)")
 
       opt[Int]("port") action { (x, c) =>
         c.copy(port = x)
