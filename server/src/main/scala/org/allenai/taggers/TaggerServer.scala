@@ -8,7 +8,7 @@ import spray.routing.Directives._
 import java.io.File
 
 object TaggerServerMain extends SimpleRoutingApp {
-  case class Config(port: Int = 8080, cascadeFile: File = null, extractorName: String = null, extractorDescription: String = null)
+  case class Config(port: Int = 8080, cascadeFile: File = null, extractorName: Option[String] = None, extractorDescription: Option[String] = None)
 
   def main(args: Array[String]): Unit = {
     val parser = new scopt.OptionParser[Config]("taggers") {
@@ -17,11 +17,11 @@ object TaggerServerMain extends SimpleRoutingApp {
       } text ("file specifying cascade")
 
       opt[String]("name") optional() action { (x, c) =>
-        c.copy(extractorName = x)
+        c.copy(extractorName = Some(x))
       } text ("name of the extractor(s)")
 
       opt[String]("description") optional() action { (x, c) =>
-        c.copy(extractorDescription = x)
+        c.copy(extractorDescription = Some(x))
       } text ("description for the extractor(s)")
 
       opt[Int]("port") action { (x, c) =>
