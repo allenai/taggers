@@ -13,13 +13,21 @@ import java.io.File
   */
 object TaggerServerMain extends SimpleRoutingApp {
   /** A representation of the command-line parameters. */
-  case class Config(port: Int = 8080, cascadeFile: File = null)
+  case class Config(port: Int = 8080, cascadeFile: File = null, extractorName: Option[String] = None, extractorDescription: Option[String] = None)
 
   def main(args: Array[String]): Unit = {
     val parser = new scopt.OptionParser[Config]("taggers") {
       arg[File]("<file>") action { (x, c) =>
         c.copy(cascadeFile = x)
       } text ("file specifying cascade")
+
+      opt[String]("name") optional() action { (x, c) =>
+        c.copy(extractorName = Some(x))
+      } text ("name of the extractor(s)")
+
+      opt[String]("description") optional() action { (x, c) =>
+        c.copy(extractorDescription = Some(x))
+      } text ("description for the extractor(s)")
 
       opt[Int]("port") action { (x, c) =>
         c.copy(port = x)
@@ -41,8 +49,9 @@ object TaggerServerMain extends SimpleRoutingApp {
     val cascade = Cascade.load(config.cascadeFile, config.cascadeFile.getName)
     val app = new ChunkedTaggerApp(cascade)
 
-    val info = Map(
-        "name" -> cascade.name
+    val info: Map[String, String] = Map(
+       "name" -> config.extractorName.getOrElse(cascade.name),
+       "description" -> config.extractorDescription.getOrElse("")
       )
 
     def infoRoute: Route = get {
