@@ -7,7 +7,12 @@ import spray.routing.Directives._
 
 import java.io.File
 
+/** This class creates a server that runs a cascade file.
+  * POST requests can contain a single sentence.  The response
+  * is the output of the extractors.
+  */
 object TaggerServerMain extends SimpleRoutingApp {
+  /** A representation of the command-line parameters. */
   case class Config(port: Int = 8080, cascadeFile: File = null, extractorName: Option[String] = None, extractorDescription: Option[String] = None)
 
   def main(args: Array[String]): Unit = {

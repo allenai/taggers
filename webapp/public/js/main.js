@@ -35,7 +35,6 @@ var TaggersCtrl = function($scope, $http) {
           start: 0,
           end: 0
         }
-        $scope.responseString = angular.toJson(data, pretty=true);
       })
       .error(function(data, status, headers, config) {
         $scope.working = false;
