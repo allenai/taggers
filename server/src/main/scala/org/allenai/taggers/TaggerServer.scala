@@ -44,9 +44,9 @@ object TaggerServerMain extends SimpleRoutingApp {
     val cascade = Cascade.load(config.cascadeFile, config.cascadeFile.getName)
     val app = new ChunkedTaggerApp(cascade)
 
-    val info = Map(
-       "name" -> config.extractorName,
-       "description" -> config.extractorDescription
+    val info: Map[String, String] = Map(
+       "name" -> config.extractorName.getOrElse(cascade.name),
+       "description" -> config.extractorDescription.getOrElse("")
       )
 
     def infoRoute: Route = get {
