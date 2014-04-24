@@ -1,0 +1,8 @@
+AVP0 := OpenRegex {
+   (?: <pos='RBR' | pos='RBS'>? <pos='RB'>)
+}
+
+AVP1 := TypedOpenRegex {
+   (?:@AVP0 (?: (?:<string="," | string="or"> @AVP0)* (<string=",">? <string=/and|or|but|and\/or/> @AVP0)? )? )
+}
+

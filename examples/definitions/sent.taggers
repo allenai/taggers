@@ -21,7 +21,7 @@ VP1 := TypedOpenRegex {
   | (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>:@VG) (<Arg2>:@NP5)? @AP1?)))
   // | (?: (<Rel>:@VG) (<Arg2>:@NP) (<Arg3>:@NP) @AP1* (<Arg>:@PP*) )
   | (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>:@VG) (<Arg2>:@AP1) (<Arg>:((<string=",">?) (@PP|(<pos="TO"> @VG)))*) )))
-  | (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>:@VG) (<Arg2>:<pos=/RB.*/>) (<Arg>:((<string=",">?) (@PP|(<pos="TO"> @VG)))*) )))
+  | (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>:@VG) (<Arg2>:@AVP1)? (<Arg>:((<string=",">?) (@PP|(<pos="TO"> @VG)))*) )))
   | (?: (@RelClause? @PPWithVerbGerund? (<MainVP>: (<Rel>: (@Rel | @RelTo | @RelFor) @V2?) (<Arg2>:@NP)? @AP1? (<Arg>:((<string=",">?) (@PP|(<pos="TO"> @VG)))*))))
 }
 
@@ -30,12 +30,13 @@ VP := TypedOpenRegex {
 }
 
 VPComposite2 := TypedOpenRegex {
-   (?: (<FirstVP>: @VP1) (?: ((<string=",">? <string=/and|or|but|and\/or/>) (<SecondVP>: @VP1))))
+   (?: (<FirstVP>: @VP1) (?: (<string=",">? <string=/and|or|but|and\/or/>? (<SecondVP>: @VP1))))
 }
 
 VPComposite3 := TypedOpenRegex {
    (?: (<FirstVP>: @VP1) (?: (<string=","> | (<string=",">? <string=/and|or|but|and\/or/>)) (<SecondVP>: @VP1) ((<string=","> | (<string=",">? <string=/and|or|but|and\/or/>)) (<ThirdVP>: @VP1))))
 }
+
 
 VPComposite4 := TypedOpenRegex {
    (?: (<FirstVP>: @VP1) (?: (<string=","> | (<string=",">? <string=/and|or|but|and\/or/>)) (<SecondVP>: @VP1) (<string=","> | (<string=",">? <string=/and|or|but|and\/or/>)) (<ThirdVP>:@VP1)? (<string=",">? ((<string=","> | (<string=",">? <string=/and|or|but|and\/or/>)) (<FourthVP>: @VP1)))))
@@ -127,4 +128,12 @@ consume Definition4_2 := TypedOpenRegex {
 
 consume Definition4_1 := TypedOpenRegex {
    (?: (<Fact>: (<DefnPattern>: @DefnPattern3) (<PP>: ((@RelClause @VG @NG) | (<pos="IN" | pos="TO"> @VG @NG?) | (<pos="IN" | pos="TO">  <pos="WDT"> @NG @VG @NG?))*)))
+}
+
+consume Definition5_2 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern5) (<Facts>: @S))
+}
+
+consume Definition5_1 := TypedOpenRegex {
+   (?: (<Isa>: @DefnPattern5) (<Facts>: @S1))
 }

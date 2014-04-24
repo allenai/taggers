@@ -1,5 +1,9 @@
-PP := TypedOpenRegex {
+PP0 := TypedOpenRegex {
   <pos="RB">? <pos="IN" | pos="TO" | pos="RP"> <pos="RB">? @NG
+}
+
+PP := TypedOpenRegex {
+   (?:@PP0 (?: (?:<string="," | string="or"> @PP0)* <string=",">? <string=/and|or|but|and\/or/> @PP0 )? )
 }
 
 // for e.g.: "in doing so"

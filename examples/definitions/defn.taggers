@@ -46,3 +46,8 @@ consume DefnPattern3 := TypedOpenRegex {
   (?:  (<Fact>: @DefnIsa))
  | (?:  (<Fact>: @DefnIsa))
 }
+
+consume DefnPattern5 := TypedOpenRegex {
+  (?: (<string=/In/>?  (<Context>: <pos=/NN.*/>) (<string=/,|:/>)?)? @Det? (<string="'">? (<DefinedTerm>: @NP3NoDetNoRelClauseSimple) <string="'">?) (<string="is"> (<string="where"> | <string="when">)))
+ | (?: ((<DefinedTerm>:@NP3NoDetNoRelClauseSimple) <string=":">) (<string=/In/>  (<Context>: <pos=/NN.*/>) (<string=/,|:/>)?)? @Det? (<string="'">? @NP3NoDetNoRelClauseSimple <string="'">?) (<string="is"> <string="where" | string="when">))
+}
