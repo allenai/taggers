@@ -30,7 +30,7 @@ class ChunkedTaggerApp(cascade: Cascade[Tagger.Sentence with Chunks with Lemmas]
   }
 
   def apply(sentence: Sent): (Seq[String], Seq[String]) = {
-    val (types, extractions) = cascade apply sentence
+    val (types, extractions) = cascade.apply(sentence)
     (types.reverse map format, extractions)
   }
 }
