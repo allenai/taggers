@@ -4,9 +4,9 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import org.allenai.taggers.SentenceFunctions;
 import org.allenai.taggers.StringFunctions;
-import edu.knowitall.tool.typer.Type;
-import edu.knowitall.tool.chunk.ChunkedToken;
-import edu.knowitall.tool.stem.Lemmatized;
+import org.allenai.nlpstack.typer.Type;
+import org.allenai.nlpstack.chunk.ChunkedToken;
+import org.allenai.nlpstack.lemmatize.Lemmatized;
 
 /***
  * Search for exact keyword matches, ignoring case.

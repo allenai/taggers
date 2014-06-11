@@ -3,18 +3,18 @@ package org.allenai.taggers.tag
 import com.google.common.base.Predicate
 import com.google.common.collect.ImmutableList
 import edu.knowitall.openregex
-import edu.knowitall.repr.sentence
-import edu.knowitall.repr.sentence.Chunks
-import edu.knowitall.repr.sentence.Sentence
+import org.allenai.repr.sentence
+import org.allenai.repr.sentence.Chunks
+import org.allenai.repr.sentence.Sentence
 import org.allenai.taggers.LinkedType
 import org.allenai.taggers.NamedGroupType
 import org.allenai.taggers.pattern.PatternBuilder
 import org.allenai.taggers.pattern.TypedToken
 import org.allenai.taggers.TypeHelper
-import edu.knowitall.tool.chunk.ChunkedToken
-import edu.knowitall.tool.stem.Lemmatized
-import edu.knowitall.tool.tokenize.Tokenizer
-import edu.knowitall.tool.typer.Type
+import org.allenai.nlpstack.chunk.ChunkedToken
+import org.allenai.nlpstack.lemmatize.Lemmatized
+import org.allenai.nlpstack.tokenize.Tokenizer
+import org.allenai.nlpstack.typer.Type
 import edu.washington.cs.knowitall.logic.ArgFactory
 import edu.washington.cs.knowitall.logic.LogicExpression
 import edu.washington.cs.knowitall.regex.Expression.BaseExpression
@@ -80,7 +80,7 @@ extends OpenRegex(patternTaggerName, expression) {
 
       val tokens = sentence.lemmatizedTokens.slice(group.interval.start, group.interval.end).map(_.token)
       val text = matchString(m)
-      val tag = Type(this.name, this.source, group.interval, text)
+      val tag = Type(this.name, this.source, OpenRegex.bridgeInterval(group.interval), text)
       tags = tags :+ tag
     }
 

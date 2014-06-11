@@ -1,6 +1,6 @@
 package org.allenai.taggers
 
-import edu.knowitall.tool.typer.Type
+import org.allenai.nlpstack.typer.Type
 
 import scala.util.parsing.combinator.RegexParsers
 import scala.util.{ Try, Success, Failure }

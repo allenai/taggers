@@ -6,9 +6,9 @@ import org.allenai.taggers.constraint.Constraint
 import org.allenai.taggers.pattern.PatternBuilder
 import org.allenai.taggers.pattern.TypedToken
 import org.allenai.taggers.TypeHelper
-import edu.knowitall.tool.chunk.ChunkedToken
-import edu.knowitall.tool.stem.Lemmatized
-import edu.knowitall.tool.typer.Type
+import org.allenai.nlpstack.chunk.ChunkedToken
+import org.allenai.nlpstack.lemmatize.Lemmatized
+import org.allenai.nlpstack.typer.Type
 import edu.washington.cs.knowitall.regex.Expression.NamedGroup
 
 import scala.util.matching.Regex

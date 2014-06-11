@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import edu.knowitall.tool.chunk.ChunkedToken;
-import edu.knowitall.tool.stem.Lemmatized;
-import edu.knowitall.tool.tokenize.Token;
+import org.allenai.nlpstack.chunk.ChunkedToken;
+import org.allenai.nlpstack.lemmatize.Lemmatized;
+import org.allenai.nlpstack.tokenize.Token;
 
 public class SentenceFunctions {
   public static List<Lemmatized<ChunkedToken>> lowercase(List<Lemmatized<ChunkedToken>> tokens) {

@@ -2,11 +2,11 @@ package org.allenai.taggers.constraint;
 
 import java.util.List
 import java.util.regex.Pattern
-import edu.knowitall.tool.typer.Type
-import edu.knowitall.tool.chunk.ChunkedToken
-import edu.knowitall.tool.stem.Lemmatized
-import edu.knowitall.repr.sentence.Sentence
-import edu.knowitall.repr.sentence.Postags
+import org.allenai.nlpstack.typer.Type
+import org.allenai.nlpstack.chunk.ChunkedToken
+import org.allenai.nlpstack.lemmatize.Lemmatized
+import org.allenai.repr.sentence.Sentence
+import org.allenai.repr.sentence.Postags
 
 object CommonNounConstraint extends Constraint[Sentence with Postags] {
   override def apply(sentence: TheSentence, tag: Type): Boolean = {

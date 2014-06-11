@@ -2,9 +2,9 @@ package org.allenai.taggers.tag;
 
 import java.util.List;
 
-import edu.knowitall.tool.typer.Type;
-import edu.knowitall.tool.chunk.ChunkedToken;
-import edu.knowitall.tool.stem.Lemmatized;
+import org.allenai.nlpstack.typer.Type;
+import org.allenai.nlpstack.chunk.ChunkedToken;
+import org.allenai.nlpstack.lemmatize.Lemmatized;
 
 /***
  * Search for exact keyword matches, ignoring case, and then tag the chunk

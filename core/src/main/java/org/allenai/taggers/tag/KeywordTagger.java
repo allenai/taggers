@@ -14,12 +14,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-import edu.knowitall.collection.immutable.Interval;
+import org.allenai.common.immutable.Interval;
 import org.allenai.taggers.SentenceFunctions;
 import org.allenai.taggers.StringFunctions;
-import edu.knowitall.tool.typer.Type;
-import edu.knowitall.tool.chunk.ChunkedToken;
-import edu.knowitall.tool.stem.Lemmatized;
+import org.allenai.nlpstack.typer.Type;
+import org.allenai.nlpstack.chunk.ChunkedToken;
+import org.allenai.nlpstack.lemmatize.Lemmatized;
 
 /***
  * Search for exact keyword matches, case-sensitive, and tag the match.

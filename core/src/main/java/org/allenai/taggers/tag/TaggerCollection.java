@@ -20,12 +20,12 @@
 //
 //import com.google.common.collect.Iterables;
 //
-//import edu.knowitall.tool.chunk.ChunkedToken;
-//import edu.knowitall.tool.chunk.OpenNlpChunker;
-//import edu.knowitall.tool.stem.Lemmatized;
-//import edu.knowitall.tool.stem.MorphaStemmer;
+//import org.allenai.nlpstack.chunk.ChunkedToken;
+//import org.allenai.nlpstack.chunk.OpenNlpChunker;
+//import org.allenai.nlpstack.lemmatize.Lemmatized;
+//import org.allenai.nlpstack.lemmatize.MorphaStemmer;
 //import org.allenai.taggers.SentenceFunctions;
-//import edu.knowitall.tool.typer.Type;
+//import org.allenai.nlpstack.typer.Type;
 //
 ///***
 // * A collection of {@see Tagger}s.

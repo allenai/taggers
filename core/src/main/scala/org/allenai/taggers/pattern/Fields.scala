@@ -11,7 +11,7 @@ object Fields {
     */
   object StringField extends Field {
     override def field(token: PatternBuilder.Token): Iterable[String] =
-      Seq(token.token.string)
+      Seq(token.token.token.string)
   }
 
   /** The lemma portion of a token.
@@ -29,7 +29,7 @@ object Fields {
     */
   object PostagField extends Field {
     override def field(token: PatternBuilder.Token): Iterable[String] =
-      Seq(token.token.postag)
+      Seq(token.token.token.postag)
   }
 
   /** The chunk portion of a token.
@@ -38,7 +38,7 @@ object Fields {
     */
   object ChunkField extends Field {
     override def field(token: PatternBuilder.Token): Iterable[String] =
-      Seq(token.token.chunk)
+      Seq(token.token.token.chunk)
   }
 
   abstract class AbstractTypeField extends Field

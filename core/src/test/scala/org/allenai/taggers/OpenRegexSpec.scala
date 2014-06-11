@@ -1,13 +1,13 @@
 package org.allenai.taggers
 
-import edu.knowitall.collection.immutable.Interval
-import edu.knowitall.repr.sentence
-import edu.knowitall.repr.sentence.Sentence
+import org.allenai.common.immutable.Interval
+import org.allenai.repr.sentence
+import org.allenai.repr.sentence.Sentence
 import org.allenai.taggers.tag.Tagger
-import edu.knowitall.tool.chunk.ChunkedToken
-import edu.knowitall.tool.chunk.OpenNlpChunker
-import edu.knowitall.tool.stem.Lemmatized
-import edu.knowitall.tool.stem.MorphaStemmer
+import org.allenai.nlpstack.chunk.ChunkedToken
+import org.allenai.nlpstack.chunk.OpenNlpChunker
+import org.allenai.nlpstack.lemmatize.Lemmatized
+import org.allenai.nlpstack.lemmatize.MorphaStemmer
 
 import org.scalatest.FlatSpec
 

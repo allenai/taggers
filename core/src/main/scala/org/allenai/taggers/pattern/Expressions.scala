@@ -1,8 +1,8 @@
 package org.allenai.taggers.pattern
 
 import org.allenai.taggers.pattern.Fields.Field
-import edu.knowitall.tool.chunk.ChunkedToken
-import edu.knowitall.tool.stem.Lemmatized
+import org.allenai.nlpstack.chunk.ChunkedToken
+import org.allenai.nlpstack.lemmatize.Lemmatized
 
 import java.util.regex.Pattern
 

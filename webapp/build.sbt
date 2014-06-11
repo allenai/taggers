@@ -7,7 +7,7 @@ libraryDependencies ++= Seq(
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "io.spray" % "spray-can" % sprayVersion,
     "io.spray" % "spray-routing" % sprayVersion,
-    "io.spray" %% "spray-json" % "1.2.5") ++ loggingImplementations
+    "io.spray" %% "spray-json" % "1.2.6") ++ loggingImplementations
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
 

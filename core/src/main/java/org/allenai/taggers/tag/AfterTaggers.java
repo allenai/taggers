@@ -3,11 +3,11 @@ package org.allenai.taggers.tag;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.knowitall.collection.immutable.Interval;
+import org.allenai.common.immutable.Interval;
 import org.allenai.taggers.TypeHelper;
-import edu.knowitall.tool.typer.Type;
-import edu.knowitall.tool.chunk.ChunkedToken;
-import edu.knowitall.tool.stem.Lemmatized;
+import org.allenai.nlpstack.typer.Type;
+import org.allenai.nlpstack.chunk.ChunkedToken;
+import org.allenai.nlpstack.lemmatize.Lemmatized;
 
 public class AfterTaggers {
 	public static List<Interval> npChunkIntervals(List<Lemmatized<ChunkedToken>> tokens) {
