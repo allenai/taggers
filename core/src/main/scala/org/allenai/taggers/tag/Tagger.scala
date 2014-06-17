@@ -1,13 +1,13 @@
 package org.allenai.taggers.tag
 
 import edu.knowitall.common.HashCodeHelper
-import edu.knowitall.repr.sentence.Sentence
+import org.allenai.repr.sentence.Sentence
 import org.allenai.taggers.constraint.Constraint
 import org.allenai.taggers.Consume
-import edu.knowitall.tool.chunk.ChunkedToken
-import edu.knowitall.tool.stem.Lemmatized
-import edu.knowitall.tool.typer.Type
-import edu.knowitall.tool.typer.Typer
+import org.allenai.nlpstack.chunk.ChunkedToken
+import org.allenai.nlpstack.lemmatize.Lemmatized
+import org.allenai.nlpstack.typer.Type
+import org.allenai.nlpstack.typer.Typer
 
 import scala.collection.JavaConverters._
 
@@ -98,7 +98,7 @@ abstract class Tagger[-S <: Tagger.Sentence] {
 }
 
 object Tagger {
-  type Sentence = edu.knowitall.repr.sentence.Sentence with Consume
+  type Sentence = org.allenai.repr.sentence.Sentence with Consume
 
   def getTaggerClass(classname: String, pack: String): Class[_] = {
     try {

@@ -1,9 +1,9 @@
 package org.allenai.taggers.pattern
 
-import edu.knowitall.collection.immutable.Interval
-import edu.knowitall.tool.chunk.ChunkedToken
-import edu.knowitall.tool.stem.Lemmatized
-import edu.knowitall.tool.typer.Type
+import org.allenai.common.immutable.Interval
+import org.allenai.nlpstack.chunk.ChunkedToken
+import org.allenai.nlpstack.lemmatize.Lemmatized
+import org.allenai.nlpstack.typer.Type
 
 /** A representation of a token that includes information about the
   * types at that token.

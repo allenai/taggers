@@ -7,11 +7,11 @@ import java.util.regex.Pattern;
 
 import com.google.common.collect.ImmutableList;
 
-import edu.knowitall.collection.immutable.Interval;
+import org.allenai.common.immutable.Interval;
 import org.allenai.taggers.SentenceFunctions;
-import edu.knowitall.tool.typer.Type;
-import edu.knowitall.tool.chunk.ChunkedToken;
-import edu.knowitall.tool.stem.Lemmatized;
+import org.allenai.nlpstack.typer.Type;
+import org.allenai.nlpstack.chunk.ChunkedToken;
+import org.allenai.nlpstack.lemmatize.Lemmatized;
 
 public class RegexTagger extends JavaTagger {
     public ImmutableList<Pattern[]> patterns;

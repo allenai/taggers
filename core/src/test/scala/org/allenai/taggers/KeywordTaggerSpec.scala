@@ -1,12 +1,12 @@
 package org.allenai.taggers
 
-import edu.knowitall.repr.sentence
-import edu.knowitall.repr.sentence.Sentence
+import org.allenai.repr.sentence
+import org.allenai.repr.sentence.Sentence
 import org.allenai.taggers.constraint.VerbPhraseConstraint
 import org.allenai.taggers.tag.ConstrainedTagger
 import org.allenai.taggers.tag.KeywordTagger
-import edu.knowitall.tool.chunk.OpenNlpChunker
-import edu.knowitall.tool.stem.MorphaStemmer
+import org.allenai.nlpstack.chunk.OpenNlpChunker
+import org.allenai.nlpstack.lemmatize.MorphaStemmer
 
 import org.scalatest.FlatSpec
 

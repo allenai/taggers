@@ -3,19 +3,6 @@ package org.allenai.taggers.tag
 import com.google.common.base.Predicate
 import com.google.common.collect.ImmutableList
 import edu.knowitall.openregex
-import edu.knowitall.repr.sentence
-import edu.knowitall.repr.sentence.Chunks
-import edu.knowitall.repr.sentence.Lemmas
-import edu.knowitall.repr.sentence.Sentence
-import org.allenai.taggers.LinkedType
-import org.allenai.taggers.NamedGroupType
-import org.allenai.taggers.pattern.PatternBuilder
-import org.allenai.taggers.pattern.TypedToken
-import org.allenai.taggers.TypeHelper
-import edu.knowitall.tool.chunk.ChunkedToken
-import edu.knowitall.tool.stem.Lemmatized
-import edu.knowitall.tool.tokenize.Tokenizer
-import edu.knowitall.tool.typer.Type
 import edu.washington.cs.knowitall.logic.ArgFactory
 import edu.washington.cs.knowitall.logic.LogicExpression
 import edu.washington.cs.knowitall.regex.Expression.BaseExpression
@@ -23,6 +10,20 @@ import edu.washington.cs.knowitall.regex.Expression.NamedGroup
 import edu.washington.cs.knowitall.regex.ExpressionFactory
 import edu.washington.cs.knowitall.regex.Match
 import edu.washington.cs.knowitall.regex.RegularExpression
+import org.allenai.common.immutable.Interval
+import org.allenai.nlpstack.chunk.ChunkedToken
+import org.allenai.nlpstack.lemmatize.Lemmatized
+import org.allenai.nlpstack.tokenize.Tokenizer
+import org.allenai.nlpstack.typer.Type
+import org.allenai.repr.sentence
+import org.allenai.repr.sentence.Chunks
+import org.allenai.repr.sentence.Lemmas
+import org.allenai.repr.sentence.Sentence
+import org.allenai.taggers.LinkedType
+import org.allenai.taggers.NamedGroupType
+import org.allenai.taggers.pattern.PatternBuilder
+import org.allenai.taggers.pattern.TypedToken
+import org.allenai.taggers.TypeHelper
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -104,13 +105,13 @@ class OpenRegex(patternTaggerName: String, expression: String) extends Tagger[Ta
         val tag = group.expr match {
           // create the main type for the group
           case _ if i == 0 =>
-            val typ = Type(this.name, this.source, group.interval, text)
+            val typ = Type(this.name, this.source, OpenRegex.bridgeInterval(group.interval), text)
             parent = Some(typ) // There may be children of this type.
             Some(typ)
           case namedGroup: NamedGroup[_] =>
             require(parent.isDefined)
             val name = this.name + "." + namedGroup.name
-            Some(new NamedGroupType(namedGroup.name, Type(name, this.source, group.interval, text), parent))
+            Some(new NamedGroupType(namedGroup.name, Type(name, this.source, OpenRegex.bridgeInterval(group.interval), text), parent))
           case _ => None
         }
 
@@ -127,6 +128,10 @@ class OpenRegex(patternTaggerName: String, expression: String) extends Tagger[Ta
 object OpenRegex {
   class OpenRegexException(message: String, cause: Throwable)
   extends Exception(message, cause)
+
+  def bridgeInterval(interval: edu.knowitall.collection.immutable.Interval): org.allenai.common.immutable.Interval = {
+    Interval.open(interval.start, interval.end)
+  }
 
   def buildTypedTokens(sentence: Tagger.Sentence with Chunks with Lemmas, types: Seq[Type]) = {
     for ((token, i) <- sentence.lemmatizedTokens.zipWithIndex) yield {

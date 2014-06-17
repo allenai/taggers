@@ -1,12 +1,13 @@
 package org.allenai.taggers.pattern
 
-import edu.knowitall.collection.immutable.Interval
 import edu.knowitall.openregex
-import edu.knowitall.tool.chunk.ChunkedToken
-import edu.knowitall.tool.stem.Lemmatized
 import edu.washington.cs.knowitall.logic
 import edu.washington.cs.knowitall.logic.LogicExpression
 import edu.washington.cs.knowitall.regex.Expression
+import org.allenai.common.immutable.Interval
+import org.allenai.nlpstack.chunk.ChunkedToken
+import org.allenai.nlpstack.lemmatize.Lemmatized
+import org.allenai.taggers.tag.OpenRegex
 
 import com.google.common.base.{ Function => GuavaFunction }
 import org.apache.commons.lang3.StringEscapeUtils
@@ -107,7 +108,7 @@ object PatternBuilder {
     })
 
   def intervalFromGroup(group: openregex.Pattern.Group[_]): Interval = {
-    val interval = group.interval
+    val interval = OpenRegex.bridgeInterval(group.interval)
 
     if (interval.start == -1 || interval.end == -1) {
       Interval.empty

@@ -6,10 +6,10 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 import org.allenai.taggers.SentenceFunctions;
-import edu.knowitall.tool.typer.Type;
-import edu.knowitall.tool.chunk.ChunkedToken;
-import edu.knowitall.tool.stem.Lemmatized;
-import edu.knowitall.tool.stem.MorphaStemmer$;
+import org.allenai.nlpstack.typer.Type;
+import org.allenai.nlpstack.chunk.ChunkedToken;
+import org.allenai.nlpstack.lemmatize.Lemmatized;
+import org.allenai.nlpstack.lemmatize.MorphaStemmer$;
 
 /***
  * Search for normalized keywords against a normalized sentence and tag the

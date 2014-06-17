@@ -1,6 +1,6 @@
 package org.allenai.taggers.tag
 
-import edu.knowitall.tool.typer.Type
+import org.allenai.nlpstack.typer.Type
 
 class ConsumingTagger[S <: Tagger.Sentence](val tagger: Tagger[S])
     extends Tagger[S] {

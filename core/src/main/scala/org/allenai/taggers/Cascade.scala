@@ -2,14 +2,14 @@ package org.allenai.taggers
 
 import org.allenai.taggers.rule._
 import edu.knowitall.common.Resource.using
-import edu.knowitall.repr.sentence.Sentence
+import org.allenai.repr.sentence.Sentence
 import org.allenai.taggers.constraint.Constraint
 import org.allenai.taggers.tag.Tagger
-import edu.knowitall.tool.chunk.ChunkedToken
-import edu.knowitall.tool.chunk.OpenNlpChunker
-import edu.knowitall.tool.stem.Lemmatized
-import edu.knowitall.tool.stem.MorphaStemmer
-import edu.knowitall.tool.typer.Type
+import org.allenai.nlpstack.chunk.ChunkedToken
+import org.allenai.nlpstack.chunk.OpenNlpChunker
+import org.allenai.nlpstack.lemmatize.Lemmatized
+import org.allenai.nlpstack.lemmatize.MorphaStemmer
+import org.allenai.nlpstack.typer.Type
 
 import io.Source
 import org.slf4j.LoggerFactory

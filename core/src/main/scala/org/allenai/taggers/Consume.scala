@@ -1,8 +1,8 @@
 package org.allenai.taggers
 
-import edu.knowitall.repr.sentence.Sentence
-import edu.knowitall.repr.sentence.TokensSupertrait
-import edu.knowitall.tool.typer.Type
+import org.allenai.repr.sentence.Sentence
+import org.allenai.repr.sentence.TokensSupertrait
+import org.allenai.nlpstack.typer.Type
 
 /** We need a consuming trait that removes all information from
   * the sentence representation other than the consuming type.
