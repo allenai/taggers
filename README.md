@@ -77,7 +77,7 @@ NFA.  A token is described as a logical formula between angled brackets `<>`.
 There are a number of fields that can be matched upon for each token.
 
 * __string__
-* __lemma__: the lemmatized form of the token string (see MorphaStemmer in nlptools)
+* __lemma__: the lemmatized form of the token string (see MorphaStemmer in nlpstack)
 * __pos__: the part-of-speech tag
 * __chunk__: the chunk tag
 * __type__: any type that intersects this token
