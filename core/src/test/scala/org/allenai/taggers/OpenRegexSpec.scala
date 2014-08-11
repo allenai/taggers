@@ -8,11 +8,11 @@ import org.allenai.nlpstack.chunk.ChunkedToken
 import org.allenai.nlpstack.chunk.OpenNlpChunker
 import org.allenai.nlpstack.lemmatize.Lemmatized
 import org.allenai.nlpstack.lemmatize.MorphaStemmer
-
 import org.scalatest.FlatSpec
-
 import scala.collection.immutable.IntMap
 import scala.collection.JavaConverters._
+import org.allenai.nlpstack.postag.OpenNlpPostagger
+import org.allenai.nlpstack.tokenize.SimpleEnglishTokenizer
 
 class OpenRegexSpec extends FlatSpec {
   type MySentence = Tagger.Sentence with sentence.Chunks with sentence.Lemmas
@@ -21,6 +21,8 @@ class OpenRegexSpec extends FlatSpec {
   def makeSentence(text: String): MySentence =
     new Sentence(text) with Consume with sentence.Chunker with sentence.Lemmatizer {
       override val chunker = new OpenNlpChunker
+      override val postagger = new OpenNlpPostagger
+      override val tokenizer = new SimpleEnglishTokenizer
       override val lemmatizer = MorphaStemmer
     }
 

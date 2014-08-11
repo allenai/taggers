@@ -1,13 +1,14 @@
 package org.allenai.taggers
 
-import org.allenai.repr.sentence
-import org.allenai.repr.sentence.Sentence
-import org.allenai.taggers.tag.Tagger
 import org.allenai.nlpstack.chunk.ChunkedToken
 import org.allenai.nlpstack.chunk.OpenNlpChunker
 import org.allenai.nlpstack.lemmatize.Lemmatized
 import org.allenai.nlpstack.lemmatize.MorphaStemmer
-
+import org.allenai.nlpstack.postag.OpenNlpPostagger
+import org.allenai.nlpstack.tokenize.SimpleEnglishTokenizer
+import org.allenai.repr.sentence
+import org.allenai.repr.sentence.Sentence
+import org.allenai.taggers.tag.Tagger
 import org.scalatest.FlatSpec
 
 class ExtractorSpec extends FlatSpec {
@@ -17,6 +18,8 @@ class ExtractorSpec extends FlatSpec {
   def makeSentence(text: String): MySentence =
     new Sentence(text) with sentence.Chunker with sentence.Lemmatizer with Consume {
       override val chunker = new OpenNlpChunker
+      override val postagger = new OpenNlpPostagger
+      override val tokenizer = new SimpleEnglishTokenizer
       override val lemmatizer = MorphaStemmer
     }
 
