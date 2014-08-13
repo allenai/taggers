@@ -3,8 +3,8 @@ package org.allenai.taggers
 import org.allenai.nlpstack.chunk.OpenNlpChunker
 import org.allenai.nlpstack.core.repr.{Chunker, Lemmatizer, Sentence}
 import org.allenai.nlpstack.lemmatize.MorphaStemmer
-import org.allenai.nlpstack.postag.OpenNlpPostagger
-import org.allenai.nlpstack.tokenize.SimpleEnglishTokenizer
+import org.allenai.nlpstack.postag.defaultPostagger
+import org.allenai.nlpstack.tokenize.defaultTokenizer
 import org.allenai.taggers.constraint.VerbPhraseConstraint
 import org.allenai.taggers.tag.{ConstrainedTagger, KeywordTagger}
 
@@ -21,8 +21,8 @@ class TaggerSpec extends FlatSpec {
     val opennlpChunker = new OpenNlpChunker
     val s = new Sentence(sentenceText) with Chunker with Lemmatizer with Consume {
       override val chunker = new OpenNlpChunker
-      override val postagger = new OpenNlpPostagger
-      override val tokenizer = new SimpleEnglishTokenizer
+      override val postagger = defaultPostagger
+      override val tokenizer = defaultTokenizer
       override val lemmatizer = MorphaStemmer
     }
 
@@ -37,8 +37,8 @@ class TaggerSpec extends FlatSpec {
     val opennlpChunker = new OpenNlpChunker
     val s = new Sentence(sentenceText) with Chunker with Lemmatizer with Consume {
       override val chunker = new OpenNlpChunker
-      override val postagger = new OpenNlpPostagger
-      override val tokenizer = new SimpleEnglishTokenizer
+      override val postagger = defaultPostagger
+      override val tokenizer = defaultTokenizer
       override val lemmatizer = MorphaStemmer
     }
 
