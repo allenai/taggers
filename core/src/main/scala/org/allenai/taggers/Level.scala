@@ -1,10 +1,9 @@
 package org.allenai.taggers
 
 import edu.knowitall.common.Resource
-import org.allenai.repr.sentence.Sentence
 import org.allenai.taggers.rule._
 import org.allenai.taggers.tag._
-import org.allenai.nlpstack.typer.Type
+import org.allenai.nlpstack.core.typer.Type
 
 import java.io.File
 import java.io.Reader

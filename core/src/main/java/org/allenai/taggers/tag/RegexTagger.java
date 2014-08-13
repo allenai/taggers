@@ -8,10 +8,10 @@ import java.util.regex.Pattern;
 import com.google.common.collect.ImmutableList;
 
 import org.allenai.common.immutable.Interval;
+import org.allenai.nlpstack.core.ChunkedToken;
+import org.allenai.nlpstack.core.Lemmatized;
+import org.allenai.nlpstack.core.typer.Type;
 import org.allenai.taggers.SentenceFunctions;
-import org.allenai.nlpstack.typer.Type;
-import org.allenai.nlpstack.chunk.ChunkedToken;
-import org.allenai.nlpstack.lemmatize.Lemmatized;
 
 public class RegexTagger extends JavaTagger {
     public ImmutableList<Pattern[]> patterns;

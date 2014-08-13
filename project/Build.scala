@@ -12,7 +12,7 @@ object TaggerBuild extends Build {
 
   val sprayVersion = "1.3.1"
   val akkaVersion = "2.3.2"
-  val nlpstackVersion = "2014.6.2-1-SNAPSHOT"
+  val nlpstackVersion = "0.8"
 
   lazy val root = Project(id = "taggers-root", base = file(".")).settings (
     publish := { },

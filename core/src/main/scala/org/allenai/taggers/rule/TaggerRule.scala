@@ -1,6 +1,5 @@
 package org.allenai.taggers.rule
 
-import org.allenai.repr.sentence.Sentence
 import org.allenai.taggers.constraint.Constraint
 import org.allenai.taggers.tag.ConstrainedTagger
 import org.allenai.taggers.tag.ConsumingTagger

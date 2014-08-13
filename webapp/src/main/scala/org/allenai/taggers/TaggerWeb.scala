@@ -1,21 +1,16 @@
 package org.allenai.taggers
 
+import org.allenai.nlpstack.core.typer.Type
+
 import edu.knowitall.common.Resource
-import org.allenai.repr.sentence
-import org.allenai.repr.sentence.Chunker
-import org.allenai.repr.sentence.Chunks
-import org.allenai.repr.sentence.Lemmas
-import org.allenai.repr.sentence.Lemmatizer
-import org.allenai.repr.sentence.Sentence
+import org.allenai.nlpstack.core.repr._
 import org.allenai.taggers.Cascade.LevelDefinition
-import org.allenai.taggers.rule._
 import org.allenai.taggers.tag.Tagger
 import org.allenai.taggers.tag.OpenRegex
-import org.allenai.nlpstack.tokenize.SimpleEnglishTokenizer
-import org.allenai.nlpstack.postag.OpenNlpPostagger
+import org.allenai.nlpstack.tokenize.defaultTokenizer
+import org.allenai.nlpstack.postag.defaultPostagger
 import org.allenai.nlpstack.chunk.OpenNlpChunker
 import org.allenai.nlpstack.lemmatize.MorphaStemmer
-import org.allenai.nlpstack.typer.Type
 
 import akka.actor._
 import spray.http._
@@ -25,8 +20,6 @@ import spray.json._
 import spray.routing._
 
 import java.io.File
-import scala.collection.immutable.IntMap
-import scala.collection.immutable.ListMap
 import scala.collection.JavaConverters._
 import scala.io.Source
 import scala.util.{ Try, Success, Failure }
@@ -41,8 +34,8 @@ class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, s
   type Sent = Tagger.Sentence with Chunks with Lemmas
 
   // External NLP tools that are used to build the expected type from a sentence string.
-  lazy val tokenizer = new SimpleEnglishTokenizer()
-  lazy val postagger = new OpenNlpPostagger()
+  lazy val tokenizer = defaultTokenizer
+  lazy val postagger = defaultPostagger
   lazy val chunker = new OpenNlpChunker()
 
   /** Build the NLP representation of a sentence string. */

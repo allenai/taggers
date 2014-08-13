@@ -1,32 +1,16 @@
 package org.allenai.taggers.tag
 
-import com.google.common.base.Predicate
-import com.google.common.collect.ImmutableList
-import edu.knowitall.openregex
-import edu.washington.cs.knowitall.logic.ArgFactory
-import edu.washington.cs.knowitall.logic.LogicExpression
-import edu.washington.cs.knowitall.regex.Expression.BaseExpression
-import edu.washington.cs.knowitall.regex.Expression.NamedGroup
-import edu.washington.cs.knowitall.regex.ExpressionFactory
-import edu.washington.cs.knowitall.regex.Match
-import edu.washington.cs.knowitall.regex.RegularExpression
+import org.allenai.nlpstack.core.repr.{Lemmas, Chunks}
+import org.allenai.nlpstack.core.Tokenizer
+import org.allenai.nlpstack.core.typer.Type
 import org.allenai.common.immutable.Interval
-import org.allenai.nlpstack.chunk.ChunkedToken
-import org.allenai.nlpstack.lemmatize.Lemmatized
-import org.allenai.nlpstack.tokenize.Tokenizer
-import org.allenai.nlpstack.typer.Type
-import org.allenai.repr.sentence
-import org.allenai.repr.sentence.Chunks
-import org.allenai.repr.sentence.Lemmas
-import org.allenai.repr.sentence.Sentence
-import org.allenai.taggers.LinkedType
 import org.allenai.taggers.NamedGroupType
 import org.allenai.taggers.pattern.PatternBuilder
 import org.allenai.taggers.pattern.TypedToken
-import org.allenai.taggers.TypeHelper
 
-import java.util.regex.Matcher
-import java.util.regex.Pattern
+import edu.knowitall.openregex
+import edu.washington.cs.knowitall.regex.Expression.NamedGroup
+
 import scala.collection.JavaConverters._
 import scala.util.control._
 
