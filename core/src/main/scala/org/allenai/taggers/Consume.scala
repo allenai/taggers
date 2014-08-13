@@ -1,6 +1,6 @@
 package org.allenai.taggers
 
-import org.allenai.nlpstack.core.repr.{TokensSupertrait, Sentence}
+import org.allenai.nlpstack.core.repr.{Sentence, TokensSupertrait}
 import org.allenai.nlpstack.core.typer.Type
 
 /** We need a consuming trait that removes all information from

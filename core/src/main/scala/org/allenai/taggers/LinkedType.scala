@@ -1,6 +1,7 @@
 package org.allenai.taggers
 
 import org.allenai.nlpstack.core.typer.Type
+
 import edu.knowitall.common.HashCodeHelper
 
 class LinkedType(val typ: Type, val link: Option[Type] = None) extends Type {

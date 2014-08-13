@@ -1,6 +1,5 @@
 package org.allenai.taggers.rule
 
-import org.allenai.nlpstack.core.repr.Sentence
 import org.allenai.taggers.tag.Tagger
 
 /** A representation of a parsed definition rule in the DSL. */

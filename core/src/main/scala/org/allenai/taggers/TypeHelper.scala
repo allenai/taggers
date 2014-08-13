@@ -1,9 +1,9 @@
 package org.allenai.taggers
 
 import org.allenai.common.immutable.Interval
-import org.allenai.nlpstack.core.{Tokenizer, Token, ChunkedToken, Lemmatized}
-import org.allenai.nlpstack.core.repr.{Tokens, Sentence}
+import org.allenai.nlpstack.core.repr.{Sentence, Tokens}
 import org.allenai.nlpstack.core.typer.Type
+import org.allenai.nlpstack.core.{ChunkedToken, Lemmatized, Token, Tokenizer}
 
 import scala.collection.JavaConverters._
 

@@ -1,6 +1,5 @@
+import sbt.Keys._
 import sbt._
-import Keys._
-
 import spray.revolver.RevolverPlugin._
 
 object TaggerBuild extends Build {

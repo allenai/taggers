@@ -1,17 +1,15 @@
 package org.allenai.taggers.tag
 
-import org.allenai.nlpstack.core.repr.{Lemmas, Chunks}
-import org.allenai.nlpstack.core.Tokenizer
-import org.allenai.nlpstack.core.typer.Type
 import org.allenai.common.immutable.Interval
+import org.allenai.nlpstack.core.Tokenizer
+import org.allenai.nlpstack.core.repr.{Chunks, Lemmas}
+import org.allenai.nlpstack.core.typer.Type
 import org.allenai.taggers.NamedGroupType
-import org.allenai.taggers.pattern.PatternBuilder
-import org.allenai.taggers.pattern.TypedToken
+import org.allenai.taggers.pattern.{PatternBuilder, TypedToken}
 
 import edu.knowitall.openregex
 import edu.washington.cs.knowitall.regex.Expression.NamedGroup
 
-import scala.collection.JavaConverters._
 import scala.util.control._
 
 /** Run a token-based pattern over the text and tag matches.

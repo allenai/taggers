@@ -1,19 +1,18 @@
 package org.allenai.taggers.tag;
 
-import java.util.*;
-
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
 import org.allenai.common.immutable.Interval;
 import org.allenai.nlpstack.core.ChunkedToken;
 import org.allenai.nlpstack.core.Lemmatized;
 import org.allenai.nlpstack.core.typer.Type;
 import org.allenai.taggers.SentenceFunctions;
 import org.allenai.taggers.StringFunctions;
+
+import java.util.*;
 
 
 /***

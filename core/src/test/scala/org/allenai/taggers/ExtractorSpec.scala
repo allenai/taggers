@@ -6,6 +6,7 @@ import org.allenai.nlpstack.lemmatize.MorphaStemmer
 import org.allenai.nlpstack.postag.defaultPostagger
 import org.allenai.nlpstack.tokenize.defaultTokenizer
 import org.allenai.taggers.tag.Tagger
+
 import org.scalatest.FlatSpec
 
 class ExtractorSpec extends FlatSpec {

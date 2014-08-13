@@ -1,16 +1,14 @@
 package org.allenai.taggers
 
-import org.allenai.nlpstack.core.repr.{Chunker, Lemmatizer, Sentence}
-import org.allenai.taggers.constraint.VerbPhraseConstraint
-import org.allenai.taggers.tag.ConstrainedTagger
-import org.allenai.taggers.tag.KeywordTagger
 import org.allenai.nlpstack.chunk.OpenNlpChunker
+import org.allenai.nlpstack.core.repr.{Chunker, Lemmatizer, Sentence}
 import org.allenai.nlpstack.lemmatize.MorphaStemmer
-import org.scalatest.FlatSpec
-import scala.collection.JavaConverters.asScalaBufferConverter
-import scala.collection.JavaConverters.seqAsJavaListConverter
 import org.allenai.nlpstack.postag.OpenNlpPostagger
 import org.allenai.nlpstack.tokenize.SimpleEnglishTokenizer
+import org.allenai.taggers.constraint.VerbPhraseConstraint
+import org.allenai.taggers.tag.{ConstrainedTagger, KeywordTagger}
+
+import org.scalatest.FlatSpec
 
 class TaggerSpec extends FlatSpec {
   val chunker = new OpenNlpChunker();

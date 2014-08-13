@@ -1,13 +1,13 @@
 package org.allenai.taggers.tag;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.allenai.common.immutable.Interval;
 import org.allenai.nlpstack.core.ChunkedToken;
 import org.allenai.nlpstack.core.Lemmatized;
 import org.allenai.nlpstack.core.typer.Type;
 import org.allenai.taggers.TypeHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AfterTaggers {
 	public static List<Interval> npChunkIntervals(List<Lemmatized<ChunkedToken>> tokens) {

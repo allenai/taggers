@@ -1,11 +1,9 @@
 package org.allenai.taggers.tag
 
 import org.allenai.nlpstack.core.typer.Type
-
-import edu.knowitall.common.HashCodeHelper
 import org.allenai.taggers.Consume
 
-import scala.collection.JavaConverters._
+import edu.knowitall.common.HashCodeHelper
 
 /** A tagger operations on a sentence to create types. */
 abstract class Tagger[-S <: Tagger.Sentence] {

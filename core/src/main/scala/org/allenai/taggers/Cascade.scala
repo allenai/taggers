@@ -1,23 +1,16 @@
 package org.allenai.taggers
 
-import org.allenai.taggers.rule._
-import edu.knowitall.common.Resource.using
-import org.allenai.taggers.constraint.Constraint
-import org.allenai.taggers.tag.Tagger
-import org.allenai.nlpstack.core.ChunkedToken
 import org.allenai.nlpstack.chunk.OpenNlpChunker
-import org.allenai.nlpstack.core.Lemmatized
-import org.allenai.nlpstack.lemmatize.MorphaStemmer
 import org.allenai.nlpstack.core.typer.Type
+import org.allenai.taggers.tag.Tagger
 
-import io.Source
+import edu.knowitall.common.Resource.using
 import org.slf4j.LoggerFactory
 
-import java.io.File
-import java.io.FileReader
-import java.io.Reader
 import scala.collection.immutable
-import scala.util.{ Try, Success, Failure }
+import scala.io.Source
+import scala.util.{Failure, Success}
+import java.io.File
 
 /** Represents a sequence of taggers applied in order.
   * After each level of taggers, OpenRegexs can only use

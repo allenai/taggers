@@ -1,13 +1,12 @@
 package org.allenai.taggers;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
 import org.allenai.nlpstack.core.ChunkedToken;
 import org.allenai.nlpstack.core.Lemmatized;
 import org.allenai.nlpstack.core.Token;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SentenceFunctions {
   public static List<Lemmatized<ChunkedToken>> lowercase(List<Lemmatized<ChunkedToken>> tokens) {

@@ -1,13 +1,11 @@
 package org.allenai.taggers.tag;
 
 import org.allenai.common.immutable.Interval
-import org.allenai.nlpstack.core.repr.{Lemmas, Chunks}
-import org.allenai.taggers.TypeHelper
-import org.allenai.nlpstack.core.ChunkedToken
-import org.allenai.nlpstack.core.Lemmatized
+import org.allenai.nlpstack.core.repr.{Chunks, Lemmas}
 import org.allenai.nlpstack.core.typer.Type
+import org.allenai.nlpstack.core.{ChunkedToken, Lemmatized}
+import org.allenai.taggers.TypeHelper
 
-import java.util.List
 import scala.collection.JavaConverters._
 
 abstract class JavaTagger(val name: String, val source: String)

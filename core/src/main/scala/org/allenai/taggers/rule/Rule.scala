@@ -2,10 +2,9 @@ package org.allenai.taggers.rule
 
 import org.allenai.taggers.tag.Tagger
 
-import java.io.Reader
-import java.io.StringReader
+import scala.util.Try
 import scala.util.parsing.combinator.JavaTokenParsers
-import scala.util.{ Try, Success }
+import java.io.{Reader, StringReader}
 
 /** A parser combinator for parsing rules.
   *

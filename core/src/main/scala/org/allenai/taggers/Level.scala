@@ -1,14 +1,14 @@
 package org.allenai.taggers
 
-import edu.knowitall.common.Resource
+import org.allenai.nlpstack.core.typer.Type
 import org.allenai.taggers.rule._
 import org.allenai.taggers.tag._
-import org.allenai.nlpstack.core.typer.Type
 
-import java.io.File
-import java.io.Reader
+import edu.knowitall.common.Resource
+
 import scala.io.Source
 import scala.util.control.NonFatal
+import java.io.{File, Reader}
 
 case class Level[-S <: Tagger.Sentence](name: String, taggers: Seq[Tagger[S]]) {
   def apply(sentence: S, types: Seq[Type]): Seq[Type] = {

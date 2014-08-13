@@ -1,37 +1,10 @@
 package org.allenai.taggers.tag
 
-import com.google.common.base.Predicate
-import com.google.common.collect.ImmutableList
-import edu.knowitall.openregex
-import org.allenai.taggers.LinkedType
-import org.allenai.taggers.NamedGroupType
-import org.allenai.taggers.pattern.PatternBuilder
-import org.allenai.taggers.pattern.TypedToken
-import org.allenai.taggers.TypeHelper
-import org.allenai.nlpstack.core.ChunkedToken
-import org.allenai.nlpstack.core.Lemmatized
-import org.allenai.nlpstack.core.Tokenizer
 import org.allenai.nlpstack.core.typer.Type
-import edu.washington.cs.knowitall.logic.ArgFactory
-import edu.washington.cs.knowitall.logic.LogicExpression
-import edu.washington.cs.knowitall.regex.Expression.BaseExpression
-import edu.washington.cs.knowitall.regex.Expression.NamedGroup
-import edu.washington.cs.knowitall.regex.ExpressionFactory
-import edu.washington.cs.knowitall.regex.RegularExpression
-import java.lang.reflect.InvocationTargetException
-import java.util.ArrayList
-import java.util.Collections
-import java.util.HashSet
-import java.util.Iterator
-import java.util.List
-import java.util.Map
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-import java.util.Set
-import java.util.TreeMap
-import scala.collection.JavaConverters._
-import edu.knowitall.openregex.Pattern.Group
-import edu.knowitall.openregex.Pattern.Match
+import org.allenai.taggers.pattern.TypedToken
+
+import edu.knowitall.openregex
+import edu.knowitall.openregex.Pattern.{Group, Match}
 
 /** Run a token-based pattern over the text and tag matches.
   *

@@ -1,17 +1,14 @@
 package org.allenai.taggers
 
 import org.allenai.common.immutable.Interval
-import org.allenai.nlpstack.core.repr._
-import org.allenai.taggers.tag.Tagger
 import org.allenai.nlpstack.chunk.OpenNlpChunker
+import org.allenai.nlpstack.core.repr._
 import org.allenai.nlpstack.lemmatize.MorphaStemmer
 import org.allenai.nlpstack.postag.defaultPostagger
 import org.allenai.nlpstack.tokenize.defaultTokenizer
+import org.allenai.taggers.tag.Tagger
 
 import org.scalatest.FlatSpec
-
-import scala.collection.immutable.IntMap
-import scala.collection.JavaConverters._
 
 class OpenRegexSpec extends FlatSpec {
   type MySentence = Tagger.Sentence with Chunks with Lemmas

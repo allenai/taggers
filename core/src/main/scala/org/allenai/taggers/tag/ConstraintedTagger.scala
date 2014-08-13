@@ -1,17 +1,7 @@
 package org.allenai.taggers.tag
 
-import edu.knowitall.openregex
-import org.allenai.taggers.Cascade
-import org.allenai.taggers.constraint.Constraint
-import org.allenai.taggers.pattern.PatternBuilder
-import org.allenai.taggers.pattern.TypedToken
-import org.allenai.taggers.TypeHelper
-import org.allenai.nlpstack.core.ChunkedToken
-import org.allenai.nlpstack.core.Lemmatized
 import org.allenai.nlpstack.core.typer.Type
-import edu.washington.cs.knowitall.regex.Expression.NamedGroup
-
-import scala.util.matching.Regex
+import org.allenai.taggers.constraint.Constraint
 
 class ConstrainedTagger[S <: Tagger.Sentence](val tagger: Tagger[S], val constraints: Seq[Constraint[S]])
     extends Tagger[S] {
