@@ -39,6 +39,7 @@ object TaggerBuild extends Build {
       resolvers += "AllenAI Snapshots" at "http://utility.allenai.org:8081/nexus/content/repositories/snapshots",
       resolvers += "AllenAI Releases" at "http://utility.allenai.org:8081/nexus/content/repositories/releases",
       resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+      scalacOptions += "-target:jvm-1.7",
       publishMavenStyle := true,
       publishTo <<= version { (v: String) =>
         val nexus = "https://oss.sonatype.org/"
