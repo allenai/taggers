@@ -25,6 +25,7 @@ object TaggerBuild extends Build {
       crossScalaVersions := Seq("2.10.4"),
       scalaVersion <<= crossScalaVersions { (vs: Seq[String]) => vs.head },
       scalacOptions ++= Seq("-target:jvm-1.7", "-unchecked", "-deprecation"),
+      javacOptions ++= Seq("-source", "1.7", "-target", "1.7"),
       homepage := Some(url("http://github.com/knowitall/taggers")),
       licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
       conflictManager := ConflictManager.strict,
@@ -38,6 +39,7 @@ object TaggerBuild extends Build {
       resolvers += "AllenAI Snapshots" at "http://utility.allenai.org:8081/nexus/content/repositories/snapshots",
       resolvers += "AllenAI Releases" at "http://utility.allenai.org:8081/nexus/content/repositories/releases",
       resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+      scalacOptions += "-target:jvm-1.7",
       publishMavenStyle := true,
       publishTo <<= version { (v: String) =>
         val nexus = "https://oss.sonatype.org/"
