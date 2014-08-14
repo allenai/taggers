@@ -26,6 +26,7 @@ object TaggerBuild extends Build {
       crossScalaVersions := Seq("2.10.4"),
       scalaVersion <<= crossScalaVersions { (vs: Seq[String]) => vs.head },
       scalacOptions ++= Seq("-target:jvm-1.7", "-unchecked", "-deprecation"),
+      javacOptions ++= Seq("-source 1.7", "-target 1.7"),
       homepage := Some(url("http://github.com/knowitall/taggers")),
       licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
       conflictManager := ConflictManager.strict,
