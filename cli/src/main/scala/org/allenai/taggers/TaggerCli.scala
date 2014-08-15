@@ -2,8 +2,8 @@ package org.allenai.taggers
 
 import edu.knowitall.common.Resource.using
 
-import java.io.File
 import scala.io.Source
+import java.io.File
 
 object TaggerCliMain {
   case class Config(cascadeFile: File = null,

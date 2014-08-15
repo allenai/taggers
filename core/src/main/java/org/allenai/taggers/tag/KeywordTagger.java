@@ -1,25 +1,19 @@
 package org.allenai.taggers.tag;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
 import org.allenai.common.immutable.Interval;
+import org.allenai.nlpstack.core.ChunkedToken;
+import org.allenai.nlpstack.core.Lemmatized;
+import org.allenai.nlpstack.core.typer.Type;
 import org.allenai.taggers.SentenceFunctions;
 import org.allenai.taggers.StringFunctions;
-import org.allenai.nlpstack.typer.Type;
-import org.allenai.nlpstack.chunk.ChunkedToken;
-import org.allenai.nlpstack.lemmatize.Lemmatized;
+
+import java.util.*;
+
 
 /***
  * Search for exact keyword matches, case-sensitive, and tag the match.

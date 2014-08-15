@@ -1,19 +1,10 @@
 package org.allenai.taggers.rule
 
-import org.allenai.repr.sentence.Sentence
-import org.allenai.taggers.Import
-import org.allenai.taggers.constraint.Constraint
-import org.allenai.taggers.tag.ConstrainedTagger
-import org.allenai.taggers.tag.OpenRegex
 import org.allenai.taggers.tag.Tagger
 
-import java.io.FileReader
-import java.io.Reader
-import java.io.StringReader
-import scala.collection.JavaConverters.seqAsJavaListConverter
-import scala.util.control.Exception
+import scala.util.Try
 import scala.util.parsing.combinator.JavaTokenParsers
-import scala.util.{ Try, Success }
+import java.io.{Reader, StringReader}
 
 /** A parser combinator for parsing rules.
   *

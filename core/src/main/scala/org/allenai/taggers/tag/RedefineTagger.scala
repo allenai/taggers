@@ -1,17 +1,6 @@
 package org.allenai.taggers.tag;
 
-import org.allenai.nlpstack.typer.Type
-import org.allenai.nlpstack.chunk.ChunkedToken
-import org.allenai.nlpstack.lemmatize.Lemmatized
-import org.allenai.taggers.TypeHelper
-import org.allenai.repr.sentence.Sentence
-
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-
-import java.io.IOException
-import java.util.ArrayList
-import java.util.List
+import org.allenai.nlpstack.core.typer.Type
 
 /** Rename a type to another name.
   * @author schmmd

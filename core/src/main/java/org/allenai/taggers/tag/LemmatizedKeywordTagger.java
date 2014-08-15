@@ -1,15 +1,14 @@
 package org.allenai.taggers.tag;
 
-import java.util.List;
-
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-
-import org.allenai.taggers.SentenceFunctions;
-import org.allenai.nlpstack.typer.Type;
-import org.allenai.nlpstack.chunk.ChunkedToken;
-import org.allenai.nlpstack.lemmatize.Lemmatized;
+import org.allenai.nlpstack.core.ChunkedToken;
+import org.allenai.nlpstack.core.Lemmatized;
+import org.allenai.nlpstack.core.typer.Type;
 import org.allenai.nlpstack.lemmatize.MorphaStemmer$;
+import org.allenai.taggers.SentenceFunctions;
+
+import java.util.List;
 
 /***
  * Search for normalized keywords against a normalized sentence and tag the

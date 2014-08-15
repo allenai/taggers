@@ -3,7 +3,6 @@ package org.allenai.taggers
 import akka.actor._
 import spray.http._
 import spray.routing._
-import spray.routing.Directives._
 
 import java.io.File
 

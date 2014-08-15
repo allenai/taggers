@@ -1,17 +1,13 @@
 package org.allenai.taggers
 
-import org.allenai.repr.sentence
-import org.allenai.repr.sentence.Sentence
-import org.allenai.taggers.constraint.VerbPhraseConstraint
-import org.allenai.taggers.tag.ConstrainedTagger
-import org.allenai.taggers.tag.KeywordTagger
 import org.allenai.nlpstack.chunk.OpenNlpChunker
+import org.allenai.nlpstack.core.repr.{Chunker, Lemmatizer, Sentence}
 import org.allenai.nlpstack.lemmatize.MorphaStemmer
+import org.allenai.nlpstack.postag.defaultPostagger
+import org.allenai.nlpstack.tokenize.defaultTokenizer
+import org.allenai.taggers.tag.KeywordTagger
+
 import org.scalatest.FlatSpec
-import scala.collection.JavaConverters.asScalaBufferConverter
-import scala.collection.JavaConverters.seqAsJavaListConverter
-import org.allenai.nlpstack.postag.OpenNlpPostagger
-import org.allenai.nlpstack.tokenize.SimpleEnglishTokenizer
 
 class KeywordTaggerSpec extends FlatSpec {
   val chunker = new OpenNlpChunker();
@@ -22,10 +18,10 @@ class KeywordTaggerSpec extends FlatSpec {
   "a keyword tagger" should "match the last token in a sentence" in {
     val sentenceText = "The man had run down the road"
     val opennlpChunker = new OpenNlpChunker
-    val s = new Sentence(sentenceText) with sentence.Chunker with sentence.Lemmatizer with Consume {
+    val s = new Sentence(sentenceText) with Chunker with Lemmatizer with Consume {
       override val chunker = new OpenNlpChunker
-      override val postagger = new OpenNlpPostagger
-      override val tokenizer = new SimpleEnglishTokenizer
+      override val postagger = defaultPostagger
+      override val tokenizer = defaultTokenizer
       override val lemmatizer = MorphaStemmer
     }
 

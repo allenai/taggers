@@ -1,11 +1,10 @@
 package org.allenai.taggers
 
-import org.allenai.nlpstack.typer.Type
+import org.allenai.nlpstack.core.typer.Type
 
 import scala.util.parsing.combinator.RegexParsers
-import scala.util.{ Try, Success, Failure }
-import java.io.Reader
-import java.io.StringReader
+import scala.util.{Failure, Success, Try}
+import java.io.{Reader, StringReader}
 
 /** An extractor definition, which builds an extraction string from a set of types.
   * It will be iteratively applied to all of the target types.
@@ -182,7 +181,7 @@ object Extractor {
 /** A parser combinator to parse Extractor definitions.
   * For examples, see ExtractorSpec. */
 class ExtractorParser extends RegexParsers {
-  import Extractor._
+  import org.allenai.taggers.Extractor._
 
   override def skipWhitespace = false
 

@@ -1,10 +1,10 @@
 package org.allenai.taggers.tag;
 
-import java.util.List;
+import org.allenai.nlpstack.core.ChunkedToken;
+import org.allenai.nlpstack.core.Lemmatized;
+import org.allenai.nlpstack.core.typer.Type;
 
-import org.allenai.nlpstack.typer.Type;
-import org.allenai.nlpstack.chunk.ChunkedToken;
-import org.allenai.nlpstack.lemmatize.Lemmatized;
+import java.util.List;
 
 /***
  * Search for exact keyword matches, ignoring case, and then tag the chunk

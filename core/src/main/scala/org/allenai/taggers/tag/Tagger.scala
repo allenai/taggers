@@ -1,15 +1,9 @@
 package org.allenai.taggers.tag
 
-import edu.knowitall.common.HashCodeHelper
-import org.allenai.repr.sentence.Sentence
-import org.allenai.taggers.constraint.Constraint
+import org.allenai.nlpstack.core.typer.Type
 import org.allenai.taggers.Consume
-import org.allenai.nlpstack.chunk.ChunkedToken
-import org.allenai.nlpstack.lemmatize.Lemmatized
-import org.allenai.nlpstack.typer.Type
-import org.allenai.nlpstack.typer.Typer
 
-import scala.collection.JavaConverters._
+import edu.knowitall.common.HashCodeHelper
 
 /** A tagger operations on a sentence to create types. */
 abstract class Tagger[-S <: Tagger.Sentence] {
@@ -98,7 +92,7 @@ abstract class Tagger[-S <: Tagger.Sentence] {
 }
 
 object Tagger {
-  type Sentence = org.allenai.repr.sentence.Sentence with Consume
+  type Sentence = org.allenai.nlpstack.core.repr.Sentence with Consume
 
   def getTaggerClass(classname: String, pack: String): Class[_] = {
     try {

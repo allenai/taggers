@@ -1,35 +1,24 @@
 package org.allenai.taggers
 
-import edu.knowitall.common.Resource
-import org.allenai.repr.sentence
-import org.allenai.repr.sentence.Chunker
-import org.allenai.repr.sentence.Chunks
-import org.allenai.repr.sentence.Lemmas
-import org.allenai.repr.sentence.Lemmatizer
-import org.allenai.repr.sentence.Sentence
-import org.allenai.taggers.Cascade.LevelDefinition
-import org.allenai.taggers.rule._
-import org.allenai.taggers.tag.Tagger
-import org.allenai.taggers.tag.OpenRegex
-import org.allenai.nlpstack.tokenize.SimpleEnglishTokenizer
-import org.allenai.nlpstack.postag.OpenNlpPostagger
 import org.allenai.nlpstack.chunk.OpenNlpChunker
+import org.allenai.nlpstack.core.repr._
+import org.allenai.nlpstack.core.typer.Type
 import org.allenai.nlpstack.lemmatize.MorphaStemmer
-import org.allenai.nlpstack.typer.Type
+import org.allenai.nlpstack.postag.defaultPostagger
+import org.allenai.nlpstack.tokenize.defaultTokenizer
+import org.allenai.taggers.Cascade.LevelDefinition
+import org.allenai.taggers.tag.{OpenRegex, Tagger}
 
 import akka.actor._
-import spray.http._
+import edu.knowitall.common.Resource
 import spray.http.StatusCodes._
+import spray.http._
 import spray.httpx.SprayJsonSupport
 import spray.json._
 import spray.routing._
 
-import java.io.File
-import scala.collection.immutable.IntMap
-import scala.collection.immutable.ListMap
-import scala.collection.JavaConverters._
 import scala.io.Source
-import scala.util.{ Try, Success, Failure }
+import java.io.File
 
 // This is a separate class so that optional dependencies are not loaded
 // unless a server instance is being create.
@@ -41,8 +30,8 @@ class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, s
   type Sent = Tagger.Sentence with Chunks with Lemmas
 
   // External NLP tools that are used to build the expected type from a sentence string.
-  lazy val tokenizer = new SimpleEnglishTokenizer()
-  lazy val postagger = new OpenNlpPostagger()
+  lazy val tokenizer = defaultTokenizer
+  lazy val postagger = defaultPostagger
   lazy val chunker = new OpenNlpChunker()
 
   /** Build the NLP representation of a sentence string. */
@@ -62,7 +51,7 @@ class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, s
 
     implicit val system = ActorSystem("tagger-web")
 
-    import DefaultJsonProtocol._
+    import spray.json.DefaultJsonProtocol._
     implicit val levelFormat = jsonFormat2(LevelDefinition.apply)
     implicit val requestFormat = jsonFormat3(Request.apply)
 
@@ -119,7 +108,6 @@ class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, s
 
 
     startServer(interface = "0.0.0.0", port = port) {
-      import MediaTypes._
       handleExceptions(exceptionHandler) {
         respondWithHeader(cacheControlMaxAge) {
           path ("") {
