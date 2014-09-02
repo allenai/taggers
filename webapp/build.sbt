@@ -1,13 +1,15 @@
+import Dependencies._
+
 name := "taggers-webapp"
 
 description := "Tag sentences with XML-specified logic."
 
 libraryDependencies ++= Seq(
-    "com.github.scopt" %% "scopt" % "3.2.0",
-    "com.typesafe.akka" %% "akka-actor" % akkaVersion,
-    "io.spray" % "spray-can" % sprayVersion,
-    "io.spray" % "spray-routing" % sprayVersion,
-    "io.spray" %% "spray-json" % "1.2.6") ++ loggingImplementations
+    akkaModule("actor"),
+    sprayModule("can"),
+    sprayModule("routing"),
+    sprayJson,
+    "com.github.scopt" %% "scopt" % "3.2.0") ++ loggingImplementations
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
 

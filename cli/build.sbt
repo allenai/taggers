@@ -1,3 +1,5 @@
+import Dependencies._
+
 name := "taggers-cli"
 
 description := "Tag sentences with XML-specified logic."
