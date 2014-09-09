@@ -18,6 +18,7 @@ object BuildSettings {
       resolvers += "AllenAI Snapshots" at "http://utility.allenai.org:8081/nexus/content/repositories/snapshots",
       resolvers += "AllenAI Releases" at "http://utility.allenai.org:8081/nexus/content/repositories/releases",
       resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+      resolvers += "IESL Releases" at "http://dev-iesl.cs.umass.edu/nexus/content/groups/public",
       scalacOptions += "-target:jvm-1.7",
       publishMavenStyle := true,
       publishTo <<= version { (v: String) =>
