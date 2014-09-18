@@ -1,11 +1,15 @@
 package org.allenai.taggers
 
-import org.allenai.nlpstack.typer.Type
-
-import scala.util.parsing.combinator.RegexParsers
-import scala.util.{ Try, Success, Failure }
 import java.io.Reader
 import java.io.StringReader
+
+import scala.Option.option2Iterable
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
+import scala.util.parsing.combinator.RegexParsers
+
+import org.allenai.nlpstack.core.typer.Type
 
 /** An extractor definition, which builds an extraction string from a set of types.
   * It will be iteratively applied to all of the target types.

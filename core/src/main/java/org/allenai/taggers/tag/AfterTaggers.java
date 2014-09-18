@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.allenai.common.immutable.Interval;
 import org.allenai.taggers.TypeHelper;
-import org.allenai.nlpstack.typer.Type;
-import org.allenai.nlpstack.chunk.ChunkedToken;
-import org.allenai.nlpstack.lemmatize.Lemmatized;
+import org.allenai.nlpstack.core.typer.Type;
+import org.allenai.nlpstack.core.ChunkedToken;
+import org.allenai.nlpstack.core.Lemmatized;
 
 public class AfterTaggers {
 	public static List<Interval> npChunkIntervals(List<Lemmatized<ChunkedToken>> tokens) {

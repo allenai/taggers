@@ -1,18 +1,16 @@
 package org.allenai.taggers.pattern
 
+import scala.Array.canBuildFrom
+
+import org.allenai.common.immutable.Interval
+import org.allenai.taggers.tag.OpenRegex
+import org.apache.commons.lang3.StringEscapeUtils
+
+import com.google.common.base.{Function => GuavaFunction}
+
 import edu.knowitall.openregex
 import edu.washington.cs.knowitall.logic
 import edu.washington.cs.knowitall.logic.LogicExpression
-import edu.washington.cs.knowitall.regex.Expression
-import org.allenai.common.immutable.Interval
-import org.allenai.nlpstack.chunk.ChunkedToken
-import org.allenai.nlpstack.lemmatize.Lemmatized
-import org.allenai.taggers.tag.OpenRegex
-
-import com.google.common.base.{ Function => GuavaFunction }
-import org.apache.commons.lang3.StringEscapeUtils
-
-import java.util.regex.Pattern
 
 object PatternBuilder {
   type Token = TypedToken

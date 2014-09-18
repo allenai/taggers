@@ -1,15 +1,15 @@
 package org.allenai.taggers
 
-import org.allenai.common.immutable.Interval
-import org.allenai.repr.sentence.Sentence
-import org.allenai.repr.sentence.Tokens
-import org.allenai.nlpstack.chunk.ChunkedToken
-import org.allenai.nlpstack.lemmatize.Lemmatized
-import org.allenai.nlpstack.tokenize.Token
-import org.allenai.nlpstack.tokenize.Tokenizer
-import org.allenai.nlpstack.typer.Type
+import scala.collection.JavaConverters.asScalaBufferConverter
 
-import scala.collection.JavaConverters._
+import org.allenai.common.immutable.Interval
+import org.allenai.nlpstack.core.ChunkedToken
+import org.allenai.nlpstack.core.Lemmatized
+import org.allenai.nlpstack.core.Token
+import org.allenai.nlpstack.core.Tokenizer
+import org.allenai.nlpstack.core.repr.Sentence
+import org.allenai.nlpstack.core.repr.Tokens
+import org.allenai.nlpstack.core.typer.Type
 
 object TypeHelper {
   def fromSentence(sentence: Sentence with Tokens, name: String, source: String, interval: Interval): Type = {

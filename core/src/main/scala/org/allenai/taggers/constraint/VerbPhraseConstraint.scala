@@ -1,11 +1,8 @@
 package org.allenai.taggers.constraint;
 
-import java.util.List
-import org.allenai.nlpstack.typer.Type
-import org.allenai.nlpstack.chunk.ChunkedToken
-import org.allenai.nlpstack.lemmatize.Lemmatized
-import org.allenai.repr.sentence.Sentence
-import org.allenai.repr.sentence.Chunks
+import org.allenai.nlpstack.core.repr.Chunks
+import org.allenai.nlpstack.core.repr.Sentence
+import org.allenai.nlpstack.core.typer.Type
 
 object VerbPhraseConstraint extends Constraint[Sentence with Chunks] {
   override def apply(sentence: TheSentence, tag: Type): Boolean = {

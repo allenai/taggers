@@ -1,7 +1,6 @@
 package org.allenai.taggers
 
-import org.allenai.repr.sentence
-import org.allenai.repr.sentence.Sentence
+import org.allenai.nlpstack.core.repr
 import org.allenai.taggers.constraint.VerbPhraseConstraint
 import org.allenai.taggers.tag.ConstrainedTagger
 import org.allenai.taggers.tag.KeywordTagger
@@ -22,7 +21,7 @@ class KeywordTaggerSpec extends FlatSpec {
   "a keyword tagger" should "match the last token in a sentence" in {
     val sentenceText = "The man had run down the road"
     val opennlpChunker = new OpenNlpChunker
-    val s = new Sentence(sentenceText) with sentence.Chunker with sentence.Lemmatizer with Consume {
+    val s = new repr.Sentence(sentenceText) with repr.Chunker with repr.Lemmatizer with Consume {
       override val chunker = new OpenNlpChunker
       override val postagger = new OpenNlpPostagger
       override val tokenizer = new SimpleEnglishTokenizer

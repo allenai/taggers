@@ -1,25 +1,24 @@
 package org.allenai.taggers
 
-import org.allenai.nlpstack.chunk.ChunkedToken
+import org.allenai.nlpstack.core.ChunkedToken
 import org.allenai.nlpstack.chunk.OpenNlpChunker
-import org.allenai.nlpstack.lemmatize.Lemmatized
+import org.allenai.nlpstack.core.Lemmatized
 import org.allenai.nlpstack.lemmatize.MorphaStemmer
-import org.allenai.nlpstack.postag.OpenNlpPostagger
-import org.allenai.nlpstack.tokenize.SimpleEnglishTokenizer
-import org.allenai.repr.sentence
-import org.allenai.repr.sentence.Sentence
+import org.allenai.nlpstack.postag.FactoriePostagger
+import org.allenai.nlpstack.tokenize.FactorieTokenizer
+import org.allenai.nlpstack.core.repr
 import org.allenai.taggers.tag.Tagger
 import org.scalatest.FlatSpec
 
 class ExtractorSpec extends FlatSpec {
-  type MySentence = Tagger.Sentence with sentence.Chunks with sentence.Lemmas
+  type MySentence = Tagger.Sentence with repr.Chunks with repr.Lemmas
 
   val chunker = new OpenNlpChunker();
   def makeSentence(text: String): MySentence =
-    new Sentence(text) with sentence.Chunker with sentence.Lemmatizer with Consume {
+    new repr.Sentence(text) with repr.Chunker with repr.Lemmatizer with Consume {
       override val chunker = new OpenNlpChunker
-      override val postagger = new OpenNlpPostagger
-      override val tokenizer = new SimpleEnglishTokenizer
+      override val postagger = new FactoriePostagger
+      override val tokenizer = new FactorieTokenizer
       override val lemmatizer = MorphaStemmer
     }
 

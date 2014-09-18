@@ -1,10 +1,8 @@
 package org.allenai.taggers.pattern
 
-import org.allenai.taggers.pattern.Fields.Field
-import org.allenai.nlpstack.chunk.ChunkedToken
-import org.allenai.nlpstack.lemmatize.Lemmatized
-
 import java.util.regex.Pattern
+
+import org.allenai.taggers.pattern.Fields.Field
 
 /** A collection of matchers against a token. */
 object Expressions {

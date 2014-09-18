@@ -1,12 +1,12 @@
 package org.allenai.taggers
 
 import org.allenai.common.immutable.Interval
-import org.allenai.repr.sentence
-import org.allenai.repr.sentence.Sentence
+import org.allenai.nlpstack.core.repr
+import org.allenai.nlpstack.core.repr.Sentence
 import org.allenai.taggers.tag.Tagger
-import org.allenai.nlpstack.chunk.ChunkedToken
+import org.allenai.nlpstack.core.ChunkedToken
 import org.allenai.nlpstack.chunk.OpenNlpChunker
-import org.allenai.nlpstack.lemmatize.Lemmatized
+import org.allenai.nlpstack.core.Lemmatized
 import org.allenai.nlpstack.lemmatize.MorphaStemmer
 import org.scalatest.FlatSpec
 import scala.collection.immutable.IntMap
@@ -15,11 +15,11 @@ import org.allenai.nlpstack.postag.OpenNlpPostagger
 import org.allenai.nlpstack.tokenize.SimpleEnglishTokenizer
 
 class OpenRegexSpec extends FlatSpec {
-  type MySentence = Tagger.Sentence with sentence.Chunks with sentence.Lemmas
+  type MySentence = Tagger.Sentence with repr.Chunks with repr.Lemmas
 
   val chunker = new OpenNlpChunker();
   def makeSentence(text: String): MySentence =
-    new Sentence(text) with Consume with sentence.Chunker with sentence.Lemmatizer {
+    new Sentence(text) with Consume with repr.Chunker with repr.Lemmatizer {
       override val chunker = new OpenNlpChunker
       override val postagger = new OpenNlpPostagger
       override val tokenizer = new SimpleEnglishTokenizer

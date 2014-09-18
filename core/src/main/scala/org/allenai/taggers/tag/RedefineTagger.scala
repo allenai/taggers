@@ -1,10 +1,10 @@
 package org.allenai.taggers.tag;
 
-import org.allenai.nlpstack.typer.Type
-import org.allenai.nlpstack.chunk.ChunkedToken
-import org.allenai.nlpstack.lemmatize.Lemmatized
+import org.allenai.nlpstack.core.typer.Type
+import org.allenai.nlpstack.core.ChunkedToken
+import org.allenai.nlpstack.core.Lemmatized
 import org.allenai.taggers.TypeHelper
-import org.allenai.repr.sentence.Sentence
+import org.allenai.nlpstack.core.repr.Sentence
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

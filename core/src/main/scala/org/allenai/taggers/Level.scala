@@ -1,15 +1,20 @@
 package org.allenai.taggers
 
-import edu.knowitall.common.Resource
-import org.allenai.repr.sentence.Sentence
-import org.allenai.taggers.rule._
-import org.allenai.taggers.tag._
-import org.allenai.nlpstack.typer.Type
-
 import java.io.File
 import java.io.Reader
+
 import scala.io.Source
 import scala.util.control.NonFatal
+
+import org.allenai.nlpstack.core.typer.Type
+import org.allenai.taggers.rule.DefinitionRule
+import org.allenai.taggers.rule.ParsedLevel
+import org.allenai.taggers.rule.RuleParser
+import org.allenai.taggers.rule.TaggerRule
+import org.allenai.taggers.tag.ConsumingTagger
+import org.allenai.taggers.tag.Tagger
+
+import edu.knowitall.common.Resource
 
 case class Level[-S <: Tagger.Sentence](name: String, taggers: Seq[Tagger[S]]) {
   def apply(sentence: S, types: Seq[Type]): Seq[Type] = {
