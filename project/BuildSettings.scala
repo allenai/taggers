@@ -18,7 +18,6 @@ object BuildSettings {
       resolvers += "AllenAI Snapshots" at "http://utility.allenai.org:8081/nexus/content/repositories/snapshots",
       resolvers += "AllenAI Releases" at "http://utility.allenai.org:8081/nexus/content/repositories/releases",
       scalacOptions += "-target:jvm-1.7",
-      publishMavenStyle := true,
       publishTo <<= version { (v: String) =>
         val nexus = "http://utility.allenai.org:8081/nexus/content/repositories/"
         if (v.trim.endsWith("SNAPSHOT"))
