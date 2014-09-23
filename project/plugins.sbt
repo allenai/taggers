@@ -1,6 +1,6 @@
 addSbtPlugin("com.typesafe.sbt" % "sbt-pgp" % "0.8.1")
 
-addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.2")
+addSbtPlugin("org.allenai.plugins" % "allenai-sbt-release" % "2014.09.11-0")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-scalariform" % "1.3.0")
 
