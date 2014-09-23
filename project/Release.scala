@@ -20,10 +20,4 @@ object ReleaseSettings {
       setNextVersion,
       commitNextVersion
     ))
-
-  lazy val publishSignedAction = { st: State =>
-    val extracted = st.extract
-    val ref = extracted.get(thisProjectRef)
-    extracted.runAggregated(publishSigned in Global in ref, st)
-  }
 }
