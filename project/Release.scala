@@ -16,7 +16,7 @@ object ReleaseSettings {
       setReleaseVersion,
       commitReleaseVersion,
       tagRelease,
-      publishArtifacts.copy(action = publishSignedAction),
+      publishArtifacts.copy(),
       setNextVersion,
       commitNextVersion
     ))
