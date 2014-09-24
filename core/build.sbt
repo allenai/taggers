@@ -1,6 +1,7 @@
 import Dependencies._
+import sbtrelease.ReleasePlugin._
 
-ReleaseSettings.defaults
+releaseSettings
 
 name := "taggers-core"
 
