@@ -11,7 +11,7 @@ object TaggerBuild extends Build {
     publish := { },
     publishTo := Some("bogus" at "http://nowhere.com"),
     publishLocal := { }
-  ).aggregate(core, cli, server, webapp)
+  ).aggregate(core, cli, server, webapp).enablePlugins(AllenaiReleasePlugin)
 
   lazy val core = Project(
     id = "core",
