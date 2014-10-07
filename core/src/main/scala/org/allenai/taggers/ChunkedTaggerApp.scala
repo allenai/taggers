@@ -10,10 +10,12 @@ import org.allenai.taggers.tag.Tagger
 
 /** A self-contained class for processing sentences and running taggers
   * over chunked sentences. */
-class ChunkedTaggerApp(cascade: Cascade[Tagger.Sentence with Chunks with Lemmas]) {
+class ChunkedTaggerApp(
+  cascade: Cascade[Tagger.Sentence with Chunks with Lemmas],
+  postagger: org.allenai.nlpstack.core.Postagger = defaultPostagger
+) {
   type Sent = Tagger.Sentence with Chunks with Lemmas
   val tokenizer = defaultTokenizer
-  val postagger = defaultPostagger
   val chunker = new OpenNlpChunker()
 
   def format(typ: Type) = {
