@@ -14,6 +14,8 @@ import org.allenai.taggers.SentenceFunctions
   */
 class LemmatizedKeywordTagger(name: String, keywords: Seq[String])
 extends KeywordTagger(name, keywords map MorphaStemmer.lemmatize) {
+  override def canEqual(that: Any) = that.isInstanceOf[LemmatizedKeywordTagger]
+
   override def tag(sentence: TheSentence, types: Seq[Type]): Seq[Type] = {
     keywordTag(sentence.strings map MorphaStemmer.lemmatize, types)
   }

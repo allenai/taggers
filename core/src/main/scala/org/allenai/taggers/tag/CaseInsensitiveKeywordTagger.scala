@@ -14,6 +14,8 @@ import org.allenai.taggers.SentenceFunctions
   */
 class CaseInsensitiveKeywordTagger(name: String, keywords: Seq[String])
 extends KeywordTagger(name, keywords map (_.toLowerCase)) {
+  override def canEqual(that: Any) = that.isInstanceOf[CaseInsensitiveKeywordTagger]
+
   override def tag(sentence: TheSentence, types: Seq[Type]): Seq[Type] = {
     keywordTag(sentence.strings map (_.toLowerCase), types)
   }
