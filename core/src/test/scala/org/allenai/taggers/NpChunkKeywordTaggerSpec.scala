@@ -32,4 +32,15 @@ class NpChunkKeywordTaggerSpec extends FlatSpec {
     assert(types.size === 1)
     assert(types.head.text === "The old man")
   }
+
+  "a np keyword tagger matching outside an np chunk" should "have no matches" in {
+    val runTagger = new NpChunkKeywordTagger("prep", Seq("up", "down"))
+    val sentenceText = "The old man had run down the road."
+    val opennlpChunker = new OpenNlpChunker
+
+    val sentence = parse(sentenceText)
+    val types = runTagger.apply(sentence)
+
+    assert(types.size === 0)
+  }
 }

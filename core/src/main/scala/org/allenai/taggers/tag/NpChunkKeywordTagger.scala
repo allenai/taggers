@@ -31,6 +31,7 @@ object NpChunkKeywordTagger {
       // end a chunk tag sequence
       if (start != -1 && !chunk.equalsIgnoreCase("I-NP")) {
         intervals = intervals :+ Interval.open(start, i)
+        start = -1
       }
 
       // start a chunk tag sequence
