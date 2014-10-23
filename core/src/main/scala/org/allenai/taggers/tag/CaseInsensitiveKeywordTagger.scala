@@ -6,7 +6,6 @@ import org.allenai.nlpstack.core.ChunkedToken
 import org.allenai.nlpstack.core.Lemmatized
 import org.allenai.nlpstack.core.typer.Type
 import org.allenai.nlpstack.lemmatize.MorphaStemmer
-import org.allenai.taggers.SentenceFunctions
 
 /** Search for normalized keywords against a normalized sentence and tag the
   * match.  Lemmatized is defined by {@see Stemmer.lemmatize()}.

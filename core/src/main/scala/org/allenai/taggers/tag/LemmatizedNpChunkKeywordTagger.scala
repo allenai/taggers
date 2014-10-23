@@ -11,8 +11,8 @@ import org.allenai.nlpstack.lemmatize.MorphaStemmer
   * match.  Lemmatized is defined by {@see Stemmer.lemmatize()}.
   * @author schmmd
   */
-class LemmatizedKeywordTagger(name: String, keywords: Seq[String])
-extends KeywordTagger(name, keywords map MorphaStemmer.lemmatize) {
+class LemmatizedNpChunkKeywordTagger(name: String, keywords: Seq[String])
+extends NpChunkKeywordTagger(name, keywords map MorphaStemmer.lemmatize) {
   override def canEqual(that: Any) = that.isInstanceOf[LemmatizedKeywordTagger]
 
   override def tag(sentence: TheSentence, types: Seq[Type]): Seq[Type] = {

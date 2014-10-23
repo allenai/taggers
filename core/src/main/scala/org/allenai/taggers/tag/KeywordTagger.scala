@@ -9,8 +9,6 @@ import org.allenai.common.immutable.Interval
 import org.allenai.nlpstack.core.ChunkedToken
 import org.allenai.nlpstack.core.Lemmatized
 import org.allenai.nlpstack.core.typer.Type
-import org.allenai.taggers.SentenceFunctions
-import org.allenai.taggers.StringFunctions
 import org.allenai.nlpstack.core.repr._
 
 class KeywordTagger(val name: String, val wholeKeywords: Seq[String])
