@@ -16,10 +16,7 @@ abstract class Tagger[-S <: Tagger.Sentence] {
 
   override def toString = this.getClass.getName + ":=" + name
   override def equals(that: Any) = that match {
-    // fast comparison for Intervals
     case that: Tagger[_] => that.canEqual(this) && that.name == this.name && that.source == this.source
-    // slower comparison for Seqs
-    case that: IndexedSeq[_] => super.equals(that)
     case _ => false
   }
   def canEqual(that: Any) = that.isInstanceOf[Tagger[_]]

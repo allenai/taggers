@@ -5,11 +5,11 @@ import org.allenai.nlpstack.core.repr.{Chunker, Lemmatizer, Sentence}
 import org.allenai.nlpstack.lemmatize.MorphaStemmer
 import org.allenai.nlpstack.postag.defaultPostagger
 import org.allenai.nlpstack.tokenize.defaultTokenizer
-import org.allenai.taggers.tag.KeywordTagger
+import org.allenai.taggers.tag.NpChunkKeywordTagger
 
 import org.scalatest.FlatSpec
 
-class KeywordTaggerSpec extends FlatSpec {
+class NpChunkKeywordTaggerSpec extends FlatSpec {
   val chunker = new OpenNlpChunker();
   val morpha = new MorphaStemmer();
 
@@ -22,33 +22,25 @@ class KeywordTaggerSpec extends FlatSpec {
     }
   }
 
-  "a keyword tagger" should "match the last token in a sentence" in {
-    val runTagger = new KeywordTagger("RoadTagger", Seq("road"))
-    val sentenceText = "The man had run down the road"
+  "a np keyword tagger" should "match the chunk containing the keyword" in {
+    val runTagger = new NpChunkKeywordTagger("person", Seq("man", "woman"))
+    val sentenceText = "The old man had run down the road."
     val opennlpChunker = new OpenNlpChunker
 
     val types = runTagger.apply(parse(sentenceText))
 
     assert(types.size === 1)
+    assert(types.head.text === "The old man")
   }
 
-  "a multi-word keyword tagger" should "match correctly" in {
-    val tagger = new KeywordTagger("RoadTagger", Seq("rail road"))
-    val sentenceText = "The man had run down the rail road"
+  "a np keyword tagger matching outside an np chunk" should "have no matches" in {
+    val runTagger = new NpChunkKeywordTagger("prep", Seq("up", "down"))
+    val sentenceText = "The old man had run down the road."
     val opennlpChunker = new OpenNlpChunker
 
-    val types = tagger.apply(parse(sentenceText))
+    val sentence = parse(sentenceText)
+    val types = runTagger.apply(sentence)
 
-    assert(types.size === 1)
-  }
-
-  "a multi-word keyword tagger" should "match twice" in {
-    val tagger = new KeywordTagger("RoadTagger", Seq("rail road"))
-    val sentenceText = "rail road oh my rail road"
-    val opennlpChunker = new OpenNlpChunker
-
-    val types = tagger.apply(parse(sentenceText))
-
-    assert(types.size === 2)
+    assert(types.size === 0)
   }
 }
