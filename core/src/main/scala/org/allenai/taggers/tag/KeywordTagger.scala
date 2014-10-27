@@ -73,6 +73,10 @@ extends Tagger[Tagger.Sentence with Chunks] {
       }
     }
 
+    // TODO(schmmd): this will have poor performance when the keywords list is huge--particularly if it
+    // contains many words with the same prefix.  We could instead iterate over all the spans of the sentence
+    // and look them up in the map.  This would be `O(sentence.tokens.size^2)` which makes sense if the keywords
+    // are large because the sentences are short.
     for {
       // Iterate over the sentence tokens.
       i <- 0 until sentence.size
