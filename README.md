@@ -73,8 +73,10 @@ share tagger definition files between them.
 ### OpenRegex
 
 This tagger compiles regular expressions over the tokens in a sentence into an
-NFA.  A token is described as a logical formula between angled brackets `<>`.
-There are a number of fields that can be matched upon for each token.
+NFA (for more information, see the [Open Regex](https://github.com/knowitall/openregex)
+and [Open Regex Scala](git@github.com:knowitall/openregex-scala.git) libraries).
+A token is describedas a logical formula between angled brackets `<>`.  There
+are a number of fields that can be matched upon for each token.
 
 * __string__
 * __lemma__: the lemmatized form of the token string (see MorphaStemmer in nlpstack)
