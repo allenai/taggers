@@ -16,9 +16,6 @@ object BuildSettings {
       licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
       conflictManager := ConflictManager.strict,
       dependencyOverrides := Dependencies.defaultDependencyOverrides,
-      // AllenAI Repositories
-      resolvers += "AllenAI Snapshots" at "http://utility.allenai.org:8081/nexus/content/repositories/snapshots",
-      resolvers += "AllenAI Releases" at "http://utility.allenai.org:8081/nexus/content/repositories/releases",
       // Factorie Resolver
       resolvers += "IESL Releases" at "http://dev-iesl.cs.umass.edu/nexus/content/groups/public",
       scalacOptions += "-target:jvm-1.7",
