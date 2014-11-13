@@ -29,20 +29,7 @@ class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, s
   // deals with sentences that are chunked and lemmatized
   type Sent = Tagger.Sentence with Chunks with Lemmas
 
-  // External NLP tools that are used to build the expected type from a sentence string.
-  lazy val tokenizer = defaultTokenizer
-  lazy val postagger = defaultPostagger
-  lazy val chunker = new OpenNlpChunker()
-
-  /** Build the NLP representation of a sentence string. */
-  def process(text: String): Sent = {
-    new Sentence(text) with Consume with Chunker with Lemmatizer {
-      val tokenizer = TaggerWeb.this.tokenizer
-      val postagger = TaggerWeb.this.postagger
-      val chunker = TaggerWeb.this.chunker
-      val lemmatizer = MorphaStemmer
-    }
-  }
+  val processor = new Processor()
 
   def run() {
     val staticContentRoot = "public"
@@ -155,7 +142,7 @@ class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, s
     val cascade = new Cascade[Sent]("webapp", levels, extractors)
 
     val results = for (line <- request.sentences.split("\n")) yield {
-      val sentence = process(line)
+      val sentence = processor(line)
       val levels = cascade.levelTypes(sentence)
 
       (sentence, levels)
