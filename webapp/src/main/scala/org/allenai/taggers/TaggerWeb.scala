@@ -22,7 +22,7 @@ import java.io.File
 
 // This is a separate class so that optional dependencies are not loaded
 // unless a server instance is being create.
-class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, sentences: Seq[Tagger.Sentence with Chunks with Lemmas], port: Int)
+class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, sentences: Vector[Tagger.Sentence with Chunks with Lemmas], port: Int)
   extends SimpleRoutingApp with SprayJsonSupport {
 
   // A type alias for convenience since TaggerWeb always
@@ -134,7 +134,7 @@ class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, s
 
     val cascade = new Cascade[Sent]("webapp", levels, extractors)
 
-    val results = for (sentence <- sentences) yield {
+    val results = for (sentence <- sentences.par) yield {
       val levels = cascade.levelTypes(sentence)
 
       (sentence, levels)
@@ -173,7 +173,7 @@ class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, s
       SentenceResponse(sentence.text, sentence.tokens.map(_.string), levelResponses, extractorResponses)
     }
     
-    Response(sentenceResponses)
+    Response(sentenceResponses.seq)
   }
 }
 
@@ -186,14 +186,14 @@ object TaggerWebMain extends App {
       case None => ("", Seq(LevelDefinition("anonymous", "")))
     }
 
-    def preprocessedSentences(): Seq[Tagger.Sentence with Chunks with Lemmas] = sentenceInputFile match {
+    def preprocessedSentences(): Vector[Tagger.Sentence with Chunks with Lemmas] = sentenceInputFile match {
       case Some(file) =>
         Resource.using(Source.fromFile(file)) { source =>
           (for (line <- source.getLines) yield {
             Processor.Formats.sentenceJsonFormat.read(line.parseJson)
-          }).toList
+          }).toVector
         }
-      case None => Seq()
+      case None => Vector.empty
     }
   }
 
