@@ -18,7 +18,7 @@ object Dependencies {
 
   val sprayJson = "io.spray" %% "spray-json" % "1.2.6"
 
-  def nlpstackModule(id: String) = "org.allenai.nlpstack" %% s"nlpstack-$id" % "0.16"
+  def nlpstackModule(id: String) = "org.allenai.nlpstack" %% s"nlpstack-$id" % "0.18"
   def akkaModule(id: String) = "com.typesafe.akka" %% s"akka-$id" % "2.3.2"
   def sprayModule(id: String) = "io.spray" %% s"spray-$id" % "1.3.1"
 }
