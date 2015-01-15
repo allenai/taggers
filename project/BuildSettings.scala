@@ -1,11 +1,10 @@
 import sbt.Keys._
 import sbt._
-import sbtrelease.ReleasePlugin._
 
 import spray.revolver.RevolverPlugin._
 
 object BuildSettings {
-  val defaultBuildSettings = Defaults.defaultSettings ++ releaseSettings ++ Format.settings ++ Revolver.settings ++
+  val defaultBuildSettings = Defaults.defaultSettings ++ Format.settings ++ Revolver.settings ++
     Seq(
       organization := "org.allenai.taggers",
       crossScalaVersions := Seq("2.11.5"),
