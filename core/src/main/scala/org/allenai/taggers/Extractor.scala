@@ -2,6 +2,7 @@ package org.allenai.taggers
 
 import org.allenai.nlpstack.core.typer.Type
 
+import scala.language.postfixOps
 import scala.util.parsing.combinator.RegexParsers
 import scala.util.{Failure, Success, Try}
 import java.io.{Reader, StringReader}

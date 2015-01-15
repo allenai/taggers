@@ -2,6 +2,7 @@ package org.allenai.taggers.rule
 
 import org.allenai.taggers.tag.Tagger
 
+import scala.language.postfixOps
 import scala.util.Try
 import scala.util.parsing.combinator.JavaTokenParsers
 import java.io.{Reader, StringReader}

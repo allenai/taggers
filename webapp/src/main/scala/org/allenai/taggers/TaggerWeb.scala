@@ -10,7 +10,7 @@ import org.allenai.taggers.Cascade.LevelDefinition
 import org.allenai.taggers.tag.{OpenRegex, Tagger}
 
 import akka.actor._
-import edu.knowitall.common.Resource
+import org.allenai.common.Resource
 import spray.http.StatusCodes._
 import spray.http._
 import spray.httpx.SprayJsonSupport

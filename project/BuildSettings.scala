@@ -8,7 +8,7 @@ object BuildSettings {
   val defaultBuildSettings = Defaults.defaultSettings ++ releaseSettings ++ Format.settings ++ Revolver.settings ++
     Seq(
       organization := "org.allenai.taggers",
-      crossScalaVersions := Seq("2.10.4"),
+      crossScalaVersions := Seq("2.11.5"),
       scalaVersion <<= crossScalaVersions { (vs: Seq[String]) => vs.head },
       scalacOptions ++= Seq("-target:jvm-1.7", "-unchecked", "-deprecation"),
       javacOptions ++= Seq("-source", "1.7", "-target", "1.7"),

@@ -1,6 +1,6 @@
 package org.allenai.taggers
 
-import edu.knowitall.common.Resource.using
+import org.allenai.common.Resource.using
 
 import scala.io.Source
 import java.io.File

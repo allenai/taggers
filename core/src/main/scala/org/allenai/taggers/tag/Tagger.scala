@@ -3,11 +3,10 @@ package org.allenai.taggers.tag
 import org.allenai.nlpstack.core.typer.Type
 import org.allenai.taggers.Consume
 
-import edu.knowitall.common.HashCodeHelper
-
 /** A tagger operations on a sentence to create types. */
 abstract class Tagger[-S <: Tagger.Sentence] {
-  type TheSentence = S
+  // todo(schmmd): remove type assignment
+  type TheSentence = (S @annotation.unchecked.uncheckedVariance)
 
   def name: String
   def source: String
@@ -21,7 +20,7 @@ abstract class Tagger[-S <: Tagger.Sentence] {
   }
   def canEqual(that: Any) = that.isInstanceOf[Tagger[_]]
 
-  override def hashCode = HashCodeHelper(name /*, constraints*/ )
+  override def hashCode = name.hashCode
 
   /** Public method for finding tags in a sentence.
     * @param sentence

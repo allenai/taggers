@@ -4,7 +4,7 @@ import org.allenai.nlpstack.chunk.OpenNlpChunker
 import org.allenai.nlpstack.core.typer.Type
 import org.allenai.taggers.tag.Tagger
 
-import edu.knowitall.common.Resource.using
+import org.allenai.common.Resource.using
 import org.slf4j.LoggerFactory
 
 import scala.collection.immutable

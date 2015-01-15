@@ -9,6 +9,8 @@ import edu.washington.cs.knowitall.logic
 import edu.washington.cs.knowitall.logic.LogicExpression
 import org.apache.commons.lang3.StringEscapeUtils
 
+import scala.language.implicitConversions
+
 object PatternBuilder {
   type Token = TypedToken
 

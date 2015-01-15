@@ -10,6 +10,7 @@ import org.allenai.taggers.pattern.{PatternBuilder, TypedToken}
 import edu.knowitall.openregex
 import edu.washington.cs.knowitall.regex.Expression.NamedGroup
 
+import scala.collection.immutable.Range
 import scala.util.control._
 
 /** Run a token-based pattern over the text and tag matches.
@@ -111,8 +112,8 @@ object OpenRegex {
   class OpenRegexException(message: String, cause: Throwable)
   extends Exception(message, cause)
 
-  def bridgeInterval(interval: edu.knowitall.collection.immutable.Interval): org.allenai.common.immutable.Interval = {
-    Interval.open(interval.start, interval.end)
+  def bridgeInterval(range: Range): org.allenai.common.immutable.Interval = {
+    Interval.open(range.start, range.end)
   }
 
   def buildTypedTokens(sentence: Tagger.Sentence with Chunks with Lemmas, types: Seq[Type]) = {

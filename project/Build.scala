@@ -1,5 +1,3 @@
-import org.allenai.sbt.release.AllenaiReleasePlugin
-
 import sbt.Keys._
 import sbt._
 import spray.revolver.RevolverPlugin._
@@ -11,12 +9,12 @@ object TaggerBuild extends Build {
     publish := { },
     publishTo := Some("bogus" at "http://nowhere.com"),
     publishLocal := { }
-  ).aggregate(core, cli, server, webapp).enablePlugins(AllenaiReleasePlugin)
+  ).aggregate(core, cli, server, webapp)
 
   lazy val core = Project(
     id = "core",
     base = file("core"),
-    settings = defaultBuildSettings).enablePlugins(AllenaiReleasePlugin)
+    settings = defaultBuildSettings)
 
   lazy val webapp = Project(
     id = "webapp",

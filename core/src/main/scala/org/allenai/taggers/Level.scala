@@ -4,7 +4,7 @@ import org.allenai.nlpstack.core.typer.Type
 import org.allenai.taggers.rule._
 import org.allenai.taggers.tag._
 
-import edu.knowitall.common.Resource
+import org.allenai.common.Resource
 
 import scala.io.Source
 import scala.util.control.NonFatal

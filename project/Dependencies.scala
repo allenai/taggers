@@ -3,9 +3,10 @@ import sbt._
 
 object Dependencies {
   val defaultDependencyOverrides = Set(
-      "org.scala-lang" % "scala-reflect" % "2.10.3",
+      "org.scala-lang" % "scala-library" % "2.11.5",
+      "org.scala-lang" % "scala-reflect" % "2.11.5",
+      "org.scala-lang.modules" % "scala-xml_2.11" % "1.0.2",
       "com.google.guava" % "guava" % "15.0",
-      "org.scala-lang" % "scala-library" % "2.10.4",
       "org.slf4j" % "slf4j-api" % "1.7.6",
       "org.parboiled" %% "parboiled-scala" % "1.1.6",
       "com.github.scopt" %% "scopt" % "3.2.0",
