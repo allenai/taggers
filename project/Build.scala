@@ -4,6 +4,8 @@ import spray.revolver.RevolverPlugin._
 
 import BuildSettings._
 
+import org.allenai.plugins.archetypes.LibraryPlugin
+
 object TaggerBuild extends Build {
   lazy val root = Project(id = "taggers-root", base = file(".")).settings (
     publish := { },
@@ -14,7 +16,7 @@ object TaggerBuild extends Build {
   lazy val core = Project(
     id = "core",
     base = file("core"),
-    settings = defaultBuildSettings)
+    settings = defaultBuildSettings).enablePlugins(LibraryPlugin)
 
   lazy val webapp = Project(
     id = "webapp",
