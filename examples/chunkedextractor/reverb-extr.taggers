@@ -1,3 +1,0 @@
-consume ReVerbExtraction := TypedOpenRegex {
-  (<Arg1>:@NounChunk) (<Rel>:@Relation) (<Arg2>:@NounChunk) (?: <!type = 'Relation'> | $)
-}

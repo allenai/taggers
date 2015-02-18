@@ -1,4 +1,3 @@
-reverb-parts.taggers
-reverb-extr.taggers
+reverb.taggers
 
 x: ReVerbExtraction => (${x.Arg1}, ${x.Rel}, ${x.Arg2})
