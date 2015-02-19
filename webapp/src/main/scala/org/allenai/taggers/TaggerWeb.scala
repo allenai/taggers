@@ -22,7 +22,11 @@ import java.io.File
 
 // This is a separate class so that optional dependencies are not loaded
 // unless a server instance is being create.
-class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, sentenceText: String, port: Int)
+class TaggerWeb(
+    levelDefinitions: Seq[LevelDefinition] = TaggerWeb.defaultLevels,
+    extractorText: String = TaggerWeb.defaultExtractorText,
+    sentenceText: String = TaggerWeb.defaultSentenceText,
+    port: Int)
   extends SimpleRoutingApp with SprayJsonSupport {
 
   // A type alias for convenience since TaggerWeb always
@@ -197,13 +201,32 @@ class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, s
   }
 }
 
+object TaggerWeb {
+  val defaultLevels = Seq(LevelDefinition("Anonymous",
+  """|Animal := LemmatizedKeywordTagger {
+     |cat
+     |bird
+     |frog
+   |}
+
+   |DescribedAnimal := TypedOpenRegex ( <pos='JJ'>+ @Animal )""".stripMargin))
+   val defaultExtractorText = "x: DescribedAnimal => described animal: ${x}"
+   val defaultCascade = (defaultExtractorText, defaultLevels)
+   val defaultSentenceText =
+      """|The fat black cat was hidden in the dark corner.
+         |The song birds sing new songs in the spring.""".stripMargin
+  }
+
 object TaggerWebMain extends App {
-  case class Config(ruleInputFile: Option[File] = None, sentenceInputFile: Option[File] = None, port: Int = 8080) {
+  case class Config(
+      ruleInputFile: Option[File] = None,
+      sentenceInputFile: Option[File] = None,
+      port: Int = 8080) {
     def cascade(): (String, Seq[LevelDefinition]) = ruleInputFile match {
       case Some(file) =>
         val (levels, extractors) = Cascade.partialLoad(file)
         (extractors.mkString("\n"), levels)
-      case None => ("", Seq(LevelDefinition("anonymous", "")))
+      case None => TaggerWeb.defaultCascade
     }
 
     def sentenceText() = sentenceInputFile match {
@@ -211,7 +234,7 @@ object TaggerWebMain extends App {
         Resource.using(Source.fromFile(file)) { source =>
           source.getLines.mkString("\n")
         }
-      case None => ""
+      case None => TaggerWeb.defaultSentenceText
     }
   }
 
