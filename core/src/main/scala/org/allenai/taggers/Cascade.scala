@@ -19,7 +19,6 @@ import java.io.File
   * @param  levels  stores the taggers applied on each level
   */
 case class Cascade[-S <: Tagger.Sentence](name: String, levels: Seq[Level[S]] = Seq.empty, extractors: Seq[Extractor] = Seq.empty) {
-  lazy val chunker = new OpenNlpChunker()
 
   // Make sure all the imports are valid.
   // Make sure all extractors are for defined types.
