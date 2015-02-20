@@ -8,6 +8,7 @@ name := "taggers-core"
 description := "Tag sentences with XML-specified logic."
 
 libraryDependencies ++= Seq(
+    commonPipeline,
     nlpstackModule("core"),
     nlpstackModule("chunk"),
     nlpstackModule("lemmatize"),

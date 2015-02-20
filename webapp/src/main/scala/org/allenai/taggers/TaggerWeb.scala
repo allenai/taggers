@@ -6,6 +6,7 @@ import org.allenai.nlpstack.core.typer.Type
 import org.allenai.nlpstack.lemmatize.MorphaStemmer
 import org.allenai.nlpstack.postag.defaultPostagger
 import org.allenai.nlpstack.tokenize.defaultTokenizer
+import org.allenai.pipeline._
 import org.allenai.taggers.Cascade.LevelDefinition
 import org.allenai.taggers.tag.{OpenRegex, Tagger}
 
@@ -249,8 +250,32 @@ object TaggerWebMain extends App {
       c.copy(port = x)
     }.text("port for web server")
   }
+  
+  /*
+  .fromArtifact[Sentence](
+      new FileArtifact(inputSentences))
+    val allInstances = PersistedIterator.text(extractionFile)(
+      new ExtractInstances(sentences, confidenceThreshold))
+    val filteredInstances = new FilterInstances(allInstances, confidenceThreshold)
+    val workingInstances = PersistedIterator.text(filteredExtractionFile) {
+      blacklistFile match {
+        case Some(f) => {
+          val blacklist = ReadCollection.text[String](new FileArtifact(f))
+          new FilterInstancesFromBlacklist(filteredInstances, blacklist)
+        }
+        case None => filteredInstances
+      }
+    }
+    */
 
   parser.parse(args, Config()).foreach { config =>
+    config.sentenceInputFile map { file =>
+      implicit def stringSerialiableString = new StringSerializable[String] {
+        def fromString(s: String): String = s
+        def toString(param: String): String = param
+      }
+      val sentences = IoHelpers.Read.Iterator.fromText[String](new FileArtifact(file))(io.Codec.UTF8)
+    }
     val (extractorText, levelDefinitions) = config.cascade()
     val server = new TaggerWeb(levelDefinitions, extractorText, config.sentenceText(), config.port)
     server.run()
