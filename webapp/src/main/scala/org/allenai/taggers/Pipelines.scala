@@ -12,26 +12,41 @@ import org.allenai.nlpstack.lemmatize.MorphaStemmer
 import org.allenai.nlpstack.core.repr.Chunker
 import org.allenai.pipeline.CodeInfo
 import org.allenai.pipeline.Signature
+import org.allenai.taggers.tag.Tagger
+import org.allenai.pipeline.StringSerializable
+import org.allenai.pipeline.FlatArtifact
 
-class ChunkSentences(sentences: Producer[Iterator[String]], confidenceThreshold: Double)
-extends Producer[Iterator[Tagger.Sentence with Chunks with Lemmas]] {
-  type Sent = Tagger.Sentence with Chunks with Lemmas
-  val tokenizer = defaultTokenizer
-  val postagger = defaultPostagger
-  val chunker = new OpenNlpChunker()
+object Pipelines {
+  type ChunkedSentence = Tagger.Sentence with Chunks with Lemmas
+  class ChunkSentences(sentences: Producer[Iterator[String]])
+    extends Producer[Iterator[ChunkedSentence]] {
+    val tokenizer = defaultTokenizer
+    val postagger = defaultPostagger
+    val chunker = new OpenNlpChunker()
 
-  def apply(sentence: String): Sent = this.synchronized {
-    new Sentence(sentence) with Consume with Chunker with Lemmatizer {
-      val tokenizer = ChunkSentences.this.tokenizer
-      val postagger = ChunkSentences.this.postagger
-      val chunker = ChunkSentences.this.chunker
-      val lemmatizer = MorphaStemmer
+    def apply(sentence: String): ChunkedSentence = this.synchronized {
+      new Sentence(sentence) with Consume with Chunker with Lemmatizer {
+        val tokenizer = ChunkSentences.this.tokenizer
+        val postagger = ChunkSentences.this.postagger
+        val chunker = ChunkSentences.this.chunker
+        val lemmatizer = MorphaStemmer
+      }
+    }
+    override def create: Iterator[ChunkedSentence] =
+      sentences.get map this.apply
+
+    def codeInfo: CodeInfo = ???
+
+    def signature: Signature = ???
+  }
+  
+  implicit val chunkedSentencesArtifactIo = new ArtifactIo[FlatArtifact, Iterator[ChunkedSentence]] {
+    def read(artifact: FlatArtifact): Iterator[ChunkedSentence] = {
+      
+    }
+
+    def write(data: Iterator[ChunkedSentence], artifact: Sentence): Unit = {
+      
     }
   }
-  override def create: Iterator[Tagger.Sentence with Chunks with Lemmas] = 
-    sentences.get map this.apply
-
-  def codeInfo: CodeInfo = ???
-
-  def signature: Signature = ???
 }

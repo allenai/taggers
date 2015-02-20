@@ -9,6 +9,7 @@ import org.allenai.nlpstack.tokenize.defaultTokenizer
 import org.allenai.pipeline._
 import org.allenai.taggers.Cascade.LevelDefinition
 import org.allenai.taggers.tag.{OpenRegex, Tagger}
+import org.allenai.pipeline.IoHelpers._
 
 import akka.actor._
 import org.allenai.common.Resource
@@ -96,7 +97,7 @@ class TaggerWeb(
           stackTraceWriter.toString
         }
         JsObject(
-          "messages" -> JsArray(getMessageChain(t) map (JsString(_))),
+          "messages" -> null, //JsArray(getMessageChain(t) map (JsString(_))),
           "stackTrace" -> JsString(stackTrace))
       }
     }
@@ -267,14 +268,22 @@ object TaggerWebMain extends App {
       }
     }
     */
+  
+  def addExtension(file: File, suffix: String): String = {
+    val fileName = file.getName
+    val dot = fileName.lastIndexOf('.')
+    if (dot < 0) {
+      s"$fileName.$suffix"
+    }
+    else {
+      s"${fileName.substring(0, dot)}.$suffix.${fileName.substring(dot + 1)}"
+    }
+  }
 
   parser.parse(args, Config()).foreach { config =>
     config.sentenceInputFile map { file =>
-      implicit def stringSerialiableString = new StringSerializable[String] {
-        def fromString(s: String): String = s
-        def toString(param: String): String = param
-      }
-      val sentences = IoHelpers.Read.Iterator.fromText[String](new FileArtifact(file))(io.Codec.UTF8)
+      val sentences = IoHelpers.Read.Iterator.fromText[String](new FileArtifact(file))
+      val chunked = new ChunkSentences(sentences).persisted(new FileArtifact(addExtension(file, "chunked")))
     }
     val (extractorText, levelDefinitions) = config.cascade()
     val server = new TaggerWeb(levelDefinitions, extractorText, config.sentenceText(), config.port)
