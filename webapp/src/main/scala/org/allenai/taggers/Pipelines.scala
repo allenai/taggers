@@ -15,6 +15,11 @@ import org.allenai.pipeline.Signature
 import org.allenai.taggers.tag.Tagger
 import org.allenai.pipeline.StringSerializable
 import org.allenai.pipeline.FlatArtifact
+import org.allenai.common.Resource
+import scala.io.Source
+import org.allenai.nlpstack.core.ChunkedToken
+import org.allenai.nlpstack.core.Lemmatized
+import org.allenai.nlpstack.core.Tokenizer
 
 object Pipelines {
   type ChunkedSentence = Tagger.Sentence with Chunks with Lemmas
@@ -40,13 +45,63 @@ object Pipelines {
     def signature: Signature = ???
   }
   
+  implicit def sentencePickler = new StringSerializable[ChunkedSentence] {
+    def read(pickled: String): ChunkedSentence = {
+      val tokens = pickled.split("\n").map { pickledToken =>
+        val (offset, string, lemma, postag, chunk)=
+          pickledToken.split("\t") match {
+            case Array(offset, string, lemma, postag, chunk) =>
+              (offset.toInt, string, lemma, postag, chunk)
+            case _ => throw new MatchError(pickledToken)
+        }
+        val chunked = ChunkedToken(chunk, postag, string, offset)
+        Lemmatized[ChunkedToken](chunked, lemma)
+      }
+      
+      val originalText = Tokenizer.originalText(tokens map (_.token))
+      new Sentence(originalText) with Chunks with Lemmas with Consume {
+        override val lemmatizedTokens = tokens
+      }
+    }
+    
+    def write(sentence: ChunkedSentence): String = {
+      val builder = new StringBuilder(sentence.tokens.length * 25)
+      for (token <- sentence.lemmatizedTokens) {
+        builder.append(Iterator(
+            token.token.offset,
+            token.token.string,
+            token.lemma,
+            token.token.postag,
+            token.token.chunk).mkString("\t") + "\n")
+      }
+      builder.toString
+    }
+  }
+  
   implicit val chunkedSentencesArtifactIo = new ArtifactIo[FlatArtifact, Iterator[ChunkedSentence]] {
     def read(artifact: FlatArtifact): Iterator[ChunkedSentence] = {
-      
+      Resource.using(Source.fromInputStream(artifact.read)) { source =>
+        var it = source.getLines
+        
+        var sentences = List.empty[ChunkedSentence]
+        while (it.hasNext) {
+          val (tokens, rest) = it.span(_ != "")
+          it = rest
+        
+          val sentence = tokens.toVector
+        }
+        
+        sentences.iterator
+      }
     }
 
-    def write(data: Iterator[ChunkedSentence], artifact: Sentence): Unit = {
-      
+    def write(data: Iterator[ChunkedSentence], artifact: FlatArtifact): Unit = {
+      artifact.write { writer =>
+        for (sentence <- data) {
+          writer.println(sentencePickler.write(sentences))
+          writer.println()
+        }
+      }
     }
   }
 }
