@@ -27,7 +27,7 @@ import java.io.File
 class TaggerWeb(
     levelDefinitions: Seq[LevelDefinition] = TaggerWeb.defaultLevels,
     extractorText: String = TaggerWeb.defaultExtractorText,
-    sentenceText: String = TaggerWeb.defaultSentenceText,
+    sentences: Producer[Iterable[Tagger.Sentence with Chunks with Lemmas]],
     port: Int)
   extends SimpleRoutingApp with SprayJsonSupport {
 
@@ -36,20 +36,6 @@ class TaggerWeb(
   type Sent = Tagger.Sentence with Chunks with Lemmas
 
   // External NLP tools that are used to build the expected type from a sentence string.
-  lazy val tokenizer = defaultTokenizer
-  lazy val postagger = defaultPostagger
-  lazy val chunker = new OpenNlpChunker()
-
-  /** Build the NLP representation of a sentence string. */
-  def process(text: String): Sent = {
-    new Sentence(text) with Consume with Chunker with Lemmatizer {
-      val tokenizer = TaggerWeb.this.tokenizer
-      val postagger = TaggerWeb.this.postagger
-      val chunker = TaggerWeb.this.chunker
-      val lemmatizer = MorphaStemmer
-    }
-  }
-
   def run() {
     val staticContentRoot = "public"
 
@@ -131,7 +117,11 @@ class TaggerWeb(
           path ("fields") {
             get {
               complete {
-                Request(levelDefinitions, extractorText, sentenceText)
+                val sentencesText = (sentences.get map (_.text)).mkString("\n")
+                Request(
+                    levelDefinitions, 
+                    extractorText, 
+                    sentencesText)
               }
             }
           } ~
@@ -160,8 +150,7 @@ class TaggerWeb(
 
     val cascade = new Cascade[Sent]("webapp", levels, extractors)
 
-    val results = for (line <- request.sentences.split("\n")) yield {
-      val sentence = process(line)
+    val results = for (sentence <- sentences.get.toList) yield {
       val levels = cascade.levelTypes(sentence)
 
       (sentence, levels)
@@ -281,12 +270,18 @@ object TaggerWebMain extends App {
   }
 
   parser.parse(args, Config()).foreach { config =>
-    config.sentenceInputFile map { file =>
-      val sentences = IoHelpers.Read.Iterator.fromText[String](new FileArtifact(file))
-      val chunked = new ChunkSentences(sentences).persisted(new FileArtifact(addExtension(file, "chunked")))
+    val chunked = config.sentenceInputFile.map { file =>
+      val output = new RelativeFileSystem(file.getParentFile)
+      val sentences = IoHelpers.Read.Collection.fromText[String](new FileArtifact(file))
+      new Pipelines.ChunkSentences(sentences).persisted(
+          Pipelines.chunkedSentencesArtifactIo,
+          output.flatArtifact(addExtension(file, "chunked"))
+      )
+    }.getOrElse {
+      IoHelpers.FromMemory(Iterable.empty[Pipelines.ChunkedSentence])
     }
     val (extractorText, levelDefinitions) = config.cascade()
-    val server = new TaggerWeb(levelDefinitions, extractorText, config.sentenceText(), config.port)
+    val server = new TaggerWeb(levelDefinitions, extractorText, chunked, config.port)
     server.run()
   }
 }
