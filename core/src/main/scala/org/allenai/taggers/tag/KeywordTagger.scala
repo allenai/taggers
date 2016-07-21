@@ -33,7 +33,7 @@ extends Tagger[Tagger.Sentence with Chunks] {
     keywordTag(sentence.strings, types)
   }
 
-  /** This method exists so the sentence can be transformed before matching against the keywords. 
+  /** This method exists so the sentence can be transformed before matching against the keywords.
     * For example, the sentence might be lower cased so a case insensitive match can be done
     * against the keywords (which would already have been lower cased as well).
     */
@@ -59,7 +59,7 @@ extends Tagger[Tagger.Sentence with Chunks] {
       return true
     }
 
-    /** Try and match a keyword at a particular index. 
+    /** Try and match a keyword at a particular index.
       * If there is a match, create and return a Type.
       */
     def matchKeyword(keyword: Seq[String], i: Int): Option[Type] = {
