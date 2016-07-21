@@ -275,14 +275,14 @@ class OpenRegexSpec extends FlatSpec {
 
     val taggers  =
       """VerbPhrase := OpenRegex{
-    		<pos='VBD'> || <pos='VBZ'>
-    	}
-         TastyNounPhrase := OpenRegex{
-    		<string='delicious'> <pos='NN'>
-    	}
-         TypePatternPhrase := TypedOpenRegex{
-    		@VerbPhrase @TastyNounPhrase <pos='RB'>
-    	}
+        <pos='VBD'> || <pos='VBZ'>
+      }
+      TastyNounPhrase := OpenRegex{
+        <string='delicious'> <pos='NN'>
+      }
+      TypePatternPhrase := TypedOpenRegex{
+        @VerbPhrase @TastyNounPhrase <pos='RB'>
+      }
       """
 
     val cascade = new Cascade(Level.fromString[MySentence]("unnamed", taggers))
