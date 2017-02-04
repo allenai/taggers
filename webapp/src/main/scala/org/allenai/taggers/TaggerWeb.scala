@@ -22,27 +22,14 @@ import java.io.File
 
 // This is a separate class so that optional dependencies are not loaded
 // unless a server instance is being create.
-class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, sentenceText: String, port: Int)
+class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, sentences: Vector[Tagger.Sentence with Chunks with Lemmas], port: Int)
   extends SimpleRoutingApp with SprayJsonSupport {
 
   // A type alias for convenience since TaggerWeb always
   // deals with sentences that are chunked and lemmatized
   type Sent = Tagger.Sentence with Chunks with Lemmas
-
-  // External NLP tools that are used to build the expected type from a sentence string.
-  lazy val tokenizer = defaultTokenizer
-  lazy val postagger = defaultPostagger
-  lazy val chunker = new OpenNlpChunker()
-
-  /** Build the NLP representation of a sentence string. */
-  def process(text: String): Sent = {
-    new Sentence(text) with Consume with Chunker with Lemmatizer {
-      val tokenizer = TaggerWeb.this.tokenizer
-      val postagger = TaggerWeb.this.postagger
-      val chunker = TaggerWeb.this.chunker
-      val lemmatizer = MorphaStemmer
-    }
-  }
+ 
+  val processor = new Processor()
 
   def run() {
     val staticContentRoot = "public"
@@ -122,13 +109,6 @@ class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, s
               }
             }
           } ~
-          path ("fields") {
-            get {
-              complete {
-                Request(levelDefinitions, extractorText, sentenceText)
-              }
-            }
-          } ~
           unmatchedPath { p => getFromFile(staticContentRoot + p) }
         }
       }
@@ -154,8 +134,7 @@ class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, s
 
     val cascade = new Cascade[Sent]("webapp", levels, extractors)
 
-    val results = for (line <- request.sentences.split("\n")) yield {
-      val sentence = process(line)
+    val results = for (sentence <- sentences.par) yield {
       val levels = cascade.levelTypes(sentence)
 
       (sentence, levels)
@@ -163,6 +142,7 @@ class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, s
 
     val sentenceResponses = for {
       (sentence, levels) <- results
+      if !levels.values.forall(_.isEmpty)
     } yield {
       var allTypes = Seq.empty[Type] // collection of types seen so far
       val levelResponses = for {
@@ -192,8 +172,8 @@ class TaggerWeb(levelDefinitions: Seq[LevelDefinition], extractorText: String, s
 
       SentenceResponse(sentence.text, sentence.tokens.map(_.string), levelResponses, extractorResponses)
     }
-
-    Response(sentenceResponses)
+    
+    Response(sentenceResponses.seq)
   }
 }
 
@@ -206,12 +186,14 @@ object TaggerWebMain extends App {
       case None => ("", Seq(LevelDefinition("anonymous", "")))
     }
 
-    def sentenceText() = sentenceInputFile match {
+    def preprocessedSentences(): Vector[Tagger.Sentence with Chunks with Lemmas] = sentenceInputFile match {
       case Some(file) =>
         Resource.using(Source.fromFile(file)) { source =>
-          source.getLines.mkString("\n")
+          (for (line <- source.getLines) yield {
+            Processor.Formats.sentenceJsonFormat.read(line.parseJson)
+          }).toVector
         }
-      case None => ""
+      case None => Vector.empty
     }
   }
 
@@ -229,7 +211,7 @@ object TaggerWebMain extends App {
 
   parser.parse(args, Config()).foreach { config =>
     val (extractorText, levelDefinitions) = config.cascade()
-    val server = new TaggerWeb(levelDefinitions, extractorText, config.sentenceText(), config.port)
+    val server = new TaggerWeb(levelDefinitions, extractorText, config.preprocessedSentences(), config.port)
     server.run()
   }
 }
